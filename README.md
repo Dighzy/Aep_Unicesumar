@@ -7,28 +7,28 @@ O objetivo deste documento é descrever detalhadamente a especificação e model
 # CONTEXTO
 O projeto consiste no desenvolvimento de um software dedicado ao controle de estoque e gerenciamento de doações para uma creche. Esta creche desempenha um papel crucial na comunidade, oferecendo cuidados e educação para crianças em idade pré-escolar. No entanto, a gestão eficiente dos recursos, incluindo alimentos, materiais educativos e outros itens doados, tornou-se um desafio devido ao crescimento das doações e à falta de um sistema automatizado de controle de estoque. Com este software, esse controle vai se tornar mais simples e objetivo.
  
- # REQUISITOS
+# REQUISITOS
 ### Lista de Requisitos do Sistema:
 
-1. ID	REQUISITO	TIPO	DESCRITIVO
-2. FU01	Cadastrar usuário	FU	Permite o cadastro de novos usuários no sistema.
-3. FU02	Cadastrar produto	FU	Permite o cadastro de novos produtos no sistema.
-4. FU03	Cadastrar categoria de produto	FU	Permite o cadastro de novas categorias de produtos.
-5. FU04	Cadastrar subcategoria de produto	FU	Permite o cadastro de novas subcategorias de produtos.
-6. FU05	Consultar estoque	FU	Permite a consulta do estoque atual.
-7. FU06	Registrar entrada	FU	Permite o registro de entrada de produtos no estoque.
-8. FU07	Registrar saída	FU	Permite o registro de saída de produtos do estoque.
-9. FU08	Cadastrar categoria de movimento	FU	Permite o cadastro de novas categorias de movimento.
-10. NF01	Amarrar categoria a subcategoria	NF	Toda categoria deve ser amarrada a uma subcategoria e vice-versa, exceto a categoria de movimento de estoque.
-11. NF02	Informações do usuário	NF	Todo usuário deve possuir nome, sobrenome, e-mail e senha.
-12. FU09	Resetar senha	FU	O usuário pode resetar sua própria senha clicando em ‘esqueci minha senha’ ou no painel do usuário em ‘envie-me um link de redefinição de senha’.
-13. NF03	Login do usuário	NF	O usuário deve fazer login com o login de usuário gerado, que é a concatenação entre o nome ‘.’ e sobrenome em minúsculas.
-14. NF04	Senha do usuário	NF	A senha deve conter no mínimo 8 caracteres.
-15. NF05	Produto e categoria	NF	Todo produto deve ser amarrado a uma categoria de produto e consequentemente a uma subcategoria de produto.
-16. NF06	Código do produto	NF	Todo código de produto deve ser gerado a partir da concatenação do prefixo do código da categoria ao qual ele pertence com um número sequencial.
-17. NF07	Produto do tipo pack	NF	Todo produto do tipo pack deve ter o tipo de embalagem selecionada e a quantidade de unidades base do pack informada.
-18. NF08	Produto não pack	NF	Um produto que não é do tipo pack tem seu valor base como sendo a unidade e seu tipo de embalagem como sendo unidade.
-19. NF09	Tipos de embalagem	NF	Os tipos de embalagem são apenas caixa, saco ou bandeja.
-20. NF10	Saída de produto	NF	A quantidade de saída de um produto não pode ser inferior ao saldo disponível em estoque.
-21. NF11	Tipo de usuário	NF	Todo usuário pode ser ou do tipo usuário, ou do tipo administrador.
-22. FU10	Acesso do administrador	FU	O tipo administrador tem acesso ao modulo usuários que permite o cadastro de novos usuários.
+
+FU01 - Cadastrar usuário: Permite o cadastro de novos usuários no sistema.
+FU02 - Cadastrar produto: Permite o cadastro de novos produtos no sistema.
+FU03 - Cadastrar categoria de produto: Permite o cadastro de novas categorias de produtos.
+FU04 - Cadastrar subcategoria de produto: Permite o cadastro de novas subcategorias de produtos.
+FU05 - Consultar estoque: Permite a consulta do estoque atual.
+FU06 - Registrar entrada: Permite o registro de entrada de produtos no estoque.
+FU07 - Registrar saída: Permite o registro de saída de produtos do estoque.
+FU08 - Cadastrar categoria de movimento: Permite o cadastro de novas categorias de movimento.
+NF01 - Amarrar categoria a subcategoria: Toda categoria deve ser amarrada a uma subcategoria e vice-versa, exceto a categoria de movimento de estoque.
+NF02 - Informações do usuário: Todo usuário deve possuir nome, sobrenome, e-mail e senha.
+FU09 - Resetar senha: O usuário pode resetar sua própria senha clicando em ‘esqueci minha senha’ ou no painel do usuário em ‘envie-me um link de redefinição de senha’.
+NF03 - Login do usuário: O usuário deve fazer login com o login de usuário gerado, que é a concatenação entre o nome ‘.’ e sobrenome em minúsculas.
+NF04 - Senha do usuário: A senha deve conter no mínimo 8 caracteres.
+NF05 - Produto e categoria:	Todo produto deve ser amarrado a uma categoria de produto e consequentemente a uma subcategoria de produto.
+NF06 - Código do produto: Todo código de produto deve ser gerado a partir da concatenação do prefixo do código da categoria ao qual ele pertence com um número sequencial.
+NF07 - Produto do tipo pack: Todo produto do tipo pack deve ter o tipo de embalagem selecionada e a quantidade de unidades base do pack informada.
+NF08 - Produto não pack: Um produto que não é do tipo pack tem seu valor base como sendo a unidade e seu tipo de embalagem como sendo unidade.
+NF09 - Tipos de embalagem: Os tipos de embalagem são apenas caixa, saco ou bandeja.
+NF10 - Saída de produto: A quantidade de saída de um produto não pode ser inferior ao saldo disponível em estoque.
+NF11 - Tipo de usuário: Todo usuário pode ser ou do tipo usuário, ou do tipo administrador.
+FU10 - Acesso do administrador:	O tipo administrador tem acesso ao modulo usuários que permite o cadastro de novos usuários.
