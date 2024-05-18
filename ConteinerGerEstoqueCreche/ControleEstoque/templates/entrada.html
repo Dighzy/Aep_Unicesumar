@@ -1,114 +1,25 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Usuário</title>
+    <title>Registrar Entrada</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="css/estilo.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
   </head>
 
   <body>
-    <nav class="navbar navbar-expand-lg mb-5 custom-navbar-bg">
-      <div class="container-fluid custom-container">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle text-light a-pl-0"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Usuários
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item" href="#">Gerenciar Usuários</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle text-light"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Produtos
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Cadastrar Produto</a></li>
-              <li>
-                <a class="dropdown-item" href="#">Cadastrar Categoria</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Cadastrar Sub-Categoria</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle text-light"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Estoque
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Consultar Estoque</a></li>
-              <li>
-                <a class="dropdown-item" href="#">Consultar Lançamento</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Registrar Entrada</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Registrar Saída</a>
-              </li>
-              <li>
-                <a class="dropdown-item" href="#">Categorias de Movimento</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-
-        <div class="btn-group dropstart">
-          <button
-            class="custom-my-user"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            G
-          </button>
-          <ul class="dropdown-menu">
-           <li>
-            <a class="dropdown-item" href="#">
-
-              <div class="rounded">
-                <div class="custom-bold">Gabriel Carvalho</div>
-                <div>Administrador</div>
-              </div>
-              </a>
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Sair</a></li>
-          </ul>
-        </div>
-        
-    </nav>
+    {% include "componentes/navbar.html" %}
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
-          <img class="custom-img" src="img/voltar.svg" alt="" />
+          <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
           <h5 class="custom-title">Registrar Entrada</h5>
         </div>
 
@@ -142,8 +53,8 @@
                   <td class="text-secondary">2</td>
                   <td class="text-secondary">2</td>
                   <td class="text-end">
-                    <img src="img/editar.svg" alt="" />
-                    <img src="img/deletar.svg" alt="" />
+                    <img src="{% static 'img/editar.svg' %}" alt="" />
+                    <img src="{% static 'img/deletar.svg' %}" alt="" />
                   </td>
                 </tr>
                 <tr>
@@ -153,8 +64,8 @@
                   <td class="text-secondary">2</td>
                   <td class="text-secondary">24</td>
                   <td class="text-end">
-                    <img src="img/editar.svg" alt="" />
-                    <img src="img/deletar.svg" alt="" />
+                    <img src="{% static 'img/editar.svg' %}" alt="" />
+                    <img src="{% static 'img/deletar.svg' %}" alt="" />
                   </td>
                 </tr>
                 <tr>
@@ -164,8 +75,8 @@
                   <td class="text-secondary">2</td>
                   <td class="text-secondary">10</td>
                   <td class="text-end">
-                    <img src="img/editar.svg" alt="" />
-                    <img src="img/deletar.svg" alt="" />
+                    <img src="{% static 'img/editar.svg' %}" alt="" />
+                    <img src="{% static 'img/deletar.svg' %}" alt="" />
                   </td>
                 </tr>
               </tbody>
@@ -179,7 +90,7 @@
             >
               <span>Incluir</span>
               <span>
-                <img class="custom-mb" src="img/novo-outline.svg" alt="" />
+                <img class="custom-mb" src="{% static 'img/novo-outline.svg' %}" alt="" />
               </span>
             </button>
             <button
@@ -192,7 +103,7 @@
               ></span>
               <img 
               class="position-absolute custom-r-12"
-              src="img/finalizar.svg" alt="">
+              src="{% static 'img/finalizar.svg' %}" alt="">
             </button>
           </div>
         </div>
@@ -200,7 +111,7 @@
           class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
           >
           <div class="d-flex align-items-center p-0 mb-4">
-            <img class="custom-img" src="img/voltar.svg" alt="" />
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
             <h5 class="custom-title">Adicionar Produto</h5>
           </div>
 
@@ -250,9 +161,9 @@
             <div class="col-4 mb-4">
               <label for="Quantidade" class="form-label">Quantidade</label>
               <div class="input-group">
-                <button class="form-control d-flex align-items-center justify-content-center" type="button" id="menos"><img src="img/menos.svg" alt=""></button>
+                <button class="form-control d-flex align-items-center justify-content-center" type="button" id="menos"><img src="{% static 'img/menos.svg' %}" alt=""></button>
                 <input type="text" class="form-control">
-                <button class="form-control d-flex align-items-center justify-content-center" type="button" id="mais"><img src="img/mais.svg" alt=""></button>
+                <button class="form-control d-flex align-items-center justify-content-center" type="button" id="mais"><img src="{% static 'img/mais.svg' %}" alt=""></button>
               </div>
             </div>
             <div class="col-4 mb-4">

@@ -1,22 +1,17 @@
-"""
-URL configuration for GerEstoqueCreche project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
+from ControleEstoque import views
 from django.urls import path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('categorias_movimento/', views.categorias_movimento, name='categorias_movimento'),
+    path('categorias_produto/', views.categorias_produto, name='categorias_produto'),
+    path('entrada/', views.entrada, name='entrada'),
+    path('estoque/', views.estoque, name='estoque'),
+    path('lancamento/', views.lancamento, name='lancamento'),
+    path('lancamentos/', views.lancamentos, name='lancamentos'),
+    path('', views.login, name='login'),
+    path('painel_usuario/', views.painel_usuario, name='painel_usuario'),
+    path('produtos/', views.produtos, name='produtos'),
+    path('saida/', views.saida, name='saida'),
+    path('subcategorias_produto', views.subcategorias_produto, name='subcategorias_produto'),
+    path('usuarios', views.usuarios, name='usuarios'),
 ]
