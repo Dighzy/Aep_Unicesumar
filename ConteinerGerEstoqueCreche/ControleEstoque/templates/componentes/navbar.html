@@ -14,7 +14,7 @@
           </a>
           <ul class="dropdown-menu">
             <li>
-              <a class="dropdown-item" href="#">Gerenciar Usuários</a>
+              <a class="dropdown-item" href="{% url 'painel_usuario' %}">Gerenciar Usuários</a>
             </li>
           </ul>
         </li>
@@ -29,12 +29,12 @@
             Produtos
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Cadastrar Produto</a></li>
+            <li><a class="dropdown-item" href="{% url 'produtos' %}">Cadastrar Produto</a></li>
             <li>
-              <a class="dropdown-item" href="#">Cadastrar Categoria</a>
+              <a class="dropdown-item" href="{% url 'categorias_produto' %}">Cadastrar Categoria</a>
             </li>
             <li>
-              <a class="dropdown-item" href="#">Cadastrar Sub-Categoria</a>
+              <a class="dropdown-item" href="{% url 'subcategorias_produto' %}">Cadastrar Sub-Categoria</a>
             </li>
           </ul>
         </li>
@@ -49,18 +49,18 @@
             Estoque
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Consultar Estoque</a></li>
+            <li><a class="dropdown-item" href="{% url 'estoque' %}">Consultar Estoque</a></li>
             <li>
-              <a class="dropdown-item" href="#">Consultar Lançamento</a>
+              <a class="dropdown-item" href="{% url 'lancamentos' %}">Consultar Lançamento</a>
             </li>
             <li>
-              <a class="dropdown-item" href="#">Registrar Entrada</a>
+              <a class="dropdown-item" href="{% url 'entrada' %}">Registrar Entrada</a>
             </li>
             <li>
-              <a class="dropdown-item" href="#">Registrar Saída</a>
+              <a class="dropdown-item" href="{% url 'saida' %}">Registrar Saída</a>
             </li>
             <li>
-              <a class="dropdown-item" href="#">Categorias de Movimento</a>
+              <a class="dropdown-item" href="{% url 'categorias_movimento' %}">Categorias de Movimento</a>
             </li>
           </ul>
         </li>
@@ -85,7 +85,7 @@
             </a>
           </li>
           <li><hr class="dropdown-divider" /></li>
-          <li><a class="dropdown-item" href="#">Sair</a></li>
+          <li><a class="dropdown-item" href="{% url 'login' %}">Sair</a></li>
         </ul>
       </div>
       
