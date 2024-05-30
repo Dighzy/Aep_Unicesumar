@@ -11,7 +11,11 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/estilo.css' %}"
+    />
   </head>
 
   <body>
@@ -19,7 +23,17 @@
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
-          <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+          <a
+            href="{{ request.session.previous_url|default:'/usuarios/' }}"
+            class="d-flex"
+          >
+            <img
+              class="custom-img"
+              src="{% static 'img/voltar.svg' %}"
+              alt=""
+            />
+          </a>
+
           <h5 class="custom-title">Usuários</h5>
         </div>
 
@@ -33,52 +47,49 @@
               placeholder="Pesquisar usuário..."
             />
           </div>
-          <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+          <div class="flex-grow-1 mb-3" style="width: 100%">
+            <table class="table mb-0 table-hover" id="tabelaUsuarios">
               <thead>
                 <tr class="cabecalho">
                   <th scope="col" class="text-secondary">Usuário</th>
                   <th scope="col" class="text-secondary">Nome</th>
                   <th scope="col" class="text-secondary">Sobrenome</th>
+                  <th scope="col" class="text-secondary">Tipo</th>
                   <th scope="col" class="text-secondary">E-mail</th>
                   <th scope="col" class="text-secondary"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-secondary">joao.silva</td>
-                  <td class="text-secondary">João</td>
-                  <td class="text-secondary">Silva</td>
-                  <td class="text-secondary">joao.silva@dominio.com</td>
+                {% for usuario in usuarios %}
+                <tr id="{{ usuario.id}}">
+                  <td class="text-secondary">{{ usuario.username }}</td>
+                  <td class="text-secondary">{{ usuario.first_name }}</td>
+                  <td class="text-secondary">{{ usuario.last_name }}</td>
+                  <td class="text-secondary">
+                    {{ usuario.is_superuser|yesno:"Administrador,Usuário" }}
+                  </td>
+                  <td class="text-secondary">{{ usuario.email }}</td>
                   <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
+                    <div class="d-flex align-items-center justify-content-center pt-1">
+                    <img
+                      src="{% static 'img/editar.svg' %}"
+                      class="editarUsuario"
+                      alt=""
+                    />
+                    <img
+                      src="{% static 'img/deletar.svg' %}"
+                      class="excluirUsuario"
+                      alt=""
+                    />
+                  </div>
                   </td>
                 </tr>
-                <tr>
-                  <td class="text-secondary">maria.santos</td>
-                  <td class="text-secondary">Maria</td>
-                  <td class="text-secondary">Santos</td>
-                  <td class="text-secondary">maria.santos@dominio.com</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">carlos.oliveira</td>
-                  <td class="text-secondary">Carlos</td>
-                  <td class="text-secondary">Oliveira</td>
-                  <td class="text-secondary">carlos.oliveira@dominio.com</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
           <button
+            id="novoUsuario"
             class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
           >
             <span>Novo</span>
@@ -87,40 +98,48 @@
             </span>
           </button>
         </div>
-        <div
-          class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
-        >
-          <div class="d-flex align-items-center p-0 mb-4">
-            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        <div id="formularioUsuario" class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height {% if usuario is None %}d-none{% endif %}">          <div class="d-flex align-items-center p-0 mb-4">
+            <img
+              class="custom-img"
+              src="{% static 'img/voltar.svg' %}"
+              alt=""
+            />
             <h5 class="custom-title">Cadastrar Usuário</h5>
           </div>
           <div class="row g-3">
             <div class="col mb-2">
               <input
+                id="nome"
                 type="text"
                 class="form-control"
                 placeholder="Nome"
                 aria-label="nome"
+                value="{{ usuario.first_name|default:'' }}"
               />
             </div>
             <div class="col mb-2">
               <input
+                id="sobrenome"
                 type="text"
                 class="form-control"
                 placeholder="Sobrenome"
                 aria-label="sobrenome"
+                value="{{ usuario.last_name|default:'' }}"
               />
             </div>
             <div class="col-12 mb-2">
               <input
+                id="email"
                 type="email"
                 class="form-control"
                 placeholder="E-mail"
                 aria-label="email"
+                value="{{ usuario.email|default:'' }}"
               />
             </div>
             <div class="col-12 mb-2">
               <input
+                id="senha"
                 type="password"
                 class="form-control"
                 placeholder="Senha"
@@ -128,35 +147,22 @@
               />
             </div>
             <div class="col-3 mb-4">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label class="form-check-label" for="flexRadioDefault1">
-                Usuário
-              </label>
-            </div>
-            <div class="col-9 mb-4">
-              <input
-                class="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-                checked
-              />
-              <label class="form-check-label" for="flexRadioDefault2">
-                Administrador
-              </label>
-            </div>
+              <input id="usuario" class="form-check-input" type="radio" name="flexRadioDefault" {% if not usuario.is_superuser %}checked{% endif %} />
+              <label class="form-check-label" for="usuario"> Usuário </label>
+          </div>
+          <div class="col-9 mb-4">
+              <input id="administrador" class="form-check-input" type="radio" name="flexRadioDefault" {% if usuario.is_superuser %}checked{% endif %} />
+              <label class="form-check-label" for="administrador"> Administrador </label>
+          </div>
+          
             <div class="col-6">
-              <button class="btn-cancelar rounded bg-white text-secondary">
+              <button class="btn-cancelar rounded bg-white text-secondary" id="cancelar">
                 Cancelar
               </button>
             </div>
             <div class="col-6">
               <button
+              id="salvar"
                 class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
               >
                 <span>Salvar</span>
@@ -170,10 +176,13 @@
         </div>
       </div>
     </div>
+    {% include "componentes/modal_generica.html" %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script type="module" src="{% static 'js/telas/usuarios.js' %}"></script>
   </body>
 </html>

@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'GerEstoqueCreche.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'GerEstoqueCreche',
+        'USER': 'postgres',
+        'PASSWORD': 'mt09@1806',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -124,4 +128,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Adicionado por mim:
-LOGIN_URL = '/login/'
+LOGIN_URL = '/'

@@ -10,6 +10,7 @@
   height: 45px;
   border-radius: 5px;
   margin-top: 30px;
+  margin-bottom: 40px;
   font-weight: 500;
 }
 
@@ -59,29 +60,32 @@
 .custom-container-2 {
   min-height: 60vh;
   max-height: 60vh;
-  padding: 30px
+  padding: 30px;
 }
 
-
-@media screen and (max-width: 1920px){
+@media screen and (max-width: 1920px) {
   .custom-container-2 {
     min-height: 70vh;
     max-height: 70vh;
   }
 }
-@media screen and (max-width: 1920px){
+@media screen and (max-width: 1920px) {
   .custom-col-height {
     min-height: 70vh;
     max-height: 70vh;
   }
 }
-@media screen and (min-width: 1921px){
+@media screen and (min-width: 1921px) {
   .custom-col-height {
     min-height: 60vh;
-    max-height: 60vh;   
+    max-height: 60vh;
   }
 }
-
+@media screen and (max-width: 1300px) {
+  table {
+    font-size: 13px;
+  }
+}
 
 .custom-mb {
   margin-bottom: 2px;
@@ -101,6 +105,13 @@
 }
 .table-responsive thead th {
   padding-bottom: 20px;
+}
+
+.table-hover tbody tr:hover {
+  cursor: pointer;
+}
+.cabecalho th:hover {
+  cursor: pointer;
 }
 
 .btn-cancelar {
@@ -140,7 +151,6 @@
   margin-top: 3px;
 }
 
-
 .custom-navbar-bg {
   background-color: #6aa4d9;
 }
@@ -160,14 +170,87 @@
 .custom-r-12 {
   right: 12px;
 }
-.custom-bold{
+.custom-bold {
   font-weight: 500;
 }
-.custom-dropdown{
+.custom-dropdown {
   padding-left: 10px;
   max-height: 200px;
   overflow-y: auto;
 }
-.custom-min-w{
+.custom-min-w {
   min-width: 120px;
+}
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-10px);
+  }
+  20% {
+    transform: translateX(10px);
+  }
+  30% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+  60% {
+    transform: translateX(10px);
+  }
+  70% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  90% {
+    transform: translateX(-10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.5s;
+  animation-iteration-count: 2;
+}
+
+#loginInvalidoAlert {
+  height: 50px; /* Ajuste este valor conforme necessário */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden; /* Adicione esta linha */
+  padding: 0px;
+}
+
+#emailVazio,
+#emailInvalido,
+#senhaVazia {
+  position: absolute;
+  bottom: -22px;
+}
+.custom-form-floating {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: #333 !important;
+  background-color: none !important;
+}
+
+.editarUsuario{
+  margin-right: 10px;
 }

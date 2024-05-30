@@ -19,7 +19,10 @@
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
-          <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+          <a href="{{ request.session.previous_url }}" class="d-flex">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        </a>
+        
           <h5 class="custom-title">Meu Usuário</h5>
         </div>
         <div class="col-4 align-items-start justify-content-start p-0">
@@ -29,7 +32,7 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Nome"
+                value="{{ user.first_name }}"
                 aria-label="nome"
               />
             </div>
@@ -37,7 +40,7 @@
               <input
                 type="text"
                 class="form-control"
-                placeholder="Sobrenome"
+                value="{{ user.last_name }}"
                 aria-label="sobrenome"
               />
             </div>
@@ -45,11 +48,11 @@
               <input
                 type="email"
                 class="form-control"
-                placeholder="E-mail"
+                value="{{ user.email }}"
                 aria-label="email"
               />
-            </div>
-            <h5 class="custom-title mt-3 ms-2">Segurança</h5>
+            </div>            
+            <h5 class="custom-title mt-2 ms-2">Segurança</h5>
             <div class="col-12 mb-4">
               <button
                 class="btn-resetar rounded w-100 d-flex align-items-center justify-content-between ps-3 pe-3"

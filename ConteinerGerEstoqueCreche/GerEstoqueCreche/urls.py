@@ -9,9 +9,10 @@ urlpatterns = [
     path('lancamento/', views.lancamento, name='lancamento'),
     path('lancamentos/', views.lancamentos, name='lancamentos'),
     path('', views.login, name='login'),
+    path('logout/', views.logout, name='logout'),
     path('painel_usuario/', views.painel_usuario, name='painel_usuario'),
     path('produtos/', views.produtos, name='produtos'),
     path('saida/', views.saida, name='saida'),
-    path('subcategorias_produto', views.subcategorias_produto, name='subcategorias_produto'),
-    path('usuarios', views.usuarios, name='usuarios'),
+    path('subcategorias_produto/', views.subcategorias_produto, name='subcategorias_produto'),
+    path('usuarios/', views.Usuarios.as_view(), name='usuarios'),
 ]

@@ -19,7 +19,9 @@
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
-          <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+          <a href="{{ request.session.previous_url }}" class="d-flex">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        </a>
           <h5 class="custom-title">Lançamentos</h5>
         </div>
 
@@ -94,7 +96,7 @@
                   <td class="text-secondary">Saída</td>
                   <td class="text-secondary">Bazar</td>
                   <td class="text-secondary">24</td>
-                  <td class="text-secondary">12/05/2024</td>
+                  <td class="text-secondary">13/05/2024</td>
                   <td class="text-end">
                     <img src="{% static 'img/registro-2.svg' %}" alt="" />
                   </td>
@@ -104,7 +106,7 @@
                   <td class="text-secondary">Entrada</td>
                   <td class="text-secondary">Doação</td>
                   <td class="text-secondary">24</td>
-                  <td class="text-secondary">12/05/2024</td>
+                  <td class="text-secondary">14/05/2024</td>
                   <td class="text-end">
                     <img src="{% static 'img/registro-2.svg' %}" alt="" />
                   </td>
@@ -125,5 +127,6 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
   </body>
 </html>
