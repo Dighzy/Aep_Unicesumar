@@ -54,8 +54,18 @@
                       <td class="text-secondary">{{ produto.categoria.descricao }}</td>
                       <td class="text-secondary">{{ produto.sub_categoria.descricao }}</td>
                       <td class="text-end">
-                          <img src="{% static 'img/editar.svg' %}" alt="" />
-                          <img src="{% static 'img/deletar.svg' %}" alt="" />
+                        <img
+                        src="{% static 'img/editar.svg' %}"
+                        class="editarProduto"
+                        data-id="{{ produto.id }}"
+                        alt="Editar"
+                        />
+                        <img
+                        src="{% static 'img/deletar.svg' %}"
+                        class="excluirProduto"
+                        data-id="{{ produto.id }}"
+                        alt="Excluir"
+                        />
                       </td>
                   </tr>
                   {% endfor %}
@@ -99,23 +109,23 @@
                 />
             </div>
             <div class="col-12 mb-2">
-                <label for="categoria" class="form-label">Categoria</label>
-                <select id="categoria" class="form-select" aria-label="categoria">
-                    <option selected>Escolha uma categoria...</option>
-                    {% for categoria in categorias %}
-                        <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-12 mb-2">
-                <label for="subcategoria" class="form-label">Sub-Categoria</label>
-                <select id="subcategoria" class="form-select" aria-label="subcategoria">
-                    <option selected>Escolha uma subcategoria...</option>
-                    {% for subcategoria in subcategorias %}
-                        <option value="{{ subcategoria.id }}">{{ subcategoria.descricao }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+              <label for="categoria" class="form-label">Categoria</label>
+              <select id="categoria" class="form-select" aria-label="categoria" onchange="filterSubcategories()">
+                  <option style="display:none;">Escolha uma categoria...</option>
+                  {% for categoria in categorias %}
+                      <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
+                  {% endfor %}
+              </select>
+          </div>
+          <div class="col-12 mb-2">
+            <label for="subcategoria" class="form-label">Sub-Categoria</label>
+            <select id="subcategoria" class="form-select" aria-label="subcategoria">
+                <option value="" selected>Escolha uma subcategoria...</option>
+                {% for subcategoria in subcategorias %}
+                    <option value="{{ subcategoria.id }}" data-categoria-id="{{ subcategoria.categoria_id }}">{{ subcategoria.descricao }}</option>
+                {% endfor %}
+            </select>
+        </div>
             <div class="col-4 mb-2">
                 <input
                     type="number"
@@ -179,6 +189,8 @@
         </div>
       </div>
     </div>
+    {% include "componentes/modal_generica.html" %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

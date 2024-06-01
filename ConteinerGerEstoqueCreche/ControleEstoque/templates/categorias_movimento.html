@@ -36,45 +36,39 @@
             />
           </div>
           <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+            <table id='CE_Categorias_Movimento' class="table mb-0 table-hover">
               <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Código</th>
-                  <th scope="col" class="text-secondary">Descrição</th>
-                  <th scope="col" class="text-secondary">Tipo de movimento</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
+                  <tr class="cabecalho">
+                      <th scope="col" class="text-secondary">Código</th>
+                      <th scope="col" class="text-secondary">Descrição</th>
+                      <th scope="col" class="text-secondary">Tipo de movimento</th>
+                      <th scope="col" class="text-secondary"></th>
+                  </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-secondary">C0001</td>
-                  <td class="text-secondary">Compra</td>
-                  <td class="text-secondary">Entrada</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">D0002</td>
-                  <td class="text-secondary">Doação</td>
-                  <td class="text-secondary">Entrada</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">B0003</td>
-                  <td class="text-secondary">Bazar</td>
-                  <td class="text-secondary">Saída</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
+                  {% for categoria in categorias_movimento %}
+                  <tr>
+                      <td class="text-secondary">{{ categoria.codigo }}</td>
+                      <td class="text-secondary">{{ categoria.descricao }}</td>
+                      <td class="text-secondary">{{ categoria.tipo_de_movimento }}</td>
+                      <td class="text-end">
+                        <img
+                        src="{% static 'img/editar.svg' %}"
+                        class="editarCategoriaMovimentacao"
+                        data-id="{{ categoria.id }}"
+                        alt="Editar"
+                        />
+                        <img
+                        src="{% static 'img/deletar.svg' %}"
+                        class="excluirCategoriaMovimentacao"
+                        data-id="{{ categoria.id }}"
+                        alt="Excluir"
+                        />
+                      </td>
+                  </tr>
+                  {% endfor %}
               </tbody>
-            </table>
+          </table>          
           </div>
           <button
             class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
@@ -99,6 +93,7 @@
                 class="form-control"
                 placeholder="Código"
                 aria-label="Código"
+                id="codigo"
               />
             </div>
             <div class="col-8 mb-2">
@@ -107,18 +102,20 @@
                 class="form-control"
                 placeholder="Descrição"
                 aria-label="Descrição"
+                id="descricao"
               />
             </div>
-
+          
             <div class="d-flex flex-column mb-4">
               <div class="d-flex gap-3 mb-2">
                 <input
                   class="form-check-input"
                   type="radio"
-                  name="flexRadioDefault"
-                  id="flexRadioDefault1"
+                  name="tipo_movimento"
+                  id="entrada"
+                  value="Entrada"
                 />
-                <label class="form-check-label" for="flexRadioDefault1">
+                <label class="form-check-label" for="entrada">
                   Entrada
                 </label>
               </div>
@@ -126,11 +123,12 @@
                 <input
                   class="form-check-input"
                   type="radio"
-                  name="flexRadioDefault"
-                  id="flexRadioDefault2"
+                  name="tipo_movimento"
+                  id="saida"
+                  value="Saída"
                   checked
                 />
-                <label class="form-check-label" for="flexRadioDefault2">
+                <label class="form-check-label" for="saida">
                   Saída
                 </label>
               </div>
@@ -143,24 +141,24 @@
             <div class="col-6">
               <button
                 class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
+                id="salvar"
               >
                 <span>Salvar</span>
                 <span
-                  class="spinner-border spinner-border-sm position-absolute custom-r-12"
+                  class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
                   aria-hidden="true"
                 ></span>
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </div>          
+    {% include "componentes/modal_generica.html" %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+    <script type="module" src="{% static 'js/telas/categoriasMovimento.js' %}"></script>
 
   </body>
 </html>

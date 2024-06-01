@@ -345,8 +345,12 @@ export class Solicitacoes {
   }
 
   async postSubCategoria(SubCategoria) {
-    console.log("SubCategoria", SubCategoria);
     return await this.fazerSolicitacao("/subcategorias_produto/", SubCategoria, "POST", null);
+  }
+
+  async postCategoriaMovimento(CategoriaMovimento) {
+    console.log("CategoriaMovimento", CategoriaMovimento);
+    return await this.fazerSolicitacao("/categorias_movimento/", CategoriaMovimento, "POST", null);
   }
 
   async patchUsuario(userId, dadosAtualizacao) {
@@ -369,14 +373,19 @@ export class Solicitacoes {
         return await this.fazerSolicitacao(`/usuarios/${userId}/`, {}, "DELETE");
   }
 
+  async deleteProduto(ProdutoId) {
+    return await this.fazerSolicitacao(`/produtos/${ProdutoId}/`, {}, "DELETE");
+  }
+
   async deleteCategoria(CategoriaId) {
-    console.log("userId", userId);
     return await this.fazerSolicitacao(`/categorias_produto/${CategoriaId}/`, {}, "DELETE");
   }
 
-  async deleteSubCategoria(CategoriaId) {
-    console.log("userId", userId);
-    return await this.fazerSolicitacao(`/subcategorias_produto/${CategoriaId}/`, {}, "DELETE");
+  async deleteSubCategoria(SubCategoriaId) {
+    return await this.fazerSolicitacao(`/subcategorias_produto/${SubCategoriaId}/`, {}, "DELETE");
+  }
+  async deleteCategoriaMovimento(CategoriaMovimentoId) {
+    return await this.fazerSolicitacao(`/categorias_movimento/${CategoriaMovimentoId}/`, {}, "DELETE");
   }
 }
 export class Modal {

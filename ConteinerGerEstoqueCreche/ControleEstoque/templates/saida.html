@@ -36,53 +36,47 @@
             />
           </div>
           <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+            <table id="CE_Lancamentos_Saida" class="table mb-0 table-hover">
               <thead>
                 <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Código</th>
-                  <th scope="col" class="text-secondary">Descrição</th>
-                  <th scope="col" class="text-secondary">Embalagem</th>
-                  <th scope="col" class="text-secondary">Quantidade</th>
-                  <th scope="col" class="text-secondary">Unidades</th>
-                  <th scope="col" class="text-secondary"></th>
+                    <th scope="col" class="text-secondary">Código</th>
+                    <th scope="col" class="text-secondary">Data</th>
+                    <th scope="col" class="text-secondary">Descrição</th>
+                    <th scope="col" class="text-secondary">Embalagem</th>
+                    <th scope="col" class="text-secondary">Quantidade</th>
+                    <th scope="col" class="text-secondary">Unidades</th>
+                    <th scope="col" class="text-secondary">Produto</th>
+                    <th scope="col" class="text-secondary"></th>
                 </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="text-secondary">AL0001</td>
-                  <td class="text-secondary">Arroz Integral</td>
-                  <td class="text-secondary">Única</td>
-                  <td class="text-secondary">2</td>
-                  <td class="text-secondary">2</td>
+            </thead>
+            <tbody>
+              {% for lancamento in lancamentos_saida %}
+              <tr>
+                  <td class="text-secondary">{{ lancamento.codigo }}</td>
+                  <td class="text-secondary">{{ lancamento.data_lancamento|date:"j F Y" }}</td>
+                  <td class="text-secondary">{{ lancamento.descricao }}</td>
+                  <td class="text-secondary">{{ lancamento.embalagem }}</td>
+                  <td class="text-secondary">{{ lancamento.quantidade }}</td>
+                  <td class="text-secondary">{{ lancamento.produto.unidade }}</td>
+                  <td class="text-secondary">{{ lancamento.produto.descricao }}</td>
                   <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
+                    <img
+                    src="{% static 'img/editar.svg' %}"
+                    class="editarLancamentosSaida"
+                    data-id="{{ lancamento.id }}"
+                    alt="Editar"
+                    />
+                    <img
+                    src="{% static 'img/deletar.svg' %}"
+                    class="excluirLancamentosSaida"
+                    data-id="{{ lancamento.id }}"
+                    alt="Excluir"
+                    />
                   </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">AL0002</td>
-                  <td class="text-secondary">Cx. de Leite 12 Un.</td>
-                  <td class="text-secondary">Caixa</td>
-                  <td class="text-secondary">2</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">AL0002</td>
-                  <td class="text-secondary">Sabão em Pedra 5 Un.</td>
-                  <td class="text-secondary">Pacote</td>
-                  <td class="text-secondary">2</td>
-                  <td class="text-secondary">10</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>          
           </div>
           <div
             class="d-flex align-items-center justify-content-start gap-2 ms-auto"
@@ -209,11 +203,13 @@
         </div>
       </div>
     </div>
+    {% include "componentes/modal_generica.html" %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+    <script type="module" src="{% static 'js/telas/saida.js' %}"></script>
   </body>
 </html>

@@ -25,9 +25,11 @@ class Categorias_Movimento(View):
 
     def post(self, request):
         # Inserir
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
-        tipo_de_movimento = request.POST.get('tipo_de_movimento')
+        data = json.loads(request.body)
+        print(data)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        tipo_de_movimento = data.get('tipo_de_movimento')
         categoria_movimento = CategoriasMovimento.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
         return JsonResponse({'id': categoria_movimento.id})
 
@@ -102,6 +104,54 @@ class Categorias_Produto(View):
 def entrada(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
     return render(request, 'entrada.html')
+
+@method_decorator(login_required, name='dispatch')
+class EntradaView(View):
+    @method_decorator(never_cache)
+    def get(self, request):
+        # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
+        lancamentos_entrada = Lancamentos.objects.filter(categoria_movimento_id__tipo_de_movimento='Entrada').select_related('produto','categoria_movimento','usuario')
+
+        return render(request, 'entrada.html', {'lancamentos_entrada': lancamentos_entrada})
+    
+    def post(self, request):
+        # Inserir
+        produto_id = request.POST.get('produto_id')
+        total = request.POST.get('total')
+        categoria_movimento_id = request.POST.get('categoria_movimento_id')
+        usuario_id = request.POST.get('usuario_id')
+        produto = Produto.objects.get(id=produto_id)
+        categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
+        usuario = User.objects.get(id=usuario_id)
+        lancamento = Lancamentos.objects.create(
+            produto=produto, total=total, categoria_movimento=categoria_movimento,
+            usuario=usuario, data_lancamento=timezone.now()
+        )
+        return JsonResponse({'codigo': lancamento.codigo})
+
+    def patch(self, request, lancamento_id):
+        # Atualizar Partes
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.total = request.POST.get('total', lancamento.total)
+        lancamento.save()
+        return JsonResponse({'status': 'success'})
+
+    def put(self, request, lancamento_id):
+        # Atualizar Tudo
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.produto_id = request.POST.get('produto_id')
+        lancamento.total = request.POST.get('total')
+        lancamento.categoria_movimento_id = request.POST.get('categoria_movimento_id')
+        lancamento.usuario_id = request.POST.get('usuario_id')
+        lancamento.data_lancamento = timezone.now()
+        lancamento.save()
+        return JsonResponse({'status': 'success'})
+
+    def delete(self, request, lancamento_id):
+        # Deletar
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.delete()
+        return JsonResponse({'status': 'success'})
 
 @never_cache
 @login_required
@@ -279,6 +329,53 @@ class Produtos(View):
 def saida(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
     return render(request, 'saida.html')
+
+@method_decorator(login_required, name='dispatch')
+class SaidaView(View):
+    @method_decorator(never_cache)
+    def get(self, request):
+        # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
+        lancamentos_entrada = Lancamentos.objects.filter(categoria_movimento_id__tipo_de_movimento='Saída').select_related('produto','categoria_movimento','usuario')
+        return render(request, 'entrada.html', {'lancamentos_entrada': lancamentos_entrada})
+    
+    def post(self, request):
+        # Inserir
+        produto_id = request.POST.get('produto_id')
+        total = request.POST.get('total')
+        categoria_movimento_id = request.POST.get('categoria_movimento_id')
+        usuario_id = request.POST.get('usuario_id')
+        produto = Produto.objects.get(id=produto_id)
+        categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
+        usuario = User.objects.get(id=usuario_id)
+        lancamento = Lancamentos.objects.create(
+            produto=produto, total=total, categoria_movimento=categoria_movimento,
+            usuario=usuario, data_lancamento=timezone.now()
+        )
+        return JsonResponse({'codigo': lancamento.codigo})
+
+    def patch(self, request, lancamento_id):
+        # Atualizar Partes
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.total = request.POST.get('total', lancamento.total)
+        lancamento.save()
+        return JsonResponse({'status': 'success'})
+
+    def put(self, request, lancamento_id):
+        # Atualizar Tudo
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.produto_id = request.POST.get('produto_id')
+        lancamento.total = request.POST.get('total')
+        lancamento.categoria_movimento_id = request.POST.get('categoria_movimento_id')
+        lancamento.usuario_id = request.POST.get('usuario_id')
+        lancamento.data_lancamento = timezone.now()
+        lancamento.save()
+        return JsonResponse({'status': 'success'})
+
+    def delete(self, request, lancamento_id):
+        # Deletar
+        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
+        lancamento.delete()
+        return JsonResponse({'status': 'success'})
 
 @method_decorator(login_required, name='dispatch')
 class SubCategorias_Produto(View):

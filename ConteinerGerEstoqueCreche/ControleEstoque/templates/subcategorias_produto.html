@@ -52,8 +52,18 @@
                       <td class="text-secondary">{{ subcategoria.descricao }}</td>
                       <td class="text-secondary">{{ subcategoria.categoria.descricao }}</td>
                       <td class="text-end">
-                          <img src="{% static 'img/editar.svg' %}" alt="Editar" />
-                          <img src="{% static 'img/deletar.svg' %}" alt="Deletar" />
+                        <img
+                        src="{% static 'img/editar.svg' %}"
+                        class="editarSubcategoria"
+                        data-id="{{ subcategoria.id }}"
+                        alt="Editar"
+                        />
+                        <img
+                        src="{% static 'img/deletar.svg' %}"
+                        class="excluirSubcategoria"
+                        data-id="{{ subcategoria.id }}"
+                        alt="Excluir"
+                        />
                       </td>
                   </tr>
                   {% endfor %}
@@ -113,6 +123,8 @@
         </div>
       </div>
     </div>
+    {% include "componentes/modal_generica.html" %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

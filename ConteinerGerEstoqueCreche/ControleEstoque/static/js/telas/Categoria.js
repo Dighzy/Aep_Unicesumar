@@ -19,63 +19,58 @@ document.getElementById("salvar").addEventListener("click", () => {
 
     solicitacoes.postCategoria(data)
     .then(() => {
-      // Após a postagem bem-sucedida, esperar 1 segundo antes de recarregar a página
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 300);
     })
     .catch(error => {
       console.error('Erro ao postar categoria:', error);
     });
 });
 
+let modal = new Modal();
 
-usuarios.botaoCancelar.addEventListener("click", () =>
-  formValidator.removeInvalidClass(limparCampos)
-);
+modal.botaoFechar.addEventListener("click", () => {
+  modal.modal.hide();
+});
 
-modal.eventoBotao1((dataId) => {
-    console.log("Botão 1 clicado, data-id:", dataId);
-    modal.fechar();
-  });
-  
-  modal.eventoBotao2(async (dataId) => {
-    modal.mostrarSpinner(); 
-    try {
-      console.log("Botão 2 clicado, data-id:", dataId);
-      const resposta = await solicitacoes.deleteUsuario(dataId);
-      console.log(resposta);
-     
-      setTimeout(() => {
-        usuarios.removerLinhaUsuario(dataId);
-        usuarios.limparUrl();
-        usuarios.ocultarFormulario();
-        modal.esconderSpinner(); 
-        modal.fechar(); 
-      }, 200);
-    } catch (erro) {
-      console.error("Erro ao excluir usuário:", erro);
-     
-      setTimeout(() => {
-        modal.esconderSpinner();
-        modal.fechar(); 
-      }, 200);
-    }
-  });
+modal.botao1.addEventListener("click", () => {
+  console.log("Botão 1 clicado, data-id:", modal.dataId);
+  modal.modal.hide();
+});
 
-let botoesExcluirUsuario = document.querySelectorAll(".excluirUsuario");
-botoesExcluirUsuario.forEach((botao) => {
+modal.botao2.addEventListener("click", async () => {
+  modal.spinner.style.display = 'block'; 
+  try {
+    console.log("Botão 2 clicado, data-id:", modal.dataId);
+    const resposta = await solicitacoes.deleteCategoria(modal.dataId);
+    
+     // Se a exclusão for bem-sucedida, recarregar a página após 700ms
+    setTimeout(() => {
+      window.location.reload();
+    }, 700);
+    console.log(resposta);
+    
+    setTimeout(() => {
+      modal.spinner.style.display = 'none';
+      modal.modal.hide(); 
+    }, 200);
+  } catch (error) {
+    console.error('Erro ao excluir categoria:', error);
+  }
+});
+
+
+// Event listeners para os botões de exclusão
+let botoesExcluirCategoria = document.querySelectorAll(".excluirCategoria");
+botoesExcluirCategoria.forEach((botao) => {
   let dataId = botao.getAttribute("data-id");
   botao.addEventListener("click", () => {
-    modal.parametrizar(
-      "Confirmação",
-      "Tem certeza que deseja excluir esse usuário?",
-      "Cancelar",
-      "Confirmar"
-    );
-    modal.abrir(dataId);
+    modal.titulo.innerText = "Confirmação";
+    modal.mensagem.innerText = "Tem certeza que deseja excluir essa categoria?";
+    modal.botao1.innerText = "Cancelar";
+    modal.botao2.innerText = "Confirmar";
+    modal.dataId = dataId;
+    modal.modal.show();
   });
-  botao.addEventListener("click", () =>
-    formValidator.removeInvalidClass(limparCampos)
-  );
 });

@@ -46,8 +46,18 @@
                   <td class="text-secondary">{{ categoria.descricao }}</td>
                   <td class="text-secondary">{{ categoria.sub_categoria }}</td>
                   <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="Editar" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="Deletar" />
+                    <img
+                    src="{% static 'img/editar.svg' %}"
+                    class="editarCategoria"
+                    data-id="{{ categoria.id }}"
+                    alt="Editar"
+                    />
+                    <img
+                    src="{% static 'img/deletar.svg' %}"
+                    class="excluirCategoria"
+                    data-id="{{ categoria.id }}"
+                    alt="Excluir"
+                    />
                   </td>
                 </tr>
                 {% endfor %}
@@ -86,7 +96,13 @@
         </div>
       </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script type="module" src="{% static 'js/telas/Categoria.js' %}"></script>
+    {% include "componentes/modal_generica.html" %}
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module" src="{% static 'js/telas/categoria.js' %}"></script>
   </body>
 </html>

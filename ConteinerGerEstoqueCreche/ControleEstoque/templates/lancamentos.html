@@ -69,50 +69,43 @@
             </div>
           </div>
           <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+            <table id="CE_Lancamentos_Entrada" class="table mb-0 table-hover">
               <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Lanc.</th>
-                  <th scope="col" class="text-secondary">Tipo</th>
-                  <th scope="col" class="text-secondary">Categoria</th>
-                  <th scope="col" class="text-secondary">Total</th>
-                  <th scope="col" class="text-secondary">Data</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
+                  <tr class="cabecalho">
+                      <th scope="col" class="text-secondary">Código</th>
+                      <th scope="col" class="text-secondary">Data</th>
+                      <th scope="col" class="text-secondary">Tipo</th>
+                      <th scope="col" class="text-secondary">Categoria</th>
+                      <th scope="col" class="text-secondary">Total</th>
+                      <th scope="col" class="text-secondary"></th>
+                  </tr>
               </thead>
               <tbody>
+                {% for lancamento in lancamentos %}
                 <tr>
-                  <td class="text-secondary">0001</td>
-                  <td class="text-secondary">Entrada</td>
-                  <td class="text-secondary">Compra</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">12/05/2024</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro-2.svg' %}" alt="" />
-                  </td>
+                    <td class="text-secondary">{{ lancamento.codigo }}</td>
+                    <td class="text-secondary">{{ lancamento.data_lancamento|date:"j F Y" }}</td>
+                    <td class="text-secondary">{{ lancamento.categoria_movimento.tipo_de_movimento }}</td>
+                    <td class="text-secondary">{{ lancamento.produto.categoria.descricao }}</td>
+                    <td class="text-secondary">{{ lancamento.total }}</td>
+                    <td class="text-end">
+                      <img
+                      src="{% static 'img/editar.svg' %}"
+                      class="editarLancamento"
+                      data-id="{{ lancamento.id }}"
+                      alt="Editar"
+                      />
+                      <img
+                      src="{% static 'img/deletar.svg' %}"
+                      class="excluirLancamento"
+                      data-id="{{ lancamento.id }}"
+                      alt="Excluir"
+                      />
+                    </td>
                 </tr>
-                <tr>
-                  <td class="text-secondary">0002</td>
-                  <td class="text-secondary">Saída</td>
-                  <td class="text-secondary">Bazar</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">13/05/2024</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro-2.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">0001</td>
-                  <td class="text-secondary">Entrada</td>
-                  <td class="text-secondary">Doação</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">14/05/2024</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro-2.svg' %}" alt="" />
-                  </td>
-                </tr>
+                {% endfor %}
               </tbody>
-            </table>
+          </table>        
           </div>
         </div>
         <div
