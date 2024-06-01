@@ -36,49 +36,31 @@
             />
           </div>
           <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+            <table id='CE_Produto' class="table mb-0 table-hover">
               <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Código</th>
-                  <th scope="col" class="text-secondary">Descrição</th>
-                  <th scope="col" class="text-secondary">Categoria</th>
-                  <th scope="col" class="text-secondary">Sub-Categoria</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
+                  <tr class="cabecalho">
+                      <th scope="col" class="text-secondary">Código</th>
+                      <th scope="col" class="text-secondary">Descrição</th>
+                      <th scope="col" class="text-secondary">Categoria</th>
+                      <th scope="col" class="text-secondary">Sub-Categoria</th>
+                      <th scope="col" class="text-secondary"></th>
+                  </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-secondary">AL0001</td>
-                  <td class="text-secondary">Arroz Integral</td>
-                  <td class="text-secondary">Alimento</td>
-                  <td class="text-secondary">Não Perecíveis</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">ML0001</td>
-                  <td class="text-secondary">Detergente Líquido</td>
-                  <td class="text-secondary">Material de Limpeza</td>
-                  <td class="text-secondary">Detergentes</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">ME0001</td>
-                  <td class="text-secondary">Caderno 96 Folhas</td>
-                  <td class="text-secondary">Material Escolar</td>
-                  <td class="text-secondary">Cadernos</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
+                  {% for produto in produtos %}
+                  <tr>
+                      <td class="text-secondary">{{ produto.codigo }}</td>
+                      <td class="text-secondary">{{ produto.descricao }}</td>
+                      <td class="text-secondary">{{ produto.categoria.descricao }}</td>
+                      <td class="text-secondary">{{ produto.sub_categoria.descricao }}</td>
+                      <td class="text-end">
+                          <img src="{% static 'img/editar.svg' %}" alt="" />
+                          <img src="{% static 'img/deletar.svg' %}" alt="" />
+                      </td>
+                  </tr>
+                  {% endfor %}
               </tbody>
-            </table>
+          </table>
           </div>
           <button
             class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
@@ -99,285 +81,80 @@
 
           <div class="row g-3">
             <div class="col-4 mb-2">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Código"
-                aria-label="codigo"
-              />
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Código"
+                    aria-label="codigo"
+                    id="codigo" 
+                />
             </div>
             <div class="col-8 mb-2">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Descrição"
-                aria-label="descricao"
-              />
+                <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Descrição"
+                    aria-label="descricao"
+                    id="descricao"
+                />
             </div>
-            <div class="col-12">
-              <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
-                  Categoria
-                </button>
-                <ul
-                  class="dropdown-menu w-100 custom-dropdown"
-                >
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked1"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked1"
-                    >
-                      Detergentes
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked2"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Cadernos
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked3"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked3"
-                    >
-                      Canetas
-                    </label>
-                  </li>
-                </ul>
-              </div>
+            <div class="col-12 mb-2">
+                <label for="categoria" class="form-label">Categoria</label>
+                <select id="categoria" class="form-select" aria-label="categoria">
+                    <option selected>Escolha uma categoria...</option>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="col-12">
-              <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
-                  Sub-Categorias
-                </button>
-                <ul
-                  class="dropdown-menu w-100 custom-dropdown"
-                >
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked1"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked1"
-                    >
-                      Detergentes
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked2"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Cadernos
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked3"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked3"
-                    >
-                      Canetas
-                    </label>
-                  </li>
-                </ul>
-              </div>
+            <div class="col-12 mb-2">
+                <label for="subcategoria" class="form-label">Sub-Categoria</label>
+                <select id="subcategoria" class="form-select" aria-label="subcategoria">
+                    <option selected>Escolha uma subcategoria...</option>
+                    {% for subcategoria in subcategorias %}
+                        <option value="{{ subcategoria.id }}">{{ subcategoria.descricao }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="col-4 mb-2">
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Peso"
-                aria-label="peso"
-              />
+                <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Peso"
+                    aria-label="peso"
+                    id="peso" 
+                />
             </div>
             <div class="col-8 mb-2">
-              <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
-                  Peso
-                </button>
-                <ul
-                  class="dropdown-menu w-100 custom-dropdown"
-
-                >
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked1"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked1"
-                    >
-                      Kilo
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked2"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Litro
-                    </label>
-                  </li>
-                </ul>
-              </div>
+                  <div class="col-8 mb-2">
+                    <select id="pesoSelect" class="form-select text-start user-select-none w-100" aria-label="peso">
+                        <option selected>Peso</option>
+                        <option value="kilo">Kilo</option>
+                        <option value="litro">Litro</option>
+                    </select>
+                  
+                </div>
             </div>
             <div class="col-4 mb-4">
-              <input
-                type="number"
-                class="form-control"
-                placeholder="Unidade"
-                aria-label="Unidade"
-              />
+                <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Unidade"
+                    aria-label="Unidade"
+                    id="unidade" 
+                />
             </div>
             <div class="col-8 mb-4">
-              <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
-                  Unidade
-                </button>
-                <ul
-                  class="dropdown-menu w-100 custom-dropdown"
-                >
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked1"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked1"
-                    >
-                      Unica
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked2"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Pacote
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked2"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Caixa
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="radio"
-                      value=""
-                      name="unica"
-                      id="flexCheckChecked2"
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Bandeja
-                    </label>
-                  </li>
-                </ul>
-              </div>
+                <div class="dropdown">
+                  <div class="col-8 mb-4">
+                    <select id="unidadeSelect" class="form-select" aria-label="unidade">
+                        <option selected>Unidade</option>
+                        <option value="Única">Única</option>
+                        <option value="Pacote">Pacote</option>
+                        <option value="Bandeja">Bandeja</option>
+                    </select>
+                </div>
+                </div>
             </div>
            
               <div class="col-6">
@@ -387,11 +164,12 @@
               </div>
               <div class="col-6">
                 <button
+                  id="salvar"
                   class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
                 >
                   <span>Salvar</span>
                   <span
-                    class="spinner-border spinner-border-sm position-absolute custom-r-12"
+                    class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
                     aria-hidden="true"
                   ></span>
                 </button>
@@ -406,6 +184,6 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+    <script type="module" src="{% static 'js/telas/produtos.js' %}"></script>
   </body>
 </html>

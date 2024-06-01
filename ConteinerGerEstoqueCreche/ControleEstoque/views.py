@@ -58,7 +58,7 @@ class Categorias_Movimento(View):
 class Categorias_Produto(View):
     @method_decorator(never_cache)
     def get(self, request):
-        # Mostrar
+
         categoria_id = request.GET.get('categoria_id', None)
         if categoria_id is not None:
             categoria = Categoria.objects.get(id=categoria_id)
@@ -67,10 +67,12 @@ class Categorias_Produto(View):
         categorias = Categoria.objects.all()
         return render(request, 'categorias_produto.html', {'categorias': categorias, 'categoria': categoria})
 
+
     def post(self, request):
         # Inserir
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
         categoria = Categoria.objects.create(codigo=codigo, descricao=descricao)
         return JsonResponse({'id': categoria.id})
 
@@ -208,16 +210,21 @@ class Produtos(View):
         else:
             produto = None
         produtos = Produto.objects.select_related('categoria', 'sub_categoria').all()
-        return render(request, 'produtos.html', {'produtos': produtos, 'produto': produto})
+        subcategorias = SubCategoria.objects.select_related('categoria').all()
+        categorias = Categoria.objects.all()
+        return render(request, 'produtos.html', {'produtos': produtos, 'produto': produto,'subcategorias': subcategorias, 'categorias': categorias})
 
     def post(self, request):
         # Inserir
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
-        categoria_id = request.POST.get('categoria_id')
-        sub_categoria_id = request.POST.get('sub_categoria_id')
-        peso = request.POST.get('peso')
-        unidade = request.POST.get('unidade')
+        
+        data = json.loads(request.body)
+        print(data)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        categoria_id = data.get('categoria_id')
+        sub_categoria_id = data.get('sub_categoria_id')
+        peso = data.get('peso')
+        unidade = data.get('unidade')
         categoria = Categoria.objects.get(id=categoria_id)
         sub_categoria = SubCategoria.objects.get(id=sub_categoria_id)
         produto = Produto.objects.create(
@@ -284,13 +291,16 @@ class SubCategorias_Produto(View):
         else:
             subcategoria = None
         subcategorias = SubCategoria.objects.select_related('categoria').all()
-        return render(request, 'subcategorias_produto.html', {'subcategorias': subcategorias, 'subcategoria': subcategoria})
+        categorias = Categoria.objects.all()
+        return render(request, 'subcategorias_produto.html', {'subcategorias': subcategorias, 'categorias': categorias})
 
     def post(self, request):
+        print(request.body)
         # Inserir
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
-        categoria_id = request.POST.get('categoria_id')
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        categoria_id = data.get('categoria_id')
         categoria = Categoria.objects.get(id=categoria_id)
         subcategoria = SubCategoria.objects.create(codigo=codigo, descricao=descricao, categoria=categoria)
         return JsonResponse({'id': subcategoria.id})
@@ -325,6 +335,7 @@ class Usuarios(View):
     @method_decorator(never_cache)
     # Mostrar
     def get(self, request):
+        print(request)
         request.session['previous_url'] = request.META.get('HTTP_REFERER')
         user_id = request.GET.get('usuario_id', None)
         if user_id is not None:
@@ -365,7 +376,7 @@ class Usuarios(View):
         return JsonResponse({'status': 'success'})
     # Deletar
     def delete(self, request, user_id):
-        print(self, request, user_id)
+        print('teste',self, request, user_id)
         user = get_object_or_404(User, id=user_id)
         user.delete()
         return JsonResponse({'status': 'success'})

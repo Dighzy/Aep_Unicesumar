@@ -21,22 +21,16 @@
         <div class="d-flex align-items-center p-0 mb-4">
           <a href="{{ request.session.previous_url }}" class="d-flex">
             <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-        </a>
+          </a>
           <h5 class="custom-title">Categorias</h5>
         </div>
 
-        <div
-          class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
-        >
+        <div class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2">
           <div class="col-6 custom-col-pb-30">
-            <input
-              class="form-control"
-              id=""
-              placeholder="Pesquisar categoria..."
-            />
+            <input class="form-control" id="search" placeholder="Pesquisar categoria..." />
           </div>
           <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
+            <table id="CE_Categoria" class="table mb-0 table-hover">
               <thead>
                 <tr class="cabecalho">
                   <th scope="col" class="text-secondary">Código</th>
@@ -46,156 +40,53 @@
                 </tr>
               </thead>
               <tbody>
+                {% for categoria in categorias %}
                 <tr>
-                  <td class="text-secondary">joao.silva</td>
-                  <td class="text-secondary">João</td>
-                  <td class="text-secondary">Silva</td>
+                  <td class="text-secondary">{{ categoria.codigo }}</td>
+                  <td class="text-secondary">{{ categoria.descricao }}</td>
+                  <td class="text-secondary">{{ categoria.sub_categoria }}</td>
                   <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
+                    <img src="{% static 'img/editar.svg' %}" alt="Editar" />
+                    <img src="{% static 'img/deletar.svg' %}" alt="Deletar" />
                   </td>
                 </tr>
-                <tr>
-                  <td class="text-secondary">maria.santos</td>
-                  <td class="text-secondary">Maria</td>
-                  <td class="text-secondary">Santos</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">carlos.oliveira</td>
-                  <td class="text-secondary">Carlos</td>
-                  <td class="text-secondary">Oliveira</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" alt="" />
-                    <img src="{% static 'img/deletar.svg' %}" alt="" />
-                  </td>
-                </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
-          <button
-            class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
-          >
+          <button class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto">
             <span>Nova</span>
             <span>
               <img class="custom-mb" src="{% static 'img/novo.svg' %}" alt="" />
             </span>
           </button>
         </div>
-        <div
-          class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
-        >
+        <div class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height">
           <div class="d-flex align-items-center p-0 mb-4">
             <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
             <h5 class="custom-title">Cadastrar Categoria</h5>
           </div>
           <div class="row g-3">
             <div class="col-4 mb-2">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Código"
-                aria-label="codigo"
-              />
+              <input id="codigo" type="text" class="form-control" placeholder="Código" aria-label="codigo" />
             </div>
             <div class="col-8 mb-2">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Descrição"
-                aria-label="descricao"
-              />
-            </div>
-            <div class="col-12 mb-4">
-              <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
-                  Sub-Categorias
-                </button>
-                <ul
-                  class="dropdown-menu w-100 custom-dropdown"
-                >
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked1"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked1"
-                    >
-                      Detergentes
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked2"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked2"
-                    >
-                      Cadernos
-                    </label>
-                  </li>
-                  <li class="d-flex user-select-none">
-                    <input
-                      class="form-check-input me-2"
-                      type="checkbox"
-                      value=""
-                      id="flexCheckChecked3"
-                      checked
-                    />
-                    <label
-                      class="form-check-label w-100"
-                      for="flexCheckChecked3"
-                    >
-                      Canetas
-                    </label>
-                  </li>
-                </ul>
-              </div>
+              <input id="descricao" type="text" class="form-control" placeholder="Descrição" aria-label="descricao" />
             </div>
             <div class="col-6">
-              <button class="btn-cancelar rounded bg-white text-secondary">
-                Cancelar
-              </button>
+              <button id="cancelar" class="btn-cancelar rounded bg-white text-secondary">Cancelar</button>
             </div>
             <div class="col-6">
-              <button
-                class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
-              >
+              <button id="salvar" class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative">
                 <span>Salvar</span>
-                <span
-                  class="spinner-border spinner-border-sm position-absolute custom-r-12"
-                  aria-hidden="true"
-                ></span>
+                <span class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none" aria-hidden="true"></span>
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script type="module" src="{% static 'js/telas/Categoria.js' %}"></script>
   </body>
 </html>

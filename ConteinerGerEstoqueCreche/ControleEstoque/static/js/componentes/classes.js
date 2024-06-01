@@ -335,6 +335,20 @@ export class Solicitacoes {
     return await this.fazerSolicitacao("/usuarios/", dadosUsuario, "POST");
   }
 
+  async postProduto(dadosProdutos) {
+    return await this.fazerSolicitacao("/produtos/", dadosProdutos, "POST");
+  }
+
+
+  async postCategoria(Categoria) {
+    return await this.fazerSolicitacao("/categorias_produto/", Categoria, "POST", null);
+  }
+
+  async postSubCategoria(SubCategoria) {
+    console.log("SubCategoria", SubCategoria);
+    return await this.fazerSolicitacao("/subcategorias_produto/", SubCategoria, "POST", null);
+  }
+
   async patchUsuario(userId, dadosAtualizacao) {
     return await this.fazerSolicitacao(
       `/usuarios/${userId}/`,
@@ -352,7 +366,17 @@ export class Solicitacoes {
   }
 
   async deleteUsuario(userId) {
-    return await this.fazerSolicitacao(`/usuarios/${userId}/`, {}, "DELETE");
+        return await this.fazerSolicitacao(`/usuarios/${userId}/`, {}, "DELETE");
+  }
+
+  async deleteCategoria(CategoriaId) {
+    console.log("userId", userId);
+    return await this.fazerSolicitacao(`/categorias_produto/${CategoriaId}/`, {}, "DELETE");
+  }
+
+  async deleteSubCategoria(CategoriaId) {
+    console.log("userId", userId);
+    return await this.fazerSolicitacao(`/subcategorias_produto/${CategoriaId}/`, {}, "DELETE");
   }
 }
 export class Modal {
