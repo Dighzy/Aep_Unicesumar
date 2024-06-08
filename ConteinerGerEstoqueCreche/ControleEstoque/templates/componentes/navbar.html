@@ -5,7 +5,7 @@
       {% if request.user.is_superuser %}
       <li class="nav-item dropdown">
         <a
-          class="nav-link dropdown-toggle text-light a-pl-0"
+          class="nav-link dropdown-toggle text-light custom-nav-link"
           role="button"
           data-bs-toggle="dropdown"
           aria-expanded="false"
@@ -31,10 +31,10 @@
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="{% url 'produtos' %}">Cadastrar Produto</a></li>
           <li>
-            <a class="dropdown-item" href="{% url 'categorias_produto' %}">Cadastrar Categoria</a>
+            <a class="dropdown-item" href="{% url 'categorias' %}">Cadastrar Categoria</a>
           </li>
           <li>
-            <a class="dropdown-item" href="{% url 'subcategorias_produto' %}">Cadastrar Sub-Categoria</a>
+            <a class="dropdown-item" href="{% url 'subcategorias' %}">Cadastrar Sub-Categoria</a>
           </li>
         </ul>
       </li>

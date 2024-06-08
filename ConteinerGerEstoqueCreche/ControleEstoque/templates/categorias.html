@@ -29,41 +29,43 @@
           <div class="col-6 custom-col-pb-30">
             <input class="form-control" id="search" placeholder="Pesquisar categoria..." />
           </div>
-          <div class="flex-grow-1 mb-3">
-            <table id="CE_Categoria" class="table mb-0 table-hover">
-              <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Código</th>
-                  <th scope="col" class="text-secondary">Descrição</th>
-                  <th scope="col" class="text-secondary">Sub-Categoria</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for categoria in categorias %}
-                <tr>
-                  <td class="text-secondary">{{ categoria.codigo }}</td>
-                  <td class="text-secondary">{{ categoria.descricao }}</td>
-                  <td class="text-secondary">{{ categoria.sub_categoria }}</td>
-                  <td class="text-end">
-                    <img
-                    src="{% static 'img/editar.svg' %}"
-                    class="editarCategoria"
-                    data-id="{{ categoria.id }}"
-                    alt="Editar"
-                    />
-                    <img
-                    src="{% static 'img/deletar.svg' %}"
-                    class="excluirCategoria"
-                    data-id="{{ categoria.id }}"
-                    alt="Excluir"
-                    />
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+          <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
+            <div class="table-responsive position-absolute w-100 h-100">
+                <table id="CE_Categoria" class="table mb-0 table-hover">
+                    <thead>
+                        <tr class="cabecalho">
+                            <th scope="col" class="text-secondary">Código</th>
+                            <th scope="col" class="text-secondary">Descrição</th>
+                            <th scope="col" class="text-secondary">Tipo</th>
+                            <th scope="col" class="text-secondary">Sub-Categoria</th>
+                            <th scope="col" class="text-secondary"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in categorias %}
+                        <tr>
+                            <td class="text-secondary">{{ categoria.codigo }}</td>
+                            <td class="text-secondary">{{ categoria.descricao }}</td>
+                            <td class="text-secondary">{{ categoria.tipo.descricao }}</td>
+                            <td class="text-secondary text-truncate" style="max-width: 200px;" title="{{ categoria.subcategorias.all|join:', ' }}">
+                                <div class="d-inline-block text-truncate" style="max-width: 100%;">
+                                    {% for subcategoria in categoria.subcategorias.all %}
+                                        {{ subcategoria.descricao }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ categoria.id }}" alt="Editar" />
+                                <img src="{% static 'img/deletar.svg' %}" class="excluirCategoria" data-id="{{ categoria.id }}" alt="Excluir" />
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+          
           <button class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto">
             <span>Nova</span>
             <span>
@@ -82,6 +84,23 @@
             </div>
             <div class="col-8 mb-2">
               <input id="descricao" type="text" class="form-control" placeholder="Descrição" aria-label="descricao" />
+            </div>
+            <div class="col-12 mb-4">
+              <div class="dropdown">
+                <button class="form-select text-start user-select-none" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                  Sub-Categoria
+                </button>
+                <ul class="dropdown-menu w-100 custom-dropdown">
+
+                  <li class="d-flex user-select-none">
+                    <input class="form-check-input me-2" type="checkbox" value="{{ categoria.id }}" id="flexCheckChecked{{ categoria.id }}" name="categoria" />
+                    <label class="form-check-label w-100" for="flexCheckChecked{{ categoria.id }}">
+               
+                    </label>
+                  </li>
+
+                </ul>
+              </div>
             </div>
             <div class="col-6">
               <button id="cancelar" class="btn-cancelar rounded bg-white text-secondary">Cancelar</button>

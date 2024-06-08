@@ -90,11 +90,12 @@
 .custom-mb {
   margin-bottom: 2px;
 }
-
+.custom-wrapper-table{
+  margin-right: -25px;
+}
 .table-responsive {
-  margin-right: -10px;
-  padding-right: 20px;
-  overflow-y: auto;
+  padding-right: 10px;
+  overflow-y: scroll; 
   display: block;
 }
 
@@ -161,9 +162,13 @@
   border: none;
 }
 
-.a-pl-0 {
-  padding-left: 0px;
+.custom-nav-link {
+  margin-left: 0px !important; 
+  padding-left: 0px !important;
 }
+
+
+
 .custom-col-pb-30 {
   padding-bottom: 40px;
 }
@@ -251,6 +256,6 @@ input:-webkit-autofill:active {
   background-color: none !important;
 }
 
-.editarUsuario{
-  margin-right: 10px;
+.editarRegistro{
+  margin-right: 5px;
 }

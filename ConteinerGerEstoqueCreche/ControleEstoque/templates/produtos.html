@@ -11,7 +11,11 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/estilo.css' %}"
+    />
   </head>
 
   <body>
@@ -20,14 +24,18 @@
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
           <a href="{{ request.session.previous_url }}" class="d-flex">
-            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-        </a>
+            <img
+              class="custom-img"
+              src="{% static 'img/voltar.svg' %}"
+              alt=""
+            />
+          </a>
           <h5 class="custom-title">Produtos</h5>
         </div>
 
         <div
           class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
-        >
+          >
           <div class="col-6 custom-col-pb-30">
             <input
               class="form-control"
@@ -35,43 +43,68 @@
               placeholder="Pesquisar usuário..."
             />
           </div>
-          <div class="flex-grow-1 mb-3">
-            <table id='CE_Produto' class="table mb-0 table-hover">
-              <thead>
+          <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
+            <div class="table-responsive position-absolute w-100 h-100">
+              <table id="CE_Produto" class="table mb-0 table-hover">
+                <thead>
                   <tr class="cabecalho">
-                      <th scope="col" class="text-secondary">Código</th>
-                      <th scope="col" class="text-secondary">Descrição</th>
-                      <th scope="col" class="text-secondary">Categoria</th>
-                      <th scope="col" class="text-secondary">Sub-Categoria</th>
-                      <th scope="col" class="text-secondary"></th>
+                    <th scope="col" class="text-secondary">Código</th>
+                    <th scope="col" class="text-secondary">Descrição</th>
+                    <th scope="col" class="text-secondary">Categoria</th>
+                    <th scope="col" class="text-secondary">Sub-Categoria</th>
+                    <th scope="col" class="text-secondary"></th>
                   </tr>
-              </thead>
-              <tbody>
+                </thead>
+                <tbody>
                   {% for produto in produtos %}
                   <tr>
-                      <td class="text-secondary">{{ produto.codigo }}</td>
-                      <td class="text-secondary">{{ produto.descricao }}</td>
-                      <td class="text-secondary">{{ produto.categoria.descricao }}</td>
-                      <td class="text-secondary">{{ produto.sub_categoria.descricao }}</td>
-                      <td class="text-end">
-                        <img
+                    <td class="text-secondary">{{ produto.codigo }}</td>
+                    <td class="text-secondary">{{ produto.descricao }}</td>
+                    <td
+                      class="text-secondary text-truncate"
+                      style="max-width: 200px"
+                      title="{{ produto.categoria.descricao }}"
+                    >
+                      <div
+                        class="d-inline-block text-truncate"
+                        style="max-width: 100%"
+                      >
+                        {{ produto.categoria.descricao }}
+                      </div>
+                    </td>
+                    <td
+                      class="text-secondary text-truncate"
+                      style="max-width: 200px"
+                      title="{{ produto.sub_categoria.descricao }}"
+                    >
+                      <div
+                        class="d-inline-block text-truncate"
+                        style="max-width: 100%"
+                      >
+                        {{ produto.sub_categoria.descricao }}
+                      </div>
+                    </td>
+                    <td class="text-end">
+                      <img
                         src="{% static 'img/editar.svg' %}"
-                        class="editarProduto"
+                        class="editarRegistro"
                         data-id="{{ produto.id }}"
                         alt="Editar"
-                        />
-                        <img
+                      />
+                      <img
                         src="{% static 'img/deletar.svg' %}"
                         class="excluirProduto"
                         data-id="{{ produto.id }}"
                         alt="Excluir"
-                        />
-                      </td>
+                      />
+                    </td>
                   </tr>
                   {% endfor %}
-              </tbody>
-          </table>
+                </tbody>
+              </table>
+            </div>
           </div>
+
           <button
             class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
           >
@@ -83,108 +116,134 @@
         </div>
         <div
           class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
-          >
+        >
           <div class="d-flex align-items-center p-0 mb-4">
-            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+            <img
+              class="custom-img"
+              src="{% static 'img/voltar.svg' %}"
+              alt=""
+            />
             <h5 class="custom-title">Cadastrar Produto</h5>
           </div>
 
           <div class="row g-3">
             <div class="col-4 mb-2">
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Código"
-                    aria-label="codigo"
-                    id="codigo" 
-                />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Código"
+                aria-label="codigo"
+                id="codigo"
+              />
             </div>
             <div class="col-8 mb-2">
-                <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Descrição"
-                    aria-label="descricao"
-                    id="descricao"
-                />
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Descrição"
+                aria-label="descricao"
+                id="descricao"
+              />
             </div>
             <div class="col-12 mb-2">
               <label for="categoria" class="form-label">Categoria</label>
-              <select id="categoria" class="form-select" aria-label="categoria" onchange="filterSubcategories()">
-                  <option style="display:none;">Escolha uma categoria...</option>
-                  {% for categoria in categorias %}
-                      <option value="{{ categoria.id }}">{{ categoria.descricao }}</option>
-                  {% endfor %}
+              <select
+                id="categoria"
+                class="form-select"
+                aria-label="categoria"
+                onchange="filterSubcategories()"
+              >
+                <option style="display: none">Escolha uma categoria...</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.id }}">
+                  {{ categoria.descricao }}
+                </option>
+                {% endfor %}
               </select>
-          </div>
-          <div class="col-12 mb-2">
-            <label for="subcategoria" class="form-label">Sub-Categoria</label>
-            <select id="subcategoria" class="form-select" aria-label="subcategoria">
+            </div>
+            <div class="col-12 mb-2">
+              <label for="subcategoria" class="form-label">Sub-Categoria</label>
+              <select
+                id="subcategoria"
+                class="form-select"
+                aria-label="subcategoria"
+              >
                 <option value="" selected>Escolha uma subcategoria...</option>
                 {% for subcategoria in subcategorias %}
-                    <option value="{{ subcategoria.id }}" data-categoria-id="{{ subcategoria.categoria_id }}">{{ subcategoria.descricao }}</option>
+                <option
+                  value="{{ subcategoria.id }}"
+                  data-categoria-id="{{ subcategoria.categoria_id }}"
+                >
+                  {{ subcategoria.descricao }}
+                </option>
                 {% endfor %}
-            </select>
-        </div>
+              </select>
+            </div>
             <div class="col-4 mb-2">
-                <input
-                    type="number"
-                    class="form-control"
-                    placeholder="Peso"
-                    aria-label="peso"
-                    id="peso" 
-                />
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Peso"
+                aria-label="peso"
+                id="peso"
+              />
             </div>
             <div class="col-8 mb-2">
-                  <div class="col-8 mb-2">
-                    <select id="pesoSelect" class="form-select text-start user-select-none w-100" aria-label="peso">
-                        <option selected>Peso</option>
-                        <option value="kilo">Kilo</option>
-                        <option value="litro">Litro</option>
-                    </select>
-                  
-                </div>
+              
+                <select
+                  id="pesoSelect"
+                  class="form-select text-start user-select-none w-100"
+                  aria-label="peso"
+                >
+                  <option selected>Peso</option>
+                  <option value="kilo">Kilo</option>
+                  <option value="litro">Litro</option>
+                </select>
+              
             </div>
             <div class="col-4 mb-4">
-                <input
-                    type="number"
-                    class="form-control"
-                    placeholder="Unidade"
-                    aria-label="Unidade"
-                    id="unidade" 
-                />
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Unidade"
+                aria-label="Unidade"
+                id="unidade"
+              />
             </div>
             <div class="col-8 mb-4">
-                <div class="dropdown">
-                  <div class="col-8 mb-4">
-                    <select id="unidadeSelect" class="form-select" aria-label="unidade">
-                        <option selected>Unidade</option>
-                        <option value="Única">Única</option>
-                        <option value="Pacote">Pacote</option>
-                        <option value="Bandeja">Bandeja</option>
-                    </select>
-                </div>
-                </div>
+              <div class="dropdown">
+               
+                  <select
+                    id="unidadeSelect"
+                    class="form-select"
+                    aria-label="unidade"
+                  >
+                    <option selected>Unidade</option>
+                    <option value="Única">Única</option>
+                    <option value="Pacote">Pacote</option>
+                    <option value="Bandeja">Bandeja</option>
+                  </select>
+                
+              </div>
             </div>
-           
-              <div class="col-6">
-                <button class="btn-cancelar rounded bg-white text-secondary">
-                  Cancelar
-                </button>
-              </div>
-              <div class="col-6">
-                <button
-                  id="salvar"
-                  class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
-                >
-                  <span>Salvar</span>
-                  <span
-                    class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
-                    aria-hidden="true"
-                  ></span>
-                </button>
-              </div>
-          
+
+            <div class="col-6">
+              <button class="btn-cancelar rounded bg-white text-secondary">
+                Cancelar
+              </button>
+            </div>
+            <div class="col-6">
+              <button
+                id="salvar"
+                class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
+              >
+                <span>Salvar</span>
+                <span
+                  class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
+                  aria-hidden="true"
+                ></span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

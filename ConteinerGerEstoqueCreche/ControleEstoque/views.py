@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib.auth.models import User
-from .models import Categoria, SubCategoria, Produto, CategoriasMovimento, Lancamentos
+from .models import Categoria, SubCategoria, Produto, CategoriasMovimento, Lancamentos, TipoProduto
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
@@ -57,36 +57,25 @@ class Categorias_Movimento(View):
         return JsonResponse({'status': 'success'})
 
 @method_decorator(login_required, name='dispatch')
-class Categorias_Produto(View):
+class CategoriaView(View):
     @method_decorator(never_cache)
     def get(self, request):
-
-        categoria_id = request.GET.get('categoria_id', None)
-        if categoria_id is not None:
-            categoria = Categoria.objects.get(id=categoria_id)
-        else:
-            categoria = None
         categorias = Categoria.objects.all()
-        return render(request, 'categorias_produto.html', {'categorias': categorias, 'categoria': categoria})
-
+        return render(request, 'categorias.html', {'categorias': categorias})
 
     def post(self, request):
-        # Inserir
-        data = json.loads(request.body)
-        codigo = data.get('codigo')
-        descricao = data.get('descricao')
+        codigo = request.POST.get('codigo')
+        descricao = request.POST.get('descricao')
         categoria = Categoria.objects.create(codigo=codigo, descricao=descricao)
         return JsonResponse({'id': categoria.id})
 
     def patch(self, request, categoria_id):
-        # Atualizar Partes
         categoria = get_object_or_404(Categoria, id=categoria_id)
         categoria.descricao = request.POST.get('descricao', categoria.descricao)
         categoria.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, categoria_id):
-        # Atualizar Tudo
         categoria = get_object_or_404(Categoria, id=categoria_id)
         categoria.codigo = request.POST.get('codigo')
         categoria.descricao = request.POST.get('descricao')
@@ -94,23 +83,21 @@ class Categorias_Produto(View):
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, categoria_id):
-        # Deletar
         categoria = get_object_or_404(Categoria, id=categoria_id)
         categoria.delete()
         return JsonResponse({'status': 'success'})
 
-
 @method_decorator(login_required, name='dispatch')
-class Entrada(View):
+class EntradaView(View):
     @method_decorator(never_cache)
     def get(self, request):
-        # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
-        lancamentos_entrada = Lancamentos.objects.filter(categoria_movimento_id__tipo_de_movimento='Entrada').select_related('produto','categoria_movimento','usuario')
+        lancamentos_entrada = Lancamentos.objects.filter(
+            categoria_movimento_id__tipo_de_movimento='Entrada'
+        ).select_related('produto', 'categoria_movimento', 'usuario')
 
         return render(request, 'entrada.html', {'lancamentos_entrada': lancamentos_entrada})
-    
+
     def post(self, request):
-        # Inserir
         produto_id = request.POST.get('produto_id')
         total = request.POST.get('total')
         categoria_movimento_id = request.POST.get('categoria_movimento_id')
@@ -119,34 +106,12 @@ class Entrada(View):
         categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
         usuario = User.objects.get(id=usuario_id)
         lancamento = Lancamentos.objects.create(
-            produto=produto, total=total, categoria_movimento=categoria_movimento,
-            usuario=usuario, data_lancamento=timezone.now()
+            produto=produto,
+            total=total,
+            categoria_movimento=categoria_movimento,
+            usuario=usuario
         )
-        return JsonResponse({'codigo': lancamento.codigo})
-
-    def patch(self, request, lancamento_id):
-        # Atualizar Partes
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.total = request.POST.get('total', lancamento.total)
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def put(self, request, lancamento_id):
-        # Atualizar Tudo
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.produto_id = request.POST.get('produto_id')
-        lancamento.total = request.POST.get('total')
-        lancamento.categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        lancamento.usuario_id = request.POST.get('usuario_id')
-        lancamento.data_lancamento = timezone.now()
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def delete(self, request, lancamento_id):
-        # Deletar
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.delete()
-        return JsonResponse({'status': 'success'})
+        return JsonResponse({'id': lancamento.id})
 
 @never_cache
 @login_required
@@ -154,14 +119,9 @@ def estoque(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
     return render(request, 'estoque.html')
 
-@never_cache
-@login_required
-def lancamento(request):
-    request.session['previous_url'] = request.META.get('HTTP_REFERER')
-    return render(request, 'lancamento.html')
 
 @method_decorator(login_required, name='dispatch')
-class LancamentosView(View):
+class LancamentoView(View):
     @method_decorator(never_cache)
     def get(self, request):
         # Mostrar
@@ -245,83 +205,49 @@ def painel_usuario(request):
 
 
 @method_decorator(login_required, name='dispatch')
-class Produtos(View):
+class ProdutoView(View):
     @method_decorator(never_cache)
     def get(self, request):
-        # Mostrar
-        produto_id = request.GET.get('produto_id', None)
-        if produto_id is not None:
-            produto = Produto.objects.get(id=produto_id)
-        else:
-            produto = None
-        produtos = Produto.objects.select_related('categoria', 'sub_categoria').all()
-        subcategorias = SubCategoria.objects.select_related('categoria').all()
-        categorias = Categoria.objects.all()
-        return render(request, 'produtos.html', {'produtos': produtos, 'produto': produto,'subcategorias': subcategorias, 'categorias': categorias})
+        produtos = Produto.objects.all()
+        return render(request, 'produtos.html', {'produtos': produtos})
 
     def post(self, request):
-        # Inserir
-        
-        data = json.loads(request.body)
-        print(data)
-        codigo = data.get('codigo')
-        descricao = data.get('descricao')
-        categoria_id = data.get('categoria_id')
-        sub_categoria_id = data.get('sub_categoria_id')
-        peso = data.get('peso')
-        unidade = data.get('unidade')
-        categoria = Categoria.objects.get(id=categoria_id)
-        sub_categoria = SubCategoria.objects.get(id=sub_categoria_id)
+        codigo = request.POST.get('codigo')
+        descricao = request.POST.get('descricao')
+        categoria_id = request.POST.get('categoria_id')
+        sub_categoria_id = request.POST.get('sub_categoria_id')
+        peso = request.POST.get('peso')
+        unidade = request.POST.get('unidade')
+        tipo_id = request.POST.get('tipo_id')
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        sub_categoria = get_object_or_404(SubCategoria, id=sub_categoria_id)
+        tipo = get_object_or_404(TipoProduto, id=tipo_id)
         produto = Produto.objects.create(
             codigo=codigo, descricao=descricao, categoria=categoria,
-            sub_categoria=sub_categoria, peso=peso, unidade=unidade
+            sub_categoria=sub_categoria, peso=peso, unidade=unidade, tipo=tipo
         )
         return JsonResponse({'id': produto.id})
 
     def patch(self, request, produto_id):
-        # Atualizar Partes
         produto = get_object_or_404(Produto, id=produto_id)
-        descricao = request.POST.get('descricao')
-        peso = request.POST.get('peso')
-        unidade = request.POST.get('unidade')
-        categoria_id = request.POST.get('categoria_id')
-        sub_categoria_id = request.POST.get('sub_categoria_id')
-
-        if descricao is not None:
-            produto.descricao = descricao
-        if peso is not None:
-            produto.peso = peso
-        if unidade is not None:
-            produto.unidade = unidade
-        if categoria_id is not None:
-            produto.categoria_id = categoria_id
-        if sub_categoria_id is not None:
-            produto.sub_categoria_id = sub_categoria_id
-
+        produto.descricao = request.POST.get('descricao', produto.descricao)
         produto.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, produto_id):
-        # Atualizar Tudo
         produto = get_object_or_404(Produto, id=produto_id)
         produto.codigo = request.POST.get('codigo')
         produto.descricao = request.POST.get('descricao')
-        produto.categoria_id = request.POST.get('categoria_id')
-        produto.sub_categoria_id = request.POST.get('sub_categoria_id')
-        produto.peso = request.POST.get('peso')
-        produto.unidade = request.POST.get('unidade')
         produto.save()
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, produto_id):
-        # Deletar
         produto = get_object_or_404(Produto, id=produto_id)
         produto.delete()
         return JsonResponse({'status': 'success'})
 
-
 @method_decorator(login_required, name='dispatch')
-class Saida(View):
+class SaidaView(View):
     @method_decorator(never_cache)
     def get(self, request):
         # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
@@ -368,56 +294,40 @@ class Saida(View):
         return JsonResponse({'status': 'success'})
 
 @method_decorator(login_required, name='dispatch')
-class SubCategorias_Produto(View):
+class SubCategoriaView(View):
     @method_decorator(never_cache)
     def get(self, request):
-        # Mostrar
-        subcategoria_id = request.GET.get('subcategoria_id', None)
-        if subcategoria_id is not None:
-            subcategoria = SubCategoria.objects.get(id=subcategoria_id)
-        else:
-            subcategoria = None
-        subcategorias = SubCategoria.objects.select_related('categoria').all()
-        categorias = Categoria.objects.all()
-        return render(request, 'subcategorias_produto.html', {'subcategorias': subcategorias, 'categorias': categorias})
+        subcategorias = SubCategoria.objects.all()
+        return render(request, 'subcategorias.html', {'subcategorias': subcategorias})
 
     def post(self, request):
-        print(request.body)
-        # Inserir
-        data = json.loads(request.body)
-        codigo = data.get('codigo')
-        descricao = data.get('descricao')
-        categoria_id = data.get('categoria_id')
-        categoria = Categoria.objects.get(id=categoria_id)
+        codigo = request.POST.get('codigo')
+        descricao = request.POST.get('descricao')
+        categoria_id = request.POST.get('categoria_id')
+        categoria = get_object_or_404(Categoria, id=categoria_id)
         subcategoria = SubCategoria.objects.create(codigo=codigo, descricao=descricao, categoria=categoria)
         return JsonResponse({'id': subcategoria.id})
 
     def patch(self, request, subcategoria_id):
-        # Atualizar Partes
         subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
         subcategoria.descricao = request.POST.get('descricao', subcategoria.descricao)
-        subcategoria.categoria_id = request.POST.get('categoria_id', subcategoria.categoria_id)
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, subcategoria_id):
-        # Atualizar Tudo
         subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
         subcategoria.codigo = request.POST.get('codigo')
         subcategoria.descricao = request.POST.get('descricao')
-        subcategoria.categoria_id = request.POST.get('categoria_id')
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, subcategoria_id):
-        # Deletar
         subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
         subcategoria.delete()
         return JsonResponse({'status': 'success'})
 
 
-
-class Usuarios(View):
+class UsuarioView(View):
     @method_decorator(never_cache)
     # Mostrar
     def get(self, request):
