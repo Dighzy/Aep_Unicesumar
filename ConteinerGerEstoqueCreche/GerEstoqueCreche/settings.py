@@ -78,10 +78,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'GerEstoqueCreche',
-        'USER': '{seu_usuario}',
-        'PASSWORD': '{sua_senha}',
+        'USER': 'postgres',
+        'PASSWORD': 'mt09@1806',
         'HOST': 'localhost',
-        'PORT': '{porta}',
+        'PORT': '5432',
     }
 }
 

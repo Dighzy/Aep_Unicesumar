@@ -70,16 +70,15 @@ export class FormValidator {
     this.loginInvalidoAlert = document.querySelector("#loginInvalidoAlert");
     this.loginButton = document.querySelector("#login");
     this.formSubmitted = false;
-
   }
+
   removeInvalidClass(ids) {
     ids.forEach(id => {
       const field = document.getElementById(id);
       if (field && field.classList.contains('is-invalid')) {
         field.classList.remove('is-invalid');
       }
-  
-      // Se o ID for 'email', esconda os divs de feedback específicos
+
       if (id === 'email') {
         const emailVazio = document.getElementById('vazio');
         const emailInvalido = document.getElementById('invalido');
@@ -91,23 +90,24 @@ export class FormValidator {
         }
       }
     });
+
+    // Remover a classe is-invalid dos radios
+    const usuarioRadio = document.getElementById("usuario");
+    const administradorRadio = document.getElementById("administrador");
+    usuarioRadio.classList.remove("is-invalid");
+    administradorRadio.classList.remove("is-invalid");
   }
-  
-  
+
   validateFieldsById(ids) {
     let isValid = true;
     ids.forEach(id => {
       const field = document.getElementById(id);
       if (id === 'email') {
-        // Configura as propriedades necessárias para o método validateEmail
         this.email = field;
-        this.emailVazio = document.getElementById('vazio'); // Novo ID para o elemento de feedback 'vazio'
-        this.emailInvalido = document.getElementById('invalido'); // Novo ID para o elemento de feedback 'invalido'
-        
-        // Chama o método validateEmail
+        this.emailVazio = document.getElementById('vazio');
+        this.emailInvalido = document.getElementById('invalido');
         isValid = this.validateEmail() && isValid;
       } else {
-        // Validação padrão para outros campos
         if (!field.value.trim()) {
           field.classList.add("is-invalid");
           isValid = false;
@@ -116,6 +116,10 @@ export class FormValidator {
         }
       }
     });
+
+    // Validar os radios
+    isValid = this.validateUserType() && isValid;
+
     return isValid;
   }
 
@@ -146,6 +150,22 @@ export class FormValidator {
     } else {
       this.password.classList.remove("is-invalid");
       this.senhaVazia.style.display = "none";
+    }
+  }
+
+  validateUserType() {
+    const usuarioRadio = document.getElementById("usuario");
+    const administradorRadio = document.getElementById("administrador");
+
+    usuarioRadio.classList.remove("is-invalid");
+    administradorRadio.classList.remove("is-invalid");
+
+    if (!usuarioRadio.checked && !administradorRadio.checked) {
+      usuarioRadio.classList.add("is-invalid");
+      administradorRadio.classList.add("is-invalid");
+      return false;
+    } else {
+      return true;
     }
   }
 
@@ -223,24 +243,7 @@ export class FormValidator {
       }
     }
   }
-
-  validateUserType() {
-    const usuarioRadio = document.getElementById("usuario");
-    const administradorRadio = document.getElementById("administrador");
-
-    usuarioRadio.classList.remove("is-invalid");
-    administradorRadio.classList.remove("is-invalid");
-
-    if (!usuarioRadio.checked && !administradorRadio.checked) {
-      usuarioRadio.classList.add("is-invalid");
-      administradorRadio.classList.add("is-invalid");
-      return false;
-    } else {
-      return true;
-    }
-  }
 }
-
 
 
 export class Login {
@@ -339,18 +342,32 @@ export class Solicitacoes {
     return await this.fazerSolicitacao("/produtos/", dadosProdutos, "POST");
   }
 
-
   async postCategoria(Categoria) {
-    return await this.fazerSolicitacao("/categorias_produto/", Categoria, "POST", null);
+    return await this.fazerSolicitacao(
+      "/categorias_produto/",
+      Categoria,
+      "POST",
+      null
+    );
   }
 
   async postSubCategoria(SubCategoria) {
-    return await this.fazerSolicitacao("/subcategorias_produto/", SubCategoria, "POST", null);
+    return await this.fazerSolicitacao(
+      "/subcategorias_produto/",
+      SubCategoria,
+      "POST",
+      null
+    );
   }
 
   async postCategoriaMovimento(CategoriaMovimento) {
     console.log("CategoriaMovimento", CategoriaMovimento);
-    return await this.fazerSolicitacao("/categorias_movimento/", CategoriaMovimento, "POST", null);
+    return await this.fazerSolicitacao(
+      "/categorias_movimento/",
+      CategoriaMovimento,
+      "POST",
+      null
+    );
   }
 
   async patchUsuario(userId, dadosAtualizacao) {
@@ -370,7 +387,7 @@ export class Solicitacoes {
   }
 
   async deleteUsuario(userId) {
-        return await this.fazerSolicitacao(`/usuarios/${userId}/`, {}, "DELETE");
+    return await this.fazerSolicitacao(`/usuarios/${userId}/`, {}, "DELETE");
   }
 
   async deleteProduto(ProdutoId) {
@@ -378,14 +395,26 @@ export class Solicitacoes {
   }
 
   async deleteCategoria(CategoriaId) {
-    return await this.fazerSolicitacao(`/categorias_produto/${CategoriaId}/`, {}, "DELETE");
+    return await this.fazerSolicitacao(
+      `/categorias_produto/${CategoriaId}/`,
+      {},
+      "DELETE"
+    );
   }
 
   async deleteSubCategoria(SubCategoriaId) {
-    return await this.fazerSolicitacao(`/subcategorias_produto/${SubCategoriaId}/`, {}, "DELETE");
+    return await this.fazerSolicitacao(
+      `/subcategorias_produto/${SubCategoriaId}/`,
+      {},
+      "DELETE"
+    );
   }
   async deleteCategoriaMovimento(CategoriaMovimentoId) {
-    return await this.fazerSolicitacao(`/categorias_movimento/${CategoriaMovimentoId}/`, {}, "DELETE");
+    return await this.fazerSolicitacao(
+      `/categorias_movimento/${CategoriaMovimentoId}/`,
+      {},
+      "DELETE"
+    );
   }
 }
 export class Modal {
@@ -398,32 +427,17 @@ export class Modal {
     this.botao2 = document.getElementById("botao2");
     this.botaoFechar = document.getElementById("fechar");
     this.dataId = null;
-    this.spinner = document.getElementById("spinner");
   }
 
-  parametrizar(titulo, mensagem, botao1, botao2) {
+  parametrizar(titulo, mensagem, botao1Texto, botao2Texto) {
     this.titulo.textContent = titulo;
     this.mensagem.textContent = mensagem;
-    this.botao1.textContent = botao1;
-    this.atualizarTextoBotao(this.botao2, botao2);
+    this.botao1.textContent = botao1Texto;
+    this.atualizarTextoBotao(this.botao2, botao2Texto);
   }
 
   atualizarTextoBotao(botao, texto) {
-    let textoBotao = botao.querySelector('.texto-botao');
-    if (!textoBotao) {
-      textoBotao = document.createElement('span');
-      textoBotao.classList.add('texto-botao');
-      botao.prepend(textoBotao);
-    }
-    textoBotao.textContent = texto;
-  }
-
-  mostrarSpinner() {
-    this.spinner.classList.remove('d-none');
-  }
-
-  esconderSpinner() {
-    this.spinner.classList.add('d-none');
+    botao.textContent = texto;
   }
 
   abrir(dataId) {
@@ -442,13 +456,11 @@ export class Modal {
   eventoBotao1(callback) {
     this.botao1.addEventListener("click", () => {
       callback(this.dataId);
-      this.esconderSpinner(); // Esconde o spinner ao clicar no botão 1
     });
   }
 
   eventoBotao2(callback) {
     this.botao2.addEventListener("click", () => {
-      this.mostrarSpinner(); // Mostra o spinner ao clicar no botão 2
       callback(this.dataId);
     });
   }
@@ -466,7 +478,6 @@ export class Modal {
   }
 }
 
-
 export class Usuarios {
   constructor() {
     this.inicializarElementos();
@@ -480,6 +491,7 @@ export class Usuarios {
     this.email = this.getElemento('email');
     this.administrador = this.getElemento('administrador');
     this.usuario = this.getElemento('usuario');
+    this.username = this.getElemento('username'); // Adicionado
     this.novoUsuario = this.getElemento('novoUsuario');
     this.botaoCancelar = this.getElemento('cancelar');
     this.botaoSalvar = this.getElemento('salvar');
@@ -509,6 +521,7 @@ export class Usuarios {
         this.nome.value = row.querySelector("td:nth-child(2)").textContent;
         this.sobrenome.value = row.querySelector("td:nth-child(3)").textContent;
         this.email.value = row.querySelector("td:nth-child(5)").textContent;
+        this.username.value = row.querySelector("td:nth-child(1)").textContent; // Adicionado
 
         var userType = row.querySelector("td:nth-child(4)").textContent;
         if (userType.trim() === "Administrador") {
@@ -552,6 +565,7 @@ export class Usuarios {
     this.nome.value = "";
     this.sobrenome.value = "";
     this.email.value = "";
+    this.username.value = ""; // Adicionado
     this.usuario.checked = false;
     this.administrador.checked = false;
   }
@@ -560,6 +574,18 @@ export class Usuarios {
     var params = new URLSearchParams(window.location.search);
     params.delete("usuario_id");
     window.history.replaceState({}, "", "/usuarios/");
+  }
+
+  preencherFormulario(dadosUsuario) { // Adicionado
+    this.nome.value = dadosUsuario.first_name;
+    this.sobrenome.value = dadosUsuario.last_name;
+    this.email.value = dadosUsuario.email;
+    this.username.value = dadosUsuario.username;
+    if (dadosUsuario.is_superuser) {
+      this.administrador.checked = true;
+    } else {
+      this.usuario.checked = true;
+    }
   }
 
   configurarBotoes() {
@@ -573,6 +599,4 @@ export class Usuarios {
     });
   }
 }
-
-
 

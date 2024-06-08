@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
@@ -99,14 +99,9 @@ class Categorias_Produto(View):
         categoria.delete()
         return JsonResponse({'status': 'success'})
 
-@never_cache
-@login_required
-def entrada(request):
-    request.session['previous_url'] = request.META.get('HTTP_REFERER')
-    return render(request, 'entrada.html')
 
 @method_decorator(login_required, name='dispatch')
-class EntradaView(View):
+class Entrada(View):
     @method_decorator(never_cache)
     def get(self, request):
         # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
@@ -324,19 +319,14 @@ class Produtos(View):
         produto.delete()
         return JsonResponse({'status': 'success'})
 
-@never_cache
-@login_required
-def saida(request):
-    request.session['previous_url'] = request.META.get('HTTP_REFERER')
-    return render(request, 'saida.html')
 
 @method_decorator(login_required, name='dispatch')
-class SaidaView(View):
+class Saida(View):
     @method_decorator(never_cache)
     def get(self, request):
         # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
         lancamentos_entrada = Lancamentos.objects.filter(categoria_movimento_id__tipo_de_movimento='Saída').select_related('produto','categoria_movimento','usuario')
-        return render(request, 'entrada.html', {'lancamentos_entrada': lancamentos_entrada})
+        return render(request, 'saida.html', {'lancamentos_entrada': lancamentos_entrada})
     
     def post(self, request):
         # Inserir
@@ -427,13 +417,15 @@ class SubCategorias_Produto(View):
 
 
 
-@method_decorator(login_required, name='dispatch')
 class Usuarios(View):
     @method_decorator(never_cache)
     # Mostrar
     def get(self, request):
-        print(request)
-        request.session['previous_url'] = request.META.get('HTTP_REFERER')
+        if not request.user.is_superuser:
+            previous_url = request.session.get('previous_url', '/')
+            return redirect(previous_url)  # Redireciona para a URL anterior ou para a página raiz
+
+        request.session['previous_url'] = request.path  # Atualiza a URL atual
         user_id = request.GET.get('usuario_id', None)
         if user_id is not None:
             usuario = User.objects.get(id=user_id)
@@ -441,40 +433,76 @@ class Usuarios(View):
             usuario = None
         usuarios = User.objects.all()
         return render(request, 'usuarios.html', {'usuarios': usuarios, 'usuario': usuario})
+
     # Inserir
     def post(self, request):
-        # Código para criar um novo usuário
-        username = request.POST.get('username')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        is_superuser = request.POST.get('is_superuser') == 'true'
-        user = User.objects.create_user(username=username, email=email, first_name=first_name, last_name=last_name, password=password, is_superuser=is_superuser)
+        if not request.user.is_superuser:
+            previous_url = request.session.get('previous_url', '/')
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
+        data = json.loads(request.body)
+        username = data.get('username')  # Adicionado
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+        password = data.get('password')
+        is_superuser = data.get('is_superuser', False)
+
+        user = User.objects.create_user(
+            username=username,  # Modificado
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+            is_superuser=is_superuser
+        )
         return JsonResponse({'id': user.id})
-    # Atualizar Partes
+
+    # Atualizar Partes    
     def patch(self, request, user_id):
+        if not request.user.is_superuser:
+            previous_url = request.session.get('previous_url', '/')
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
         user = get_object_or_404(User, id=user_id)
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.email = request.POST.get('email', user.email)
+        data = json.loads(request.body)
+        user.username = data.get('username', user.username)  # Adicionado
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name = data.get('last_name', user.last_name)
+        user.email = data.get('email', user.email)
+        if 'is_superuser' in data:
+            user.is_superuser = data['is_superuser']
+        if 'password' in data and data['password']:
+            user.set_password(data['password'])
         user.save()
         return JsonResponse({'status': 'success'})
-    # Atualizar Tudo
+
+    # Atualizar Tudo   
     def put(self, request, user_id):
+        if not request.user.is_superuser:
+            previous_url = request.session.get('previous_url', '/')
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
         user = get_object_or_404(User, id=user_id)
-        user.username = request.POST.get('username')
-        user.first_name = request.POST.get('first_name')
-        user.last_name = request.POST.get('last_name')
-        user.email = request.POST.get('email')
-        user.is_superuser = request.POST.get('is_superuser') == 'true'
-        user.set_password(request.POST.get('password'))
+        data = json.loads(request.body)
+        user.username = data.get('username', user.username)  # Adicionado
+        user.first_name = data.get('first_name')
+        user.last_name = data.get('last_name')
+        user.email = data.get('email')
+        user.is_superuser = data.get('is_superuser', False)
+        if 'password' in data and data['password']:
+            user.set_password(data['password'])
         user.save()
         return JsonResponse({'status': 'success'})
-    # Deletar
+
+    # Deletar    
     def delete(self, request, user_id):
-        print('teste',self, request, user_id)
+        if not request.user.is_superuser:
+            previous_url = request.session.get('previous_url', '/')
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+
         user = get_object_or_404(User, id=user_id)
         user.delete()
         return JsonResponse({'status': 'success'})
+
         

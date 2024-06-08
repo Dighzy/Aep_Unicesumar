@@ -16,10 +16,26 @@
       type="text/css"
       href="{% static 'css/estilo.css' %}"
     />
+    <style>
+      #liveAlertPlaceholder {
+        position: fixed;
+        top: 70px; /* Adjust to be below the navbar */
+        right: 20px;
+        z-index: 1050; /* Ensure it appears above other elements */
+        width: auto; /* Adjust the width as needed */
+      }
+  
+      .alert {
+        margin-bottom: 0; /* Remove default margin */
+      }
+    </style>
   </head>
 
   <body style="overflow-x: hidden;">
     {% include "componentes/navbar.html" %}
+    <div id="liveAlertPlaceholder"></div>
+
+    
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
@@ -102,134 +118,140 @@
             </span>
           </button>
         </div>
+
         <div
-          id="formularioUsuario"
-          class="
-          position-relative
-          col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height {% if usuario is None %}d-none{% endif %}"
-        >
-          <div class="d-flex align-items-center p-0 mb-4">
-            <img
-              class="custom-img"
-              src="{% static 'img/voltar.svg' %}"
-              alt=""
+        id="formularioUsuario"
+        class="
+        position-relative
+        col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height {% if usuario is None %}d-none{% endif %}"
+      >
+        <div class="d-flex align-items-center p-0 mb-4">
+          <img
+            class="custom-img"
+            src="{% static 'img/voltar.svg' %}"
+            alt=""
+          />
+          <h5 class="custom-title">Cadastrar Usuário</h5>
+        </div>
+        <div class="row g-4">
+          <div class="col-12 mb-2 position-relative">
+            <input
+              id="username"
+              type="text"
+              class="form-control"
+              placeholder="Usuário"
+              aria-label="username"
+              value="{{ usuario.username|default:'' }}"
             />
-            <h5 class="custom-title">Cadastrar Usuário</h5>
+            <div class="invalid-feedback position-absolute">
+              Por favor, preencha este campo.
+            </div>
           </div>
-          <div class="row g-4">
-            <div class="col mb-2 position-relative">
+      
+          <div class="col mb-2 position-relative">
+            <input
+              id="nome"
+              type="text"
+              class="form-control"
+              placeholder="Nome"
+              aria-label="nome"
+              value="{{ usuario.first_name|default:'' }}"
+            />
+            <div class="invalid-feedback position-absolute">
+              Por favor, preencha este campo.
+            </div>
+          </div>
+          <div class="col mb-2">
+            <input
+              id="sobrenome"
+              type="text"
+              class="form-control position-relative"
+              placeholder="Sobrenome"
+              aria-label="sobrenome"
+              value="{{ usuario.last_name|default:'' }}"
+            />
+            <div class="invalid-feedback position-absolute">
+              Por favor, preencha este campo.
+            </div>
+          </div>
+          <div class="col-12 mb-2">
+            <input
+              type="email"
+              class="form-control position-relative"
+              id="email"
+              name="email"
+              placeholder="name@example.com"
+              value="{{ usuario.email|default:'' }}"
+              required
+              style="margin-top: 10px"
+            />
+            <div class="invalid-feedback position-absolute" id="vazio">
+              Por favor, preencha este campo.
+            </div>
+            <div class="invalid-feedback position-absolute" id="invalido">
+              Por favor, insira um e-mail válido.
+            </div>
+          </div>
+          <div class="col-12 mb-2">
+            <input
+              id="senha"
+              type="password"
+              class="form-control position-relative"
+              placeholder="Senha"
+              aria-label="senha"
+              style="margin-top: 10px"
+            />
+            <div class="invalid-feedback position-absolute">
+              Por favor, preencha este campo.
+            </div>
+          </div>
+          <div class="d-flex" style="margin-top: 30px">
+            <div class="col-3 mb-4">
               <input
-                id="nome"
-                type="text"
-                class="form-control"
-                placeholder="Nome"
-                aria-label="nome"
-                value="{{ usuario.first_name|default:'' }}"
+                id="usuario"
+                class="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                {% if usuario and not usuario.is_superuser %}checked{% endif %}
               />
-              <div class="invalid-feedback position-absolute">
-                Por favor, preencha este campo.
-              </div>
+              <label class="form-check-label" for="usuario"> Usuário </label>
             </div>
-            <div class="col mb-2">
+            <div class="col-9 mb-4">
               <input
-                id="sobrenome"
-                type="text"
-                class="form-control position-relative"
-                placeholder="Sobrenome"
-                aria-label="sobrenome"
-                value="{{ usuario.last_name|default:'' }}"
+                id="administrador"
+                class="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                {% if usuario and usuario.is_superuser %}checked{% endif %}
               />
-              <div class="invalid-feedback position-absolute">
-                Por favor, preencha este campo.
-              </div>
+              <label class="form-check-label" for="administrador">
+                Administrador
+              </label>
             </div>
-            <div class="col-12 mb-2">
-              <input
-                type="email"
-                class="form-control position-relative"
-                id="email"
-                name="email"
-                placeholder="name@example.com"
-                required
-                style="margin-top: 10px"
-              />
-              <div class="invalid-feedback position-absolute" id="vazio">
-                Por favor, preencha este campo.
-              </div>
-              <div class="invalid-feedback position-absolute" id="invalido">
-                Por favor, insira um e-mail válido.
-              </div>
-            </div>
-            <div class="col-12 mb-2">
-              <input
-                id="senha"
-                type="password"
-                class="form-control position-relative"
-                placeholder="Senha"
-                aria-label="senha"
-                style="margin-top: 10px"
-              />
-              <div class="invalid-feedback position-absolute">
-                Por favor, preencha este campo.
-              </div>
-            </div>
-            <div class="d-flex" style="margin-top: 30px">
-              <div class="col-3 mb-4">
-                <input
-                  id="usuario"
-                  class="form-check-input"
-                  type="radio"
-                  name="flexRadioDefault"
-                  {%
-                  if
-                  not
-                  usuario.is_superuser
-                  %}checked{%
-                  endif
-                  %}
-                />
-                <label class="form-check-label" for="usuario"> Usuário </label>
-              </div>
-              <div class="col-9 mb-4">
-                <input
-                  id="administrador"
-                  class="form-check-input"
-                  type="radio"
-                  name="flexRadioDefault"
-                  {%
-                  if
-                  usuario.is_superuser
-                  %}checked{%
-                  endif
-                  %}
-                />
-                <label class="form-check-label" for="administrador">
-                  Administrador
-                </label>
-              </div>
-            </div>
-            <div class="col-6">
-              <button
-                class="btn-cancelar rounded bg-white text-secondary"
-                id="cancelar"
-              >
-                Cancelar
-              </button>
-            </div>
-            <div class="col-6">
-              <button
-                id="salvar"
-                class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
-              >
-                <span>Salvar</span>
-                <span
-                  class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
-                  aria-hidden="true"
-                ></span>
-              </button>
-            </div>
+          </div>
+          <div class="col-6">
+            <button
+              class="btn-cancelar rounded bg-white text-secondary"
+              id="cancelar"
+            >
+              Cancelar
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              id="salvar"
+              class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
+            >
+              <span>Salvar</span>
+              <span
+                class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
+                aria-hidden="true"
+              ></span>
+            </button>
           </div>
         </div>
+      </div>
+      
       </div>
     </div>
     {% include "componentes/modal_generica.html" %}
