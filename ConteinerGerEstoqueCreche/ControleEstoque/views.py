@@ -4,58 +4,53 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib.auth.models import User
-from .models import Categoria, SubCategoria, Produto, CategoriasMovimento, Lancamentos, TipoProduto
+from .models import Categoria, SubCategoria, Produto, Origem, Lancamentos, TipoProduto
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 import json
 
 @method_decorator(login_required, name='dispatch')
-class Categorias_Movimento(View):
+class OrigemView(View):
     @method_decorator(never_cache)
     def get(self, request):
         # Mostrar
-        categoria_movimento_id = request.GET.get('categoria_movimento_id', None)
-        if categoria_movimento_id is not None:
-            categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
-        else:
-            categoria_movimento = None
-        categorias_movimento = CategoriasMovimento.objects.all()
-        return render(request, 'categorias_movimento.html', {'categorias_movimento': categorias_movimento, 'categoria_movimento': categoria_movimento})
+        categorias_movimento = Origem.objects.all()
+        return render(request, 'origens.html', {'categorias_movimento': categorias_movimento})
 
     def post(self, request):
         # Inserir
         data = json.loads(request.body)
-        print(data)
         codigo = data.get('codigo')
         descricao = data.get('descricao')
         tipo_de_movimento = data.get('tipo_de_movimento')
-        categoria_movimento = CategoriasMovimento.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
+        categoria_movimento = Origem.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
         return JsonResponse({'id': categoria_movimento.id})
 
     def patch(self, request, categoria_movimento_id):
         # Atualizar Partes
-        categoria_movimento = get_object_or_404(CategoriasMovimento, id=categoria_movimento_id)
-        categoria_movimento.descricao = request.POST.get('descricao', categoria_movimento.descricao)
-        categoria_movimento.tipo_de_movimento = request.POST.get('tipo_de_movimento', categoria_movimento.tipo_de_movimento)
+        categoria_movimento = get_object_or_404(Origem, id=categoria_movimento_id)
+        data = json.loads(request.body)
+        categoria_movimento.descricao = data.get('descricao', categoria_movimento.descricao)
+        categoria_movimento.tipo_de_movimento = data.get('tipo_de_movimento', categoria_movimento.tipo_de_movimento)
         categoria_movimento.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, categoria_movimento_id):
         # Atualizar Tudo
-        categoria_movimento = get_object_or_404(CategoriasMovimento, id=categoria_movimento_id)
-        categoria_movimento.codigo = request.POST.get('codigo')
-        categoria_movimento.descricao = request.POST.get('descricao')
-        categoria_movimento.tipo_de_movimento = request.POST.get('tipo_de_movimento')
+        categoria_movimento = get_object_or_404(Origem, id=categoria_movimento_id)
+        data = json.loads(request.body)
+        categoria_movimento.codigo = data.get('codigo')
+        categoria_movimento.descricao = data.get('descricao')
+        categoria_movimento.tipo_de_movimento = data.get('tipo_de_movimento')
         categoria_movimento.save()
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, categoria_movimento_id):
         # Deletar
-        categoria_movimento = get_object_or_404(CategoriasMovimento, id=categoria_movimento_id)
+        categoria_movimento = get_object_or_404(Origem, id=categoria_movimento_id)
         categoria_movimento.delete()
         return JsonResponse({'status': 'success'})
-
 @method_decorator(login_required, name='dispatch')
 class CategoriaView(View):
     @method_decorator(never_cache)
@@ -103,7 +98,7 @@ class EntradaView(View):
         categoria_movimento_id = request.POST.get('categoria_movimento_id')
         usuario_id = request.POST.get('usuario_id')
         produto = Produto.objects.get(id=produto_id)
-        categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
+        categoria_movimento = Origem.objects.get(id=categoria_movimento_id)
         usuario = User.objects.get(id=usuario_id)
         lancamento = Lancamentos.objects.create(
             produto=produto,
@@ -140,7 +135,7 @@ class LancamentoView(View):
         categoria_movimento_id = request.POST.get('categoria_movimento_id')
         usuario_id = request.POST.get('usuario_id')
         produto = Produto.objects.get(id=produto_id)
-        categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
+        categoria_movimento = Origem.objects.get(id=categoria_movimento_id)
         usuario = User.objects.get(id=usuario_id)
         lancamento = Lancamentos.objects.create(
             produto=produto, total=total, categoria_movimento=categoria_movimento,
@@ -261,7 +256,7 @@ class SaidaView(View):
         categoria_movimento_id = request.POST.get('categoria_movimento_id')
         usuario_id = request.POST.get('usuario_id')
         produto = Produto.objects.get(id=produto_id)
-        categoria_movimento = CategoriasMovimento.objects.get(id=categoria_movimento_id)
+        categoria_movimento = Origem.objects.get(id=categoria_movimento_id)
         usuario = User.objects.get(id=usuario_id)
         lancamento = Lancamentos.objects.create(
             produto=produto, total=total, categoria_movimento=categoria_movimento,

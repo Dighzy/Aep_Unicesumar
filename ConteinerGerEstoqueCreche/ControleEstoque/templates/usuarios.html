@@ -78,10 +78,10 @@
               <tbody>
                 {% for usuario in usuarios %}
                 <tr id="{{ usuario.id}}">
-                  <td class="text-secondary">{{ usuario.username }}</td>
-                  <td class="text-secondary">{{ usuario.first_name }}</td>
-                  <td class="text-secondary">{{ usuario.last_name }}</td>
-                  <td class="text-secondary">
+                  <td class="text-secondary text-truncate">{{ usuario.username }}</td>
+                  <td class="text-secondary text-truncate">{{ usuario.first_name }}</td>
+                  <td class="text-secondary text-truncate">{{ usuario.last_name }}</td>
+                  <td class="text-secondary text-truncate">
                     {{ usuario.is_superuser|yesno:"Administrador,Usuário" }}
                   </td>
                   <td class="text-secondary">{{ usuario.email }}</td>

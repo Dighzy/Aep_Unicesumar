@@ -2,8 +2,8 @@ from ControleEstoque import views
 from django.urls import path
 
 urlpatterns = [
-    path('categorias_movimento/', views.Categorias_Movimento.as_view(), name='categorias_movimento'),
-    path('categorias_movimento/<int:categoria_movimento_id>/', views.Categorias_Movimento.as_view(), name='gerenciar_categoria_movimento'),
+    path('origens/', views.OrigemView.as_view(), name='origens'),
+    path('origens/<int:origem_id>/', views.OrigemView.as_view(), name='gerenciar_origem'),
     path('categorias/', views.CategoriaView.as_view(), name='categorias'), 
     path('categorias/<int:categoria_id>/', views.CategoriaView.as_view(), name='gerenciar_categoria'), 
     path('entrada/', views.EntradaView.as_view(), name='entrada'),

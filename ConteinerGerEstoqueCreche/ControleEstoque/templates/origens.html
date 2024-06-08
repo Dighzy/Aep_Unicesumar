@@ -22,7 +22,7 @@
           <a href="{{ request.session.previous_url }}" class="d-flex">
             <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
         </a>
-          <h5 class="custom-title">Categorias de Movimento</h5>
+          <h5 class="custom-title">Origens de Lançamento</h5>
         </div>
 
         <div
@@ -35,41 +35,44 @@
               placeholder="Pesquisar categoria..."
             />
           </div>
-          <div class="flex-grow-1 mb-3">
-            <table id='CE_Categorias_Movimento' class="table mb-0 table-hover">
-              <thead>
-                  <tr class="cabecalho">
-                      <th scope="col" class="text-secondary">Código</th>
-                      <th scope="col" class="text-secondary">Descrição</th>
-                      <th scope="col" class="text-secondary">Tipo de movimento</th>
-                      <th scope="col" class="text-secondary"></th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for categoria in categorias_movimento %}
-                  <tr>
-                      <td class="text-secondary">{{ categoria.codigo }}</td>
-                      <td class="text-secondary">{{ categoria.descricao }}</td>
-                      <td class="text-secondary">{{ categoria.tipo_de_movimento }}</td>
-                      <td class="text-end">
-                        <img
-                        src="{% static 'img/editar.svg' %}"
-                        class="editarCategoriaMovimentacao"
-                        data-id="{{ categoria.id }}"
-                        alt="Editar"
-                        />
-                        <img
-                        src="{% static 'img/deletar.svg' %}"
-                        class="excluirCategoriaMovimentacao"
-                        data-id="{{ categoria.id }}"
-                        alt="Excluir"
-                        />
-                      </td>
-                  </tr>
-                  {% endfor %}
-              </tbody>
-          </table>          
-          </div>
+          <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
+            <div class="table-responsive position-absolute w-100 h-100">
+                <table id='CE_Categorias_Movimento' class="table mb-0 table-hover">
+                    <thead>
+                        <tr class="cabecalho">
+                            <th scope="col" class="text-secondary">Código</th>
+                            <th scope="col" class="text-secondary">Descrição</th>
+                            <th scope="col" class="text-secondary">Tipo de movimento</th>
+                            <th scope="col" class="text-secondary"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in categorias_movimento %}
+                        <tr>
+                            <td class="text-secondary text-truncate">{{ categoria.codigo }}</td>
+                            <td class="text-secondary text-truncate">{{ categoria.descricao }}</td>
+                            <td class="text-secondary text-truncate">{{ categoria.tipo_de_movimento }}</td>
+                            <td class="text-end">
+                                <img
+                                src="{% static 'img/editar.svg' %}"
+                                class="editarCategoriaMovimentacao"
+                                data-id="{{ categoria.id }}"
+                                alt="Editar"
+                                />
+                                <img
+                                src="{% static 'img/deletar.svg' %}"
+                                class="excluirCategoriaMovimentacao"
+                                data-id="{{ categoria.id }}"
+                                alt="Excluir"
+                                />
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table> 
+            </div>         
+        </div>
+        
           <button
             class="custom-button-2 rounded d-flex justify-content-between align-items-center ms-auto"
           >
@@ -84,7 +87,7 @@
         >
           <div class="d-flex align-items-center p-0 mb-4">
             <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-            <h5 class="custom-title">Cadastrar Categoria</h5>
+            <h5 class="custom-title">Cadastrar Origem</h5>
           </div>
           <div class="row g-3">
             <div class="col-4 mb-2">
