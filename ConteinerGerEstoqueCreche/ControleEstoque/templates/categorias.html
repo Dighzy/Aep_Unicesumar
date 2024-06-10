@@ -91,17 +91,20 @@
                   Sub-Categoria
                 </button>
                 <ul class="dropdown-menu w-100 custom-dropdown">
-
+                  {% for subcategoria in subcategorias %}
                   <li class="d-flex user-select-none">
-                    <input class="form-check-input me-2" type="checkbox" value="{{ categoria.id }}" id="flexCheckChecked{{ categoria.id }}" name="categoria" />
-                    <label class="form-check-label w-100" for="flexCheckChecked{{ categoria.id }}">
-               
+                    <input class="form-check-input me-2" type="checkbox" value="{{ subcategoria.codigo }}" id="flexCheckChecked{{ subcategoria.codigo }}" name="subcategoria" />
+                    <label class="form-check-label w-100" for="flexCheckChecked{{ subcategoria.codigo }}">
+                      {{ subcategoria.descricao }}
                     </label>
                   </li>
-
+                  {% endfor %}
                 </ul>
               </div>
             </div>
+            
+            
+            
             <div class="col-6">
               <button id="cancelar" class="btn-cancelar rounded bg-white text-secondary">Cancelar</button>
             </div>

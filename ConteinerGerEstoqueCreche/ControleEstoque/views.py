@@ -80,7 +80,8 @@ class CategoriaView(View):
     @method_decorator(never_cache)
     def get(self, request):
         categorias = Categoria.objects.all()
-        return render(request, 'categorias.html', {'categorias': categorias})
+        subcategorias = SubCategoria.objects.all()
+        return render(request, 'categorias.html', {'categorias': categorias, 'subcategorias': subcategorias})
 
     def post(self, request):
         codigo = request.POST.get('codigo')
@@ -105,6 +106,7 @@ class CategoriaView(View):
         categoria = get_object_or_404(Categoria, id=categoria_id)
         categoria.delete()
         return JsonResponse({'status': 'success'})
+
 
 @method_decorator(login_required, name='dispatch')
 class EntradaView(View):
@@ -317,31 +319,32 @@ class SubCategoriaView(View):
     @method_decorator(never_cache)
     def get(self, request):
         subcategorias = SubCategoria.objects.all()
-        return render(request, 'subcategorias.html', {'subcategorias': subcategorias})
+        categorias = Categoria.objects.all()
+        return render(request, 'subcategorias.html', {'subcategorias': subcategorias, 'categorias': categorias})
 
     def post(self, request):
         codigo = request.POST.get('codigo')
         descricao = request.POST.get('descricao')
         categoria_id = request.POST.get('categoria_id')
-        categoria = get_object_or_404(Categoria, id=categoria_id)
+        categoria = get_object_or_404(Categoria, codigo=categoria_id)
         subcategoria = SubCategoria.objects.create(codigo=codigo, descricao=descricao, categoria=categoria)
         return JsonResponse({'id': subcategoria.id})
 
     def patch(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
+        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
         subcategoria.descricao = request.POST.get('descricao', subcategoria.descricao)
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
+        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
         subcategoria.codigo = request.POST.get('codigo')
         subcategoria.descricao = request.POST.get('descricao')
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
+        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
         subcategoria.delete()
         return JsonResponse({'status': 'success'})
 

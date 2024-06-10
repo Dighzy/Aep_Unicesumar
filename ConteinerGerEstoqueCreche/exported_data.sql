@@ -82,11 +82,11 @@ codigo,peso,unidade,categoria_id,sub_categoria_id,descricao,tipo_id
 "ESC010","0.15","unidade","10","35","Estojo Escolar","3"
 
 -- Dados da tabela ce_origem
-descricao,tipo_de_movimento,codigo
-"Bazar","Saída","1"
-"Compra","Entrada","2"
-"Doação","Entrada","3"
-"Ajuste a Maior","Entrada","4"
-"Ajuste a Menor","Saída","5"
-"Descarte","Saída","6"
+descricao,tipo_de_movimento,codigo,id
+"Bazar","Saída","1","1"
+"Compra","Entrada","2","2"
+"Doação","Entrada","3","3"
+"Ajuste a Maior","Entrada","4","4"
+"Ajuste a Menor","Saída","5","5"
+"Descarte","Saída","6","6"
 

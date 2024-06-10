@@ -126,13 +126,7 @@
             </div>
             <div class="col-12 mb-4">
               <div class="dropdown">
-                <button
-                  class="form-select text-start user-select-none"
-                  type="button"
-                  data-bs-toggle="dropdown"
-                  data-bs-auto-close="false"
-                  aria-expanded="false"
-                >
+                <button class="form-select text-start user-select-none" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                   Categoria
                 </button>
                 <ul class="dropdown-menu w-100 custom-dropdown">
@@ -141,13 +135,13 @@
                     <input
                       class="form-check-input me-2"
                       type="radio"
-                      value="{{ categoria.id }}"
-                      id="flexCheckChecked{{ categoria.id }}"
+                      value="{{ categoria.codigo }}"
+                      id="flexRadio{{ categoria.codigo }}"
                       name="categoria"
                     />
                     <label
                       class="form-check-label w-100"
-                      for="flexCheckChecked{{ categoria.id }}"
+                      for="flexRadio{{ categoria.codigo }}"
                     >
                       {{ categoria.descricao }}
                     </label>
@@ -156,6 +150,8 @@
                 </ul>
               </div>
             </div>
+            
+            
             <div class="col-6">
               <button
                 id="cancelar"
