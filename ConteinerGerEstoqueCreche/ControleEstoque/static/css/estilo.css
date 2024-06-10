@@ -259,3 +259,15 @@ input:-webkit-autofill:active {
 .editarRegistro{
   margin-right: 5px;
 }
+
+#liveAlertPlaceholder {
+  position: fixed;
+  top: 70px; /* Adjust to be below the navbar */
+  right: 20px;
+  z-index: 1050; /* Ensure it appears above other elements */
+  width: auto; /* Adjust the width as needed */
+}
+
+.alert {
+  margin-bottom: 0; /* Remove default margin */
+}

@@ -83,7 +83,7 @@ codigo,peso,unidade,categoria_id,sub_categoria_id,descricao,tipo_id
 
 -- Dados da tabela ce_origem
 descricao,tipo_de_movimento,codigo
-"Bazar","Saida","1"
+"Bazar","Saída","1"
 "Compra","Entrada","2"
 "Doação","Entrada","3"
 "Ajuste a Maior","Entrada","4"

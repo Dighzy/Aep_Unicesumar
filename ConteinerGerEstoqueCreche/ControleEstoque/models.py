@@ -49,8 +49,10 @@ class Produto(models.Model):
     def __str__(self):
         return f'{self.codigo} - {self.descricao}'
 
+
 class Origem(models.Model):
-    codigo = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    codigo = models.PositiveIntegerField(unique=True)
     descricao = models.CharField(max_length=100)
     tipo_de_movimento = models.CharField(max_length=50)
 
@@ -60,11 +62,12 @@ class Origem(models.Model):
     def __str__(self):
         return f'{str(self.codigo).zfill(4)} - {self.descricao}'
 
+
 class Lancamentos(models.Model):
     codigo = models.AutoField(primary_key=True)
     produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    categoria_movimento = models.ForeignKey('Origem', on_delete=models.CASCADE)
+    origem = models.ForeignKey('Origem', on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     data_lancamento = models.DateTimeField(default=timezone.now)
 
@@ -78,7 +81,7 @@ class Estoque(models.Model):
     contabil = models.DecimalField(max_digits=10, decimal_places=2)
     primeiro_movimento = models.DateTimeField(default=timezone.now)
     ultimo_movimento = models.DateTimeField(default=timezone.now)
-    categoria_movimento = models.ForeignKey('Origem', on_delete=models.CASCADE)
+    origem = models.ForeignKey('Origem', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'ce_estoque'

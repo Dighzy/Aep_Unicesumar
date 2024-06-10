@@ -56,7 +56,7 @@ modal.eventoBotao1((dataId) => {
 modal.eventoBotao2(async (dataId) => {
   try {
     console.log("Botão 2 clicado, data-id:", dataId);
-    const resposta = await solicitacoes.deleteUsuario(dataId);
+    const resposta = await solicitacoes.fazerSolicitacao(`/usuarios/${dataId}/`, {}, "DELETE");
     console.log(resposta);
 
     usuarios.removerLinhaUsuario(dataId);
@@ -77,7 +77,7 @@ const limparCampos = [
   "sobrenome",
   "email",
   "senha",
-  "username", // Adicionado
+  "username",
   "administrador",
 ];
 
@@ -115,7 +115,7 @@ usuarios.novoUsuario.addEventListener("click", () =>
 let sorter = new TableSorter("tabelaUsuarios");
 sorter.setupSorting();
 
-const idsToRevalidate = ["nome", "sobrenome", "email", "senha", "username"]; // Adicionado
+const idsToRevalidate = ["nome", "sobrenome", "email", "senha", "username"];
 
 idsToRevalidate.forEach((id) => {
   const field = document.getElementById(id);
@@ -124,20 +124,20 @@ idsToRevalidate.forEach((id) => {
 
 ["usuario", "administrador"].forEach((id) => {
   const radio = document.getElementById(id);
-  radio.addEventListener("change", () => formValidator.validateUserType());
+  radio.addEventListener("change", () => formValidator.validateRadioButtons('flexRadioDefault'));
 });
 
 document.getElementById("salvar").addEventListener("click", async () => {
-  const idsToValidate = ["nome", "sobrenome", "email", "username"]; // Adicionado
+  const idsToValidate = ["nome", "sobrenome", "email", "username"];
   const isEditing = !!new URLSearchParams(window.location.search).get("usuario_id");
 
   if (!isEditing) {
     idsToValidate.push("senha");
   }
 
-  if (formValidator.validateFieldsById(idsToValidate) && formValidator.validateUserType()) {
+  if (formValidator.validateFieldsById(idsToValidate) && formValidator.validateRadioButtons('flexRadioDefault')) {
     const dadosUsuario = {
-      username: document.getElementById("username").value, // Adicionado
+      username: document.getElementById("username").value,
       first_name: document.getElementById("nome").value,
       last_name: document.getElementById("sobrenome").value,
       email: document.getElementById("email").value,
@@ -146,7 +146,7 @@ document.getElementById("salvar").addEventListener("click", async () => {
     };
 
     if (isEditing) {
-      delete dadosUsuario.password; // Remover a senha se estiver em edição e não for fornecida
+      delete dadosUsuario.password;
     }
 
     const userId = new URLSearchParams(window.location.search).get("usuario_id");
@@ -154,15 +154,15 @@ document.getElementById("salvar").addEventListener("click", async () => {
     try {
       let resposta;
       if (userId) {
-        resposta = await solicitacoes.patchUsuario(userId, dadosUsuario);
+        resposta = await solicitacoes.fazerSolicitacao(`/usuarios/${userId}/`, dadosUsuario, "PATCH");
         sessionStorage.setItem('alertMessage', 'Usuário editado com sucesso!');
         sessionStorage.setItem('alertType', 'success');
-        usuarios.preencherFormulario(dadosUsuario); // Manter valores no formulário após edição
+        usuarios.preencherFormulario(dadosUsuario);
       } else {
-        resposta = await solicitacoes.postUsuario(dadosUsuario);
+        resposta = await solicitacoes.fazerSolicitacao("/usuarios/", dadosUsuario, "POST");
         sessionStorage.setItem('alertMessage', 'Usuário incluído com sucesso!');
         sessionStorage.setItem('alertType', 'success');
-        usuarios.preencherFormulario(dadosUsuario); // Manter valores no formulário após inclusão
+        usuarios.preencherFormulario(dadosUsuario);
       }
       console.log(resposta);
 
