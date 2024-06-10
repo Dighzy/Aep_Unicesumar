@@ -8,6 +8,7 @@ from .models import Categoria, SubCategoria, Produto, Origem, Lancamentos, TipoP
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
+from django.db import IntegrityError
 import json
 
 @method_decorator(login_required, name='dispatch')
@@ -28,8 +29,11 @@ class OrigemView(View):
         codigo = data.get('codigo')
         descricao = data.get('descricao')
         tipo_de_movimento = data.get('tipo_de_movimento')
-        origem = Origem.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
-        return JsonResponse({'id': origem.id})
+        try:
+            origem = Origem.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
+            return JsonResponse({'id': origem.id})
+        except IntegrityError:
+            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
 
     def patch(self, request, origem_id):
         data = json.loads(request.body)
@@ -41,9 +45,12 @@ class OrigemView(View):
 
         origem.descricao = data.get('descricao', origem.descricao)
         origem.tipo_de_movimento = data.get('tipo_de_movimento', origem.tipo_de_movimento)
-        origem.save()
 
-        return JsonResponse({'status': 'success'})
+        try:
+            origem.save()
+            return JsonResponse({'status': 'success'})
+        except IntegrityError:
+            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
 
     def put(self, request, origem_id):
         data = json.loads(request.body)
@@ -55,9 +62,12 @@ class OrigemView(View):
 
         origem.descricao = data.get('descricao')
         origem.tipo_de_movimento = data.get('tipo_de_movimento')
-        origem.save()
 
-        return JsonResponse({'status': 'success'})
+        try:
+            origem.save()
+            return JsonResponse({'status': 'success'})
+        except IntegrityError:
+            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
 
     def delete(self, request, origem_id):
         origem = get_object_or_404(Origem, codigo=origem_id)

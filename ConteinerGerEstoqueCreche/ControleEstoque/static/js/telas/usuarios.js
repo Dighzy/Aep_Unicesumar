@@ -135,7 +135,10 @@ document.getElementById("salvar").addEventListener("click", async () => {
     idsToValidate.push("senha");
   }
 
-  if (formValidator.validateFieldsById(idsToValidate) && formValidator.validateRadioButtons('flexRadioDefault')) {
+  const fieldsValid = formValidator.validateFieldsById(idsToValidate);
+  const radiosValid = formValidator.validateRadioButtons('flexRadioDefault');
+
+  if (fieldsValid && radiosValid) {
     const dadosUsuario = {
       username: document.getElementById("username").value,
       first_name: document.getElementById("nome").value,
@@ -157,19 +160,20 @@ document.getElementById("salvar").addEventListener("click", async () => {
         resposta = await solicitacoes.fazerSolicitacao(`/usuarios/${userId}/`, dadosUsuario, "PATCH");
         sessionStorage.setItem('alertMessage', 'Usuário editado com sucesso!');
         sessionStorage.setItem('alertType', 'success');
-        usuarios.preencherFormulario(dadosUsuario);
       } else {
         resposta = await solicitacoes.fazerSolicitacao("/usuarios/", dadosUsuario, "POST");
         sessionStorage.setItem('alertMessage', 'Usuário incluído com sucesso!');
         sessionStorage.setItem('alertType', 'success');
-        usuarios.preencherFormulario(dadosUsuario);
       }
-      console.log(resposta);
 
+      console.log(resposta);
       window.location.reload();
     } catch (erro) {
       console.error("Erro ao salvar usuário:", erro);
       appendAlert('Erro ao salvar usuário: ' + erro.message, 'danger');
     }
+  } else {
+    appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
   }
 });
+
