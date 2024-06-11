@@ -85,7 +85,8 @@ usuarios.botaoCancelar.addEventListener("click", () =>
   formValidator.removeInvalidClass(limparCampos)
 );
 
-let botoesExcluirUsuario = document.querySelectorAll(".excluirUsuario");
+// Atualize a seleção e configuração dos botões de exclusão
+let botoesExcluirUsuario = document.querySelectorAll(".excluirRegistro");
 botoesExcluirUsuario.forEach((botao) => {
   let dataId = botao.getAttribute("data-id");
   botao.addEventListener("click", () => {
@@ -176,4 +177,3 @@ document.getElementById("salvar").addEventListener("click", async () => {
     appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
   }
 });
-
