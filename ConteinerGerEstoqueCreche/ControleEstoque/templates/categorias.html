@@ -31,37 +31,37 @@
           </div>
           <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
             <div class="table-responsive position-absolute w-100 h-100">
-                <table id="CE_Categoria" class="table mb-0 table-hover">
-                    <thead>
-                        <tr class="cabecalho">
-                            <th scope="col" class="text-secondary">Código</th>
-                            <th scope="col" class="text-secondary">Descrição</th>
-                            <th scope="col" class="text-secondary">Tipo</th>
-                            <th scope="col" class="text-secondary">Sub-Categoria</th>
-                            <th scope="col" class="text-secondary"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for categoria in categorias %}
-                        <tr>
-                            <td class="text-secondary">{{ categoria.codigo }}</td>
-                            <td class="text-secondary">{{ categoria.descricao }}</td>
-                            <td class="text-secondary">{{ categoria.tipo.descricao }}</td>
-                            <td class="text-secondary text-truncate" style="max-width: 200px;" title="{{ categoria.subcategorias.all|join:', ' }}">
-                                <div class="d-inline-block text-truncate" style="max-width: 100%;">
-                                    {% for subcategoria in categoria.subcategorias.all %}
-                                        {{ subcategoria.descricao }}{% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </td>
-                            <td class="text-end">
-                                <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ categoria.id }}" alt="Editar" />
-                                <img src="{% static 'img/deletar.svg' %}" class="excluirCategoria" data-id="{{ categoria.id }}" alt="Excluir" />
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+              <table id="CE_Categoria" class="table mb-0 table-hover">
+                <thead>
+                    <tr class="cabecalho">
+                        <th scope="col" class="text-secondary">Código</th>
+                        <th scope="col" class="text-secondary">Descrição</th>
+                        <th scope="col" class="text-secondary">Tipo</th>
+                        <th scope="col" class="text-secondary">Sub-Categoria</th>
+                        <th scope="col" class="text-secondary"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for categoria in categorias %}
+                    <tr data-codigo="{{ categoria.codigo }}" class="categoria-row">
+                        <td class="text-secondary">{{ categoria.codigo }}</td>
+                        <td class="text-secondary">{{ categoria.descricao }}</td>
+                        <td class="text-secondary">{{ categoria.tipo.descricao }}</td>
+                        <td class="text-secondary text-truncate" style="max-width: 200px;" title="{% for subcategoria in categoria.subcategorias.all %}{{ subcategoria.descricao }}{% if not forloop.last %}; {% endif %}{% endfor %}">
+                            <div class="d-inline-block text-truncate" style="max-width: 100%;">
+                                {% for subcategoria in categoria.subcategorias.all %}
+                                    {{ subcategoria.descricao }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ categoria.id }}" alt="Editar" />
+                            <img src="{% static 'img/deletar.svg' %}" class="excluirCategoria" data-id="{{ categoria.id }}" alt="Excluir" />
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             </div>
         </div>
         
@@ -90,7 +90,7 @@
                 <button class="form-select text-start user-select-none" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                   Sub-Categoria
                 </button>
-                <ul class="dropdown-menu w-100 custom-dropdown">
+                <ul class="dropdown-menu w-100 custom-dropdown" id="subcategorias-container">
                   {% for subcategoria in subcategorias %}
                   <li class="d-flex user-select-none">
                     <input class="form-check-input me-2" type="checkbox" value="{{ subcategoria.codigo }}" id="flexCheckChecked{{ subcategoria.codigo }}" name="subcategoria" />
@@ -101,10 +101,7 @@
                   {% endfor %}
                 </ul>
               </div>
-            </div>
-            
-            
-            
+            </div>      
             <div class="col-6">
               <button id="cancelar" class="btn-cancelar rounded bg-white text-secondary">Cancelar</button>
             </div>
