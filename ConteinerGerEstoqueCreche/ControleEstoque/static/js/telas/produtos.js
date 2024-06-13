@@ -1,162 +1,118 @@
-// produtos.js
-
-import {
-  Modal,
-  TableSorter,
-  Solicitacoes,
-} from "../componentes/classes.js";
+import { Modal, TableSorter, Solicitacoes } from "../componentes/classes.js";
 
 let sorter = new TableSorter("CE_Produto");
-let solicitacoes = new Solicitacoes();
-let categoriaSelecionadaId = null;
-let subcategoriaSelecionadaId = null;
-let unidadeSelecionado = null;
-let pesoSelecionado = null;
-
 sorter.setupSorting();
 
-document.addEventListener("DOMContentLoaded", () => {
-  const categoriaSelect = document.getElementById("categoria");
-  categoriaSelect.addEventListener("change", () => {
-      categoriaSelecionadaId = categoriaSelect.value;
-      filterSubcategories(); // Chama a função ao mudar a categoria
-  });
+document.addEventListener("DOMContentLoaded", function() {
+    const formularioProduto = document.getElementById("formularioProduto");
+    const btnCancelar = document.querySelector(".btn-cancelar");
+    const btnNovoProduto = document.querySelector(".custom-button-2");
+    const produtoRows = document.querySelectorAll(".produto-row");
+    const btnSalvar = document.getElementById("salvar");
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 
-  const subcategoriaSelect = document.getElementById("subcategoria");
-  subcategoriaSelect.addEventListener("change", () => {
-      subcategoriaSelecionadaId = subcategoriaSelect.value;
-  });
+    // Função para esconder o formulário de produtos
+    function esconderFormulario() {
+        formularioProduto.classList.add("d-none");
+    }
 
-  const unidadeSelect = document.getElementById("unidadeSelect");
-  unidadeSelect.addEventListener("change", () => {
-      unidadeSelecionado = unidadeSelect.value;
-  });
+    // Função para exibir o formulário de produtos
+    function exibirFormulario() {
+        formularioProduto.classList.remove("d-none");
+    }
 
-  const pesoSelect = document.getElementById("pesoSelect");
-  pesoSelect.addEventListener("change", () => {
-      pesoSelecionado = pesoSelect.value;
-  });
+    // Função para validar campos
+    function validarCampos() {
+        const camposTexto = formularioProduto.querySelectorAll("input[type='text'], input[type='number']");
+        const dropdowns = formularioProduto.querySelectorAll(".form-select");
+        const radios = formularioProduto.querySelectorAll("input[type='radio']");
+        let camposValidos = true;
+
+        // Validação de campos de texto e números
+        camposTexto.forEach((campo) => {
+            if (campo.value.trim() === "") {
+                campo.classList.add("is-invalid");
+                camposValidos = false;
+            } else {
+                campo.classList.remove("is-invalid");
+            }
+        });
+
+        // Validação de dropdowns
+        dropdowns.forEach((dropdown) => {
+            const selectedOption = dropdown.parentElement.querySelector("input[type='radio']:checked");
+            if (!selectedOption) {
+                dropdown.classList.add("is-invalid");
+                camposValidos = false;
+            } else {
+                dropdown.classList.remove("is-invalid");
+            }
+        });
+
+        // Adiciona event listeners para remover a classe is-invalid quando o campo é preenchido
+        formularioProduto.querySelectorAll("input, .form-select").forEach((campo) => {
+            campo.addEventListener("input", () => {
+                if (campo.value.trim() !== "") {
+                    campo.classList.remove("is-invalid");
+                }
+            });
+            if (campo.type === "radio") {
+                campo.addEventListener("change", () => {
+                    campo.classList.remove("is-invalid");
+                    campo.closest(".dropdown").querySelector("button").classList.remove("is-invalid");
+                });
+            }
+        });
+
+        return camposValidos;
+    }
+
+    // Função para exibir alertas
+    function appendAlert(message, type) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('');
+
+        alertPlaceholder.append(wrapper);
+    }
+
+    // Evento de clique para o botão de cancelar
+    if (btnCancelar) {
+        btnCancelar.addEventListener("click", function() {
+            esconderFormulario();
+        });
+    }
+
+    // Evento de clique para o botão de novo produto
+    if (btnNovoProduto) {
+        btnNovoProduto.addEventListener("click", function() {
+            exibirFormulario();
+        });
+    }
+
+    // Evento de clique para as rows da tabela de produtos
+    if (produtoRows) {
+        produtoRows.forEach(function(row) {
+            row.addEventListener("click", function() {
+                exibirFormulario();
+            });
+        });
+    }
+
+    // Evento de clique para o botão de salvar
+    if (btnSalvar) {
+        btnSalvar.addEventListener("click", function() {
+            if (validarCampos()) {
+                // Aqui você pode adicionar a lógica para salvar o produto se todos os campos forem válidos
+                console.log("Todos os campos são válidos. Salvar produto...");
+            } else {
+                console.log("Há campos inválidos.");
+                appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
+            }
+        });
+    }
 });
-
-document.getElementById("salvar").addEventListener("click", () => {
-  const codigo = document.getElementById('codigo').value;
-  const descricao = document.getElementById('descricao').value;
-  const categoria_id = document.getElementById('categoria').value; 
-  const subcategoria_id = document.getElementById('subcategoria').value;
-  const unidade = document.getElementById('unidade').value;
-  const peso = document.getElementById('peso').value;
-
-  if (categoria_id === "") {
-      alert("Selecione uma categoria");
-      return;
-  }
-
-  if (subcategoria_id === "") {
-      alert("Selecione uma subcategoria");
-      return; 
-  }
-
-  const data = {
-      codigo: codigo,
-      descricao: descricao,
-      categoria_id: categoria_id,
-      sub_categoria_id: subcategoria_id,
-      peso: peso,
-      peso_select: pesoSelecionado,
-      unidade: unidade,
-      unidade_select: unidadeSelecionado,
-  };
-
-  solicitacoes.postProduto(data)
-  .then(() => {
-    // Após a postagem bem-sucedida, esperar 1 segundo antes de recarregar a página
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  })
-  .catch(error => {
-    console.error('Erro ao postar subcategoria:', error);
-  });
-});
-
-window.filterSubcategories = function() {
-  var categoriaSelect = document.getElementById("categoria");
-  var subcategoriaSelect = document.getElementById("subcategoria");
-  var selectedCategoriaId = categoriaSelect.value;
-  console.log("entrou filter");
-  console.log(selectedCategoriaId);
-
-  // Verifica se a categoria selecionada é a mesma que já estava selecionada anteriormente
-  if (selectedCategoriaId === subcategoriaSelect.getAttribute("data-selected-categoria-id")) {
-      // Limpa a seleção da subcategoria
-      subcategoriaSelect.value = "";
-  }
-
-  // Armazena o ID da categoria selecionada para uso futuro
-  subcategoriaSelect.setAttribute("data-selected-categoria-id", selectedCategoriaId);
-
-  // Esconde todas as subcategorias
-  var subcategoriaOptions = subcategoriaSelect.options;
-  for (var i = 0; i < subcategoriaOptions.length; i++) {
-      var option = subcategoriaOptions[i];
-      var categoriaId = option.getAttribute("data-categoria-id");
-
-      if (categoriaId === selectedCategoriaId || !categoriaId) {
-          option.style.display = "block";
-      } else {
-          option.style.display = "none";
-      }
-  }
-}
-
-
-
-
-let modalProduto = new Modal();
-
-modalProduto.botaoFechar.addEventListener("click", () => {
-  modalProduto.modal.hide();
-});
-
-modalProduto.botao1.addEventListener("click", () => {
-  console.log("Botão 1 (Cancelar) clicado, data-id:", modalProduto.dataId);
-  modalProduto.modal.hide();
-});
-
-modalProduto.botao2.addEventListener("click", async () => {
-  modalProduto.spinner.style.display = 'block';
-
-  try {
-    console.log("Botão 2 (Confirmar) clicado, data-id:", modalProduto.dataId);
-
-    const resposta = await solicitacoes.deleteProduto(modalProduto.dataId);
-
-    // Se a exclusão for bem-sucedida, recarregar a página após 700ms
-    setTimeout(() => {
-      window.location.reload();
-    }, 700);
-
-    setTimeout(() => {
-      modalProduto.spinner.style.display = 'none';
-      modalProduto.modal.hide(); 
-    }, 200);
-  } catch (error) {
-    console.error('Erro ao excluir produto:', error);
-  }
-});
-
-// Event listeners para os botões de exclusão
-let botoesExcluirProduto = document.querySelectorAll(".excluirProduto");
-botoesExcluirProduto.forEach((botao) => {
-  let dataId = botao.getAttribute("data-id");
-  botao.addEventListener("click", () => {
-
-    modalProduto.titulo.innerText = "Confirmação";
-    modalProduto.mensagem.innerText = "Tem certeza que deseja exclusão desse produto?";
-    modalProduto.botao1.innerText = "Cancelar";
-    modalProduto.botao2.innerText = "Confirmar";
-    modalProduto.dataId = dataId;
-    modalProduto.modal.show(); 
-    });
-    });
-

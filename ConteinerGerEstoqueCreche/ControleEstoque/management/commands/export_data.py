@@ -8,9 +8,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         tables = [
-            'ce_tipo_produto',
+            'ce_tipo',
             'ce_categoria',
             'ce_subcategoria',
+            'ce_embalagem',
             'ce_produto',
             'ce_origem'
         ]

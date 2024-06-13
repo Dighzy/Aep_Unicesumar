@@ -32,16 +32,15 @@ const displayAlertFromSession = () => {
 
 window.onload = displayAlertFromSession;
 
-let sorter = new TableSorter("CE_Categoria");
+let sorter = new TableSorter("CE_SubCategoria");
 let solicitacoes = new Solicitacoes();
 sorter.setupSorting();
 
 document.getElementById("salvar").addEventListener("click", async () => {
   const codigo = document.getElementById('codigo').value;
   const descricao = document.getElementById('descricao').value;
-  const tipoChecked = document.querySelector('input[name="tipo"]:checked');
   const categoriaChecked = document.querySelector('input[name="categoria"]:checked');
-  
+
   let isValid = true;
 
   if (!codigo.trim()) {
@@ -58,18 +57,11 @@ document.getElementById("salvar").addEventListener("click", async () => {
     document.getElementById('descricao').classList.remove('is-invalid');
   }
 
-  if (!tipoChecked) {
-    document.getElementById('tipo-options').classList.add('is-invalid');
-    isValid = false;
-  } else {
-    document.getElementById('tipo-options').classList.remove('is-invalid');
-  }
-
   if (!categoriaChecked) {
-    document.querySelector('button[data-bs-toggle="dropdown"]').classList.add('is-invalid');
+    document.getElementById('categoria-options').classList.add('is-invalid');
     isValid = false;
   } else {
-    document.querySelector('button[data-bs-toggle="dropdown"]').classList.remove('is-invalid');
+    document.getElementById('categoria-options').classList.remove('is-invalid');
   }
 
   if (!isValid) {
@@ -77,36 +69,34 @@ document.getElementById("salvar").addEventListener("click", async () => {
     return;
   }
 
-  const tipo = tipoChecked.value;
   const categoria = categoriaChecked.value;
 
   const data = {
     codigo: codigo,
     descricao: descricao,
-    tipo_id: tipo,
     categoria_id: categoria
   };
 
   try {
-    const categoriaId = new URLSearchParams(window.location.search).get('categoria_id');
+    const subcategoriaId = new URLSearchParams(window.location.search).get('subcategoria_id');
     const url = new URL(window.location);
-    if (categoriaId) {
-      await solicitacoes.fazerSolicitacao(`/categorias/${categoriaId}/`, data, "PUT");
-      sessionStorage.setItem('alertMessage', 'Categoria editada com sucesso!');
+    if (subcategoriaId) {
+      await solicitacoes.fazerSolicitacao(`/subcategorias/${subcategoriaId}/`, data, "PUT");
+      sessionStorage.setItem('alertMessage', 'Subcategoria editada com sucesso!');
       sessionStorage.setItem('alertType', 'success');
     } else {
-      await solicitacoes.fazerSolicitacao('/categorias/', data, "POST");
-      sessionStorage.setItem('alertMessage', 'Categoria incluída com sucesso!');
+      await solicitacoes.fazerSolicitacao('/subcategorias/', data, "POST");
+      sessionStorage.setItem('alertMessage', 'Subcategoria incluída com sucesso!');
       sessionStorage.setItem('alertType', 'success');
     }
-    url.searchParams.delete('categoria_id');
+    url.searchParams.delete('subcategoria_id');
     window.history.pushState({}, '', url);
     setTimeout(() => {
       window.location.reload();
     }, 300);
   } catch (error) {
-    console.error('Erro ao salvar categoria:', error);
-    appendAlert('Erro ao salvar categoria: ' + error.message, 'danger');
+    console.error('Erro ao salvar subcategoria:', error);
+    appendAlert('Erro ao salvar subcategoria: ' + error.message, 'danger');
   }
 });
 
@@ -120,28 +110,28 @@ modal.eventoBotao1((dataId) => {
 modal.eventoBotao2(async (dataId) => {
   modal.fechar(); // Fechar a modal imediatamente após clicar no botão de confirmação
   try {
-    await solicitacoes.fazerSolicitacao(`/categorias/${dataId}/`, {}, "DELETE");
-    sessionStorage.setItem('alertMessage', 'Categoria excluída com sucesso!');
+    await solicitacoes.fazerSolicitacao(`/subcategorias/${dataId}/`, {}, "DELETE");
+    sessionStorage.setItem('alertMessage', 'Subcategoria excluída com sucesso!');
     sessionStorage.setItem('alertType', 'success');
     const url = new URL(window.location);
-    url.searchParams.delete('categoria_id');
+    url.searchParams.delete('subcategoria_id');
     window.history.pushState({}, '', url);
     setTimeout(() => {
       window.location.reload();
     }, 700);
   } catch (erro) {
-    console.error("Erro ao excluir categoria:", erro);
-    appendAlert('Erro ao excluir categoria: ' + erro.message, 'danger');
+    console.error("Erro ao excluir subcategoria:", erro);
+    appendAlert('Erro ao excluir subcategoria: ' + erro.message, 'danger');
   }
 });
 
-let botoesExcluirCategoria = document.querySelectorAll(".excluirCategoria");
-botoesExcluirCategoria.forEach((botao) => {
+let botoesExcluirSubcategoria = document.querySelectorAll(".excluirSubcategoria");
+botoesExcluirSubcategoria.forEach((botao) => {
   let dataId = botao.getAttribute("data-id");
   botao.addEventListener("click", () => {
     modal.parametrizar(
       "Confirmação",
-      "Tem certeza que deseja excluir essa categoria?",
+      "Tem certeza que deseja excluir essa subcategoria?",
       "Cancelar",
       "Confirmar"
     );
@@ -150,65 +140,65 @@ botoesExcluirCategoria.forEach((botao) => {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  const categoriaRows = document.querySelectorAll('.categoria-row');
-  const novoCategoriaButton = document.querySelector('.custom-button-2');
+  const subcategoriaRows = document.querySelectorAll('.subcategoria-row');
+  const novoSubcategoriaButton = document.querySelector('.custom-button-2');
   const cancelarButton = document.getElementById('cancelar');
   const codigoInput = document.getElementById('codigo');
   const descricaoInput = document.getElementById('descricao');
-  const tipoOptionsButton = document.getElementById('tipo-options');
-  let allTipos = [];
+  const categoriaOptionsButton = document.getElementById('categoria-options');
+  let allCategorias = [];
 
-  const tipoElements = document.querySelectorAll('#tipos-container li');
-  tipoElements.forEach(element => {
-    allTipos.push({
-      codigo: element.getAttribute('data-tipo-codigo'),
+  const categoriaElements = document.querySelectorAll('#categorias-container li');
+  categoriaElements.forEach(element => {
+    allCategorias.push({
+      codigo: element.getAttribute('data-categoria-codigo'),
       descricao: element.querySelector('label').textContent
     });
   });
 
-  categoriaRows.forEach(row => {
+  subcategoriaRows.forEach(row => {
     row.addEventListener('click', function() {
       const codigo = this.querySelector('td:nth-child(1)').textContent.trim();
       const descricao = this.querySelector('td:nth-child(2)').textContent.trim();
-      const tipoCodigo = this.getAttribute('data-tipo-codigo');
+      const categoriaCodigo = this.getAttribute('data-categoria-codigo');
       
       codigoInput.value = codigo;
       descricaoInput.value = descricao;
-      updateTipos(tipoCodigo);
+      updateCategorias(categoriaCodigo);
 
-      const categoriaId = this.getAttribute('data-codigo');
+      const subcategoriaId = this.getAttribute('data-codigo');
       const url = new URL(window.location);
-      url.searchParams.set('categoria_id', categoriaId);
+      url.searchParams.set('subcategoria_id', subcategoriaId);
       window.history.pushState({}, '', url);
 
       codigoInput.classList.remove('is-invalid');
       descricaoInput.classList.remove('is-invalid');
-      tipoOptionsButton.classList.remove('is-invalid');
+      categoriaOptionsButton.classList.remove('is-invalid');
 
-      document.getElementById('formularioCategoria').classList.remove('d-none');
+      document.getElementById('formularioSubcategoria').classList.remove('d-none');
     });
   });
 
-  novoCategoriaButton.addEventListener('click', function() {
+  novoSubcategoriaButton.addEventListener('click', function() {
     codigoInput.value = '';
     descricaoInput.value = '';
-    updateTipos('');
+    updateCategorias('');
 
-    document.getElementById('formularioCategoria').classList.remove('d-none');
+    document.getElementById('formularioSubcategoria').classList.remove('d-none');
 
     const url = new URL(window.location);
-    url.searchParams.delete('categoria_id');
+    url.searchParams.delete('subcategoria_id');
     window.history.pushState({}, '', url);
   });
 
   cancelarButton.addEventListener('click', function() {
-    document.getElementById('formularioCategoria').classList.add('d-none');
+    document.getElementById('formularioSubcategoria').classList.add('d-none');
     codigoInput.classList.remove('is-invalid');
     descricaoInput.classList.remove('is-invalid');
-    tipoOptionsButton.classList.remove('is-invalid');
+    categoriaOptionsButton.classList.remove('is-invalid');
 
     const url = new URL(window.location);
-    url.searchParams.delete('categoria_id');
+    url.searchParams.delete('subcategoria_id');
     window.history.pushState({}, '', url);
   });
 
@@ -224,35 +214,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  tipoOptionsButton.addEventListener('click', function() {
-    const tipoChecked = document.querySelector('input[name="tipo"]:checked');
-    if (tipoChecked) {
-      tipoOptionsButton.classList.remove('is-invalid');
+  categoriaOptionsButton.addEventListener('click', function() {
+    const categoriaChecked = document.querySelector('input[name="categoria"]:checked');
+    if (categoriaChecked) {
+      categoriaOptionsButton.classList.remove('is-invalid');
     }
   });
 
-  function updateTipos(tipoCodigo) {
-    const container = document.getElementById('tipos-container');
+  function updateCategorias(categoriaCodigo) {
+    const container = document.getElementById('categorias-container');
     container.innerHTML = '';
 
     let matchedItem = null;
-    allTipos.forEach(tipo => {
+    allCategorias.forEach(categoria => {
       const item = document.createElement('li');
       item.className = 'd-flex user-select-none';
 
-      const radioId = `tipoCheck${tipo.codigo}`;
+      const radioId = `categoriaCheck${categoria.codigo}`;
       const radio = document.createElement('input');
       radio.className = 'form-check-input me-2';
       radio.type = 'radio';
-      radio.name = 'tipo';
+      radio.name = 'categoria';
       radio.id = radioId;
-      radio.value = tipo.codigo;
-      radio.checked = tipo.codigo == tipoCodigo;
+      radio.value = categoria.codigo;
+      radio.checked = categoria.codigo == categoriaCodigo;
 
       const label = document.createElement('label');
       label.className = 'form-check-label w-100';
       label.setAttribute('for', radioId);
-      label.textContent = tipo.descricao;
+      label.textContent = categoria.descricao;
 
       item.appendChild(radio);
       item.appendChild(label);
@@ -265,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       radio.addEventListener('change', function() {
         if (radio.checked) {
-          tipoOptionsButton.classList.remove('is-invalid');
+          categoriaOptionsButton.classList.remove('is-invalid');
         }
       });
     });

@@ -18,6 +18,8 @@ urlpatterns = [
     path('saida/', views.SaidaView.as_view(), name='saida'),
     path('subcategorias/', views.SubCategoriaView.as_view(), name='subcategorias'), 
     path('subcategorias/<int:subcategoria_id>/', views.SubCategoriaView.as_view(), name='gerenciar_subcategoria'),  
+    path('tipos/', views.TipoView.as_view(), name='tipos'), 
+    path('tipos/<int:tipo_id>/', views.TipoView.as_view(), name='gerenciar_tipo'),  
     path('usuarios/', views.UsuarioView.as_view(), name='usuarios'),  # Rota genérica para operações POST
     path('usuarios/<int:user_id>/', views.UsuarioView.as_view(), name='gerenciar_usuario'),  # Rota específica para operações PUT, PATCH e DELETE
 ]

@@ -26,7 +26,7 @@
 
       <div class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2">
         <div class="col-6 custom-col-pb-30">
-          <input class="form-control" id="pesquisar-subcategoria" placeholder="Pesquisar sub-categoria..." />
+          <input class="form-control" id="search" placeholder="Pesquisar subcategoria..." />
         </div>
         <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
           <div class="table-responsive position-absolute w-100 h-100">
@@ -44,10 +44,8 @@
                 <tr data-codigo="{{ subcategoria.codigo }}" data-categoria-codigo="{{ subcategoria.categoria.codigo }}" class="subcategoria-row">
                   <td class="text-secondary">{{ subcategoria.codigo }}</td>
                   <td class="text-secondary">{{ subcategoria.descricao }}</td>
-                  <td class="text-secondary text-truncate" style="max-width: 200px;" title="{{ subcategoria.categoria.descricao }}">
-                    <div class="d-inline-block text-truncate" style="max-width: 100%;">
-                      {{ subcategoria.categoria.descricao }}
-                    </div>
+                  <td class="text-secondary">
+                    {{ subcategoria.categoria.descricao }}
                   </td>
                   <td class="text-end">
                     <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ subcategoria.codigo }}" alt="Editar" />
@@ -70,7 +68,7 @@
       <div id="formularioSubcategoria" class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height{% if not subcategoria %} d-none{% endif %}">
         <div class="d-flex align-items-center p-0 mb-4">
           <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-          <h5 class="custom-title">Cadastrar Sub-Categoria</h5>
+          <h5 class="custom-title">Cadastrar Subcategoria</h5>
         </div>
         <div class="row g-3">
           <div class="col-4 mb-2">
@@ -81,14 +79,14 @@
           </div>
           <div class="col-12 mb-4">
             <div class="dropdown">
-              <button class="form-select text-start user-select-none" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              <button id="categoria-options" class="form-select text-start user-select-none" type="button" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
                 Categoria
               </button>
               <ul class="dropdown-menu w-100 custom-dropdown" id="categorias-container">
                 {% for categoria in categorias %}
-                <li class="d-flex user-select-none">
-                  <input class="form-check-input me-2" type="radio" value="{{ categoria.codigo }}" id="flexRadio{{ categoria.codigo }}" name="categoria" />
-                  <label class="form-check-label w-100" for="flexRadio{{ categoria.codigo }}">
+                <li class="d-flex user-select-none" data-categoria-codigo="{{ categoria.codigo }}">
+                  <input class="form-check-input me-2" type="radio" value="{{ categoria.codigo }}" id="categoriaCheck{{ categoria.codigo }}" name="categoria" />
+                  <label class="form-check-label w-100" for="categoriaCheck{{ categoria.codigo }}">
                     {{ categoria.descricao }}
                   </label>
                 </li>
