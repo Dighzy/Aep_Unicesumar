@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registrar Saída</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+  </head>
+
+  <body>
+    {% include "componentes/navbar.html" %}
+    <div class="custom-container">
+      <div class="row m-0">
+        <div class="d-flex align-items-center p-0 mb-4">
+          <a href="{{ request.session.previous_url }}" class="d-flex">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        </a>
+          <h5 class="custom-title">Registrar Saída</h5>
+        </div>
+
+        <div
+          class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
+        >
+          <div class="col-6 custom-col-pb-30">
+            <input
+              class="form-control"
+              id=""
+              placeholder="Pesquisar produto..."
+            />
+          </div>
+          <div class="flex-grow-1 mb-3">
+            <table id="CE_Lancamentos_Saida" class="table mb-0 table-hover">
+              <thead>
+                <tr class="cabecalho">
+                    <th scope="col" class="text-secondary">Código</th>
+                    <th scope="col" class="text-secondary">Data</th>
+                    <th scope="col" class="text-secondary">Descrição</th>
+                    <th scope="col" class="text-secondary">Embalagem</th>
+                    <th scope="col" class="text-secondary">Quantidade</th>
+                    <th scope="col" class="text-secondary">Unidades</th>
+                    <th scope="col" class="text-secondary">Produto</th>
+                    <th scope="col" class="text-secondary"></th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for lancamento in lancamentos_saida %}
+              <tr>
+                  <td class="text-secondary">{{ lancamento.codigo }}</td>
+                  <td class="text-secondary">{{ lancamento.data_lancamento|date:"j F Y" }}</td>
+                  <td class="text-secondary">{{ lancamento.descricao }}</td>
+                  <td class="text-secondary">{{ lancamento.embalagem }}</td>
+                  <td class="text-secondary">{{ lancamento.quantidade }}</td>
+                  <td class="text-secondary">{{ lancamento.produto.unidade }}</td>
+                  <td class="text-secondary">{{ lancamento.produto.descricao }}</td>
+                  <td class="text-end">
+                    <img
+                    src="{% static 'img/editar.svg' %}"
+                    class="editarLancamentosSaida"
+                    data-id="{{ lancamento.id }}"
+                    alt="Editar"
+                    />
+                    <img
+                    src="{% static 'img/deletar.svg' %}"
+                    class="excluirLancamentosSaida"
+                    data-id="{{ lancamento.id }}"
+                    alt="Excluir"
+                    />
+                  </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>          
+          </div>
+          <div
+            class="d-flex align-items-center justify-content-start gap-2 ms-auto"
+          >
+            <button
+              class="custom-button-2-outline rounded d-flex justify-content-between align-items-center"
+            >
+              <span>Incluir</span>
+              <span>
+                <img class="custom-mb" src="{% static 'img/novo-outline.svg' %}" alt="" />
+              </span>
+            </button>
+            <button
+              class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3"
+            >
+              <span>Finalizar</span>
+              <span
+                class="d-none spinner-border spinner-border-sm position-absolute custom-r-12"
+                aria-hidden="true"
+              ></span>
+              <img 
+              class="position-absolute custom-r-12"
+              src="{% static 'img/finalizar.svg' %}" alt="">
+            </button>
+          </div>
+        </div>
+        <div
+          class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
+        >
+          <div class="d-flex align-items-center p-0 mb-4">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+            <h5 class="custom-title">Remover Produto</h5>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-4 mb-2">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Código"
+                aria-label="codigo"
+              />
+            </div>
+            <div class="col-8 mb-2">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Descrição"
+                aria-label="descricao"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Categoria"
+                aria-label="descricao"
+              />
+            </div>
+            <div class="col-12">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Sub-Categoria"
+                aria-label="descricao"
+              />
+            </div>
+
+            <div class="col-12 mb-2">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Embalagem"
+                aria-label="Embalagem"
+              />
+            </div>
+
+            <div class="col-4 mb-4">
+              <label for="Quantidade" class="form-label">Quantidade</label>
+              <div class="input-group">
+                <button
+                  class="form-control d-flex align-items-center justify-content-center"
+                  type="button"
+                  id="menos"
+                >
+                  <img src="{% static 'img/menos.svg' %}" alt="" />
+                </button>
+                <input type="text" class="form-control" />
+                <button
+                  class="form-control d-flex align-items-center justify-content-center"
+                  type="button"
+                  id="mais"
+                >
+                  <img src="{% static 'img/mais.svg' %}" alt="" />
+                </button>
+              </div>
+            </div>
+            <div class="col-4 mb-4">
+              <label for="Unidades" class="form-label">Total</label>
+              <input
+                type="number"
+                class="form-control"
+                aria-label="Unidades"
+                readonly
+              />
+            </div>
+            <div class="col-6">
+              <button class="btn-cancelar rounded bg-white text-secondary">
+                Cancelar
+              </button>
+            </div>
+            <div class="col-6">
+              <button
+                class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative"
+              >
+                <span>Salvar</span>
+                <span
+                  class="spinner-border spinner-border-sm position-absolute custom-r-12"
+                  aria-hidden="true"
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% include "componentes/modal_generica.html" %}
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script type="module" src="{% static 'js/telas/saida.js' %}"></script>
+  </body>
+</html>

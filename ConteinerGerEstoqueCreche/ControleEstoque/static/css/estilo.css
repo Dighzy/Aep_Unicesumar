@@ -1,0 +1,273 @@
+.custom-col-bg {
+  background-color: #6aa4d9;
+  height: 100%;
+}
+
+.custom-button {
+  background-color: #6aa4d9;
+  color: white;
+  border: none;
+  height: 45px;
+  border-radius: 5px;
+  margin-top: 30px;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+.custom-button-2 {
+  font-weight: 500;
+  background-color: #6aa4d9;
+  color: white;
+  border: none;
+  width: 110px;
+  height: 35px;
+  text-align: left;
+  padding: 18px;
+  padding-bottom: 20px;
+  gap: 15px;
+}
+
+.custom-button-2-outline {
+  min-width: 120px;
+  font-weight: 500;
+  background-color: white;
+  color: #6aa4d9;
+  border: 1px solid #6aa4d9;
+  width: 110px;
+  height: 35px;
+  text-align: left;
+  padding: 18px;
+  padding-bottom: 20px;
+  gap: 15px;
+  margin-right: 10px;
+}
+
+.custom-spinner {
+  margin-left: auto;
+  margin-right: 1px;
+}
+.custom-title {
+  color: #6aa4d9;
+  margin: 0px;
+  padding: 0px;
+}
+
+.custom-container {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.custom-container-2 {
+  min-height: 60vh;
+  max-height: 60vh;
+  padding: 30px;
+}
+
+@media screen and (max-width: 1920px) {
+  .custom-container-2 {
+    min-height: 70vh;
+    max-height: 70vh;
+  }
+}
+@media screen and (max-width: 1920px) {
+  .custom-col-height {
+    min-height: 70vh;
+    max-height: 70vh;
+  }
+}
+@media screen and (min-width: 1921px) {
+  .custom-col-height {
+    min-height: 60vh;
+    max-height: 60vh;
+  }
+}
+@media screen and (max-width: 1300px) {
+  table {
+    font-size: 13px;
+  }
+}
+
+.custom-mb {
+  margin-bottom: 2px;
+}
+.custom-wrapper-table{
+  margin-right: -25px;
+}
+.table-responsive {
+  padding-right: 10px;
+  overflow-y: scroll; 
+  display: block;
+}
+
+.table-responsive thead th {
+  position: sticky;
+  top: 0;
+  background: white;
+}
+.table-responsive thead th {
+  padding-bottom: 20px;
+}
+
+.table-hover tbody tr:hover {
+  cursor: pointer;
+}
+.cabecalho th:hover {
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  border: 1px solid var(--bs-dark-border-subtle);
+  height: 40px;
+  width: 100%;
+}
+
+.btn-resetar {
+  background-color: white;
+  border: 1px solid #dee2e6;
+  color: #adb5bd;
+  height: 38px;
+}
+
+.btn-resetar:hover {
+  background-color: #cfe2ff;
+  color: #052c65;
+  border: 1px solid #9ec5fe;
+}
+.btn-resetar:hover .svg-resetar path {
+  stroke: #052c65 !important;
+}
+
+.custom-btn-salvar {
+  background-color: #6aa4d9;
+  border: 1px solid #6aa4d9;
+  height: 40px;
+  width: 100%;
+  font-weight: 500;
+}
+
+.custom-img {
+  margin: 0px;
+  padding: 0px;
+  margin-right: 20px;
+  margin-top: 3px;
+}
+
+.custom-navbar-bg {
+  background-color: #6aa4d9;
+}
+.custom-my-user {
+  height: 40px;
+  width: 40px;
+  border-radius: 30px;
+  border: none;
+}
+
+.custom-nav-link {
+  margin-left: 0px !important; 
+  padding-left: 0px !important;
+}
+
+
+
+.custom-col-pb-30 {
+  padding-bottom: 40px;
+}
+.custom-r-12 {
+  right: 12px;
+}
+.custom-bold {
+  font-weight: 500;
+}
+.custom-dropdown {
+  padding-left: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.custom-min-w {
+  min-width: 120px;
+}
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  10% {
+    transform: translateX(-10px);
+  }
+  20% {
+    transform: translateX(10px);
+  }
+  30% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+  60% {
+    transform: translateX(10px);
+  }
+  70% {
+    transform: translateX(-10px);
+  }
+  80% {
+    transform: translateX(10px);
+  }
+  90% {
+    transform: translateX(-10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.5s;
+  animation-iteration-count: 2;
+}
+
+#loginInvalidoAlert {
+  height: 50px; /* Ajuste este valor conforme necessário */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden; /* Adicione esta linha */
+  padding: 0px;
+}
+
+#emailVazio,
+#emailInvalido,
+#senhaVazia {
+  position: absolute;
+  bottom: -22px;
+}
+.custom-form-floating {
+  position: relative;
+  margin-bottom: 25px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s;
+  -webkit-text-fill-color: #333 !important;
+  background-color: none !important;
+}
+
+.editarRegistro{
+  margin-right: 5px;
+}
+
+#liveAlertPlaceholder {
+  position: fixed;
+  top: 70px; /* Adjust to be below the navbar */
+  right: 20px;
+  z-index: 1050; /* Ensure it appears above other elements */
+  width: auto; /* Adjust the width as needed */
+}
+
+.alert {
+  margin-bottom: 0; /* Remove default margin */
+}

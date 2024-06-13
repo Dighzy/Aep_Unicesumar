@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lançamentos</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+  </head>
+
+  <body>
+    {% include "componentes/navbar.html" %}
+    <div class="custom-container">
+      <div class="row m-0">
+        <div class="d-flex align-items-center p-0 mb-4">
+          <a href="{{ request.session.previous_url }}" class="d-flex">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        </a>
+          <h5 class="custom-title">Lançamentos</h5>
+        </div>
+
+        <div
+          class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
+        >
+          <div
+            class="custom-col-pb-30 d-flex align-items-center justify-content-center justify-content-between"
+          >
+            <div class="col-4">
+              <input
+                type="text"
+                class="form-control"
+                id=""
+                placeholder="Pesquisar lançamento..."
+              />
+            </div>
+            <div class="d-flex">
+              <div class="input-group">
+                <input
+                  type="date"
+                  aria-label="First name"
+                  class="form-control"
+                />
+                <input
+                  type="date"
+                  aria-label="Last name"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div
+              class="d-flex align-items-center justify-content-center text-center"
+            >
+              <input
+                class="form-check-input me-2"
+                type="checkbox"
+                name="flexRadioDefault"
+                id="flexRadioDefault2"
+                checked
+              />
+              <label class="form-check-label pt-1" for="flexRadioDefault2">
+                Total Real
+              </label>
+            </div>
+          </div>
+          <div class="flex-grow-1 mb-3">
+            <table id="CE_Lancamentos_Entrada" class="table mb-0 table-hover">
+              <thead>
+                  <tr class="cabecalho">
+                      <th scope="col" class="text-secondary">Código</th>
+                      <th scope="col" class="text-secondary">Data</th>
+                      <th scope="col" class="text-secondary">Tipo</th>
+                      <th scope="col" class="text-secondary">Categoria</th>
+                      <th scope="col" class="text-secondary">Total</th>
+                      <th scope="col" class="text-secondary"></th>
+                  </tr>
+              </thead>
+              <tbody>
+                {% for lancamento in lancamentos %}
+                <tr>
+                    <td class="text-secondary">{{ lancamento.codigo }}</td>
+                    <td class="text-secondary">{{ lancamento.data_lancamento|date:"j F Y" }}</td>
+                    <td class="text-secondary">{{ lancamento.categoria_movimento.tipo_de_movimento }}</td>
+                    <td class="text-secondary">{{ lancamento.produto.categoria.descricao }}</td>
+                    <td class="text-secondary">{{ lancamento.total }}</td>
+                    <td class="text-end">
+                      <img
+                      src="{% static 'img/editar.svg' %}"
+                      class="editarLancamento"
+                      data-id="{{ lancamento.id }}"
+                      alt="Editar"
+                      />
+                      <img
+                      src="{% static 'img/deletar.svg' %}"
+                      class="excluirLancamento"
+                      data-id="{{ lancamento.id }}"
+                      alt="Excluir"
+                      />
+                    </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+          </table>        
+          </div>
+        </div>
+        <div
+          class="col-4 align-items-start justify-content-start boder-secondary ps-5 custom-col-height"
+        >
+
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+  </body>
+</html>
