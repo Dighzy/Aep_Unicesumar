@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class TipoProduto(models.Model):
     codigo = models.PositiveIntegerField(unique=True, primary_key=True)
     descricao = models.CharField(max_length=50, unique=True)
-
+    
     class Meta:
         db_table = 'ce_tipo_produto'
 
@@ -13,7 +13,8 @@ class TipoProduto(models.Model):
         return self.descricao
 
 class Categoria(models.Model):
-    codigo = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    codigo = models.PositiveIntegerField(unique=True)
     descricao = models.CharField(max_length=100)
     tipo = models.ForeignKey(TipoProduto, on_delete=models.CASCADE, related_name='categorias')
 
@@ -24,9 +25,10 @@ class Categoria(models.Model):
         return f'{str(self.codigo).zfill(4)} - {self.descricao}'
 
 class SubCategoria(models.Model):
-    codigo = models.PositiveIntegerField(unique=True, primary_key=True)
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=10, unique=True)
     descricao = models.CharField(max_length=100)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE, related_name='subcategorias')
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'ce_subcategoria'

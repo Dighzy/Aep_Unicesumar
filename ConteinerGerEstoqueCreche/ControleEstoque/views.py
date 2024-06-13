@@ -8,8 +8,9 @@ from .models import Categoria, SubCategoria, Produto, Origem, Lancamentos, TipoP
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 import json
+
 
 @method_decorator(login_required, name='dispatch')
 class OrigemView(View):
@@ -75,37 +76,71 @@ class OrigemView(View):
         return JsonResponse({'status': 'success'})
 
 
-@method_decorator(login_required, name='dispatch')
 class CategoriaView(View):
-    @method_decorator(never_cache)
+    @method_decorator(login_required, name='dispatch')
     def get(self, request):
         categorias = Categoria.objects.all()
-        subcategorias = SubCategoria.objects.all()
-        return render(request, 'categorias.html', {'categorias': categorias, 'subcategorias': subcategorias})
+        tipos = TipoProduto.objects.all()
+        categoria_id = request.GET.get('categoria_id', None)
+        if categoria_id is not None:
+            categoria = get_object_or_404(Categoria, codigo=categoria_id)
+        else:
+            categoria = None
+        return render(request, 'categorias.html', {
+            'categorias': categorias,
+            'tipos': tipos,
+            'categoria': categoria
+        })
 
     def post(self, request):
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
-        categoria = Categoria.objects.create(codigo=codigo, descricao=descricao)
-        return JsonResponse({'id': categoria.id})
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        tipo_id = data.get('tipo_id')
+
+        tipo = get_object_or_404(TipoProduto, codigo=tipo_id)
+        
+        try:
+            with transaction.atomic():
+                categoria = Categoria.objects.create(
+                    codigo=codigo, 
+                    descricao=descricao, 
+                    tipo=tipo
+                )
+            return JsonResponse({'id': categoria.codigo})
+        except IntegrityError:
+            return JsonResponse({'error': 'Código de categoria já existe.'}, status=400)
 
     def patch(self, request, categoria_id):
-        categoria = get_object_or_404(Categoria, id=categoria_id)
-        categoria.descricao = request.POST.get('descricao', categoria.descricao)
+        categoria = get_object_or_404(Categoria, codigo=categoria_id)
+        data = json.loads(request.body)
+        categoria.descricao = data.get('descricao', categoria.descricao)
+        tipo_id = data.get('tipo_id')
+
+        tipo = get_object_or_404(TipoProduto, codigo=tipo_id)
+        categoria.tipo = tipo
         categoria.save()
+        
         return JsonResponse({'status': 'success'})
 
     def put(self, request, categoria_id):
-        categoria = get_object_or_404(Categoria, id=categoria_id)
-        categoria.codigo = request.POST.get('codigo')
-        categoria.descricao = request.POST.get('descricao')
+        categoria = get_object_or_404(Categoria, codigo=categoria_id)
+        data = json.loads(request.body)
+        categoria.codigo = data.get('codigo')
+        categoria.descricao = data.get('descricao')
+        tipo_id = data.get('tipo_id')
+
+        tipo = get_object_or_404(TipoProduto, codigo=tipo_id)
+        categoria.tipo = tipo
         categoria.save()
+        
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, categoria_id):
-        categoria = get_object_or_404(Categoria, id=categoria_id)
+        categoria = get_object_or_404(Categoria, codigo=categoria_id)
         categoria.delete()
         return JsonResponse({'status': 'success'})
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -314,37 +349,66 @@ class SaidaView(View):
         lancamento.delete()
         return JsonResponse({'status': 'success'})
 
+
 @method_decorator(login_required, name='dispatch')
 class SubCategoriaView(View):
     @method_decorator(never_cache)
     def get(self, request):
         subcategorias = SubCategoria.objects.all()
         categorias = Categoria.objects.all()
-        return render(request, 'subcategorias.html', {'subcategorias': subcategorias, 'categorias': categorias})
+        subcategoria_id = request.GET.get('subcategoria_id', None)
+        if subcategoria_id is not None:
+            subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
+        else:
+            subcategoria = None
+        return render(request, 'subcategorias.html', {
+            'subcategorias': subcategorias,
+            'categorias': categorias,
+            'subcategoria': subcategoria
+        })
 
     def post(self, request):
-        codigo = request.POST.get('codigo')
-        descricao = request.POST.get('descricao')
-        categoria_id = request.POST.get('categoria_id')
-        categoria = get_object_or_404(Categoria, codigo=categoria_id)
-        subcategoria = SubCategoria.objects.create(codigo=codigo, descricao=descricao, categoria=categoria)
-        return JsonResponse({'id': subcategoria.id})
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        categoria_id = data.get('categoria_id')
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        
+        try:
+            with transaction.atomic():
+                subcategoria = SubCategoria.objects.create(
+                    codigo=codigo, 
+                    descricao=descricao, 
+                    categoria=categoria
+                )
+            return JsonResponse({'id': subcategoria.id})
+        except IntegrityError:
+            return JsonResponse({'error': 'Código de subcategoria já existe.'}, status=400)
 
     def patch(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
-        subcategoria.descricao = request.POST.get('descricao', subcategoria.descricao)
+        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
+        data = json.loads(request.body)
+        subcategoria.descricao = data.get('descricao', subcategoria.descricao)
+        categoria_id = data.get('categoria_id')
+        if categoria_id:
+            categoria = get_object_or_404(Categoria, id=categoria_id)
+            subcategoria.categoria = categoria
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def put(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
-        subcategoria.codigo = request.POST.get('codigo')
-        subcategoria.descricao = request.POST.get('descricao')
+        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
+        data = json.loads(request.body)
+        subcategoria.codigo = data.get('codigo')
+        subcategoria.descricao = data.get('descricao')
+        categoria_id = data.get('categoria_id')
+        categoria = get_object_or_404(Categoria, id=categoria_id)
+        subcategoria.categoria = categoria
         subcategoria.save()
         return JsonResponse({'status': 'success'})
 
     def delete(self, request, subcategoria_id):
-        subcategoria = get_object_or_404(SubCategoria, codigo=subcategoria_id)
+        subcategoria = get_object_or_404(SubCategoria, id=subcategoria_id)
         subcategoria.delete()
         return JsonResponse({'status': 'success'})
 

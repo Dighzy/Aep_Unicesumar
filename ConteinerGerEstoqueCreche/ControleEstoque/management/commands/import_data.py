@@ -7,13 +7,6 @@ class Command(BaseCommand):
     help = 'Importa dados das tabelas de um arquivo SQL'
 
     def handle(self, *args, **options):
-        tables = [
-            'ce_tipo_produto',
-            'ce_categoria',
-            'ce_subcategoria',
-            'ce_produto',
-            'ce_origem'
-        ]
         input_file = 'exported_data.sql'
 
         conn = psycopg2.connect(
@@ -24,16 +17,19 @@ class Command(BaseCommand):
             port=settings.DATABASES['default']['PORT'],
         )
 
-        with open(input_file, 'r', encoding='utf-8') as f:
-            for table in tables:
-                cursor = conn.cursor()
-                # Encontrar a parte relevante no arquivo de entrada
-                for line in f:
-                    if line.startswith(f"-- Dados da tabela {table}"):
-                        break
-                cursor.copy_expert(f"COPY {table} FROM STDIN WITH (FORMAT CSV, HEADER TRUE)", f)
-                cursor.close()
-
-        conn.close()
+        try:
+            with open(input_file, 'r', encoding='utf-8') as f:
+                sql_content = f.read()
+            
+            cursor = conn.cursor()
+            cursor.execute(sql_content)
+            
+            conn.commit()
+            cursor.close()
+        except Exception as e:
+            conn.rollback()
+            self.stderr.write(self.style.ERROR(f"Erro ao importar dados: {e}"))
+        finally:
+            conn.close()
 
         self.stdout.write(self.style.SUCCESS(f'Dados importados com sucesso de {input_file}'))
