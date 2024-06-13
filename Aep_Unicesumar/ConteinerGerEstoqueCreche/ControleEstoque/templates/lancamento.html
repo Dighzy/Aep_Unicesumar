@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Detalhes do Lançamento</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+  </head>
+
+  <body>
+    {% include "componentes/navbar.html" %}
+    <div class="custom-container">
+      <div class="row m-0">
+        <div class="d-flex align-items-center p-0 mb-4">
+          <a href="{{ request.session.previous_url }}" class="d-flex">
+            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        </a>
+          <h5 class="custom-title">Detalhes do Lançamento</h5>
+        </div>
+
+        <div
+          class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
+        >
+          <div class="custom-col-pb-30 d-flex justify-content-between">
+            <div class="col-6 text-secondary">
+              <div><strong>Lançamento:</strong> #00001</div>
+              <div><strong>Data:</strong> 12/05/2024</div>
+              <div><strong>Usuário:</strong> gabriel.carvalho</div>
+            </div>
+            <div class="col-6">
+              <input
+                type="text"
+                class="form-control"
+                id=""
+                placeholder="Pesquisar produto..."
+              />
+              <div
+                class="d-flex align-items-center justify-content-end text-center mt-1"
+              >
+                <input
+                  class="form-check-input me-2"
+                  type="checkbox"
+                  name="flexRadioDefault"
+                  id="flexRadioDefault2"
+                  checked
+                />
+                <label class="form-check-label pt-1" for="flexRadioDefault2">
+                  Total Real
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex-grow-1 mb-3">
+            <table class="table mb-0 table-hover">
+              <thead>
+                <tr class="cabecalho">
+                  <th scope="col" class="text-secondary">Produto</th>
+                  <th scope="col" class="text-secondary">Descrição</th>
+                  <th scope="col" class="text-secondary">Embalagem</th>
+                  <th scope="col" class="text-secondary">Total</th>
+                  <th scope="col" class="text-secondary">Categoria</th>
+                  <th scope="col" class="text-secondary">Sub-Categoria</th>
+                  <th scope="col" class="text-secondary"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-secondary">ML0001</td>
+                  <td class="text-secondary">Detergente Líquido</td>
+                  <td class="text-secondary">Única</td>
+                  <td class="text-secondary">24</td>
+                  <td class="text-secondary">Material de Limpeza</td>
+                  <td class="text-secondary">Detergentes</td>
+                  <td class="text-end">
+                    <img src="{% static 'img/registro.svg' %}" alt="" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">AL0002</td>
+                  <td class="text-secondary">Cx. de Leite 12 Un.</td>
+                  <td class="text-secondary">Caixa</td>
+                  <td class="text-secondary">2</td>
+                  <td class="text-secondary">Alimento</td>
+                  <td class="text-secondary">Não Perecíveis</td>
+                  <td class="text-end">
+                    <img src="{% static 'img/registro.svg' %}" alt="" />
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-secondary">ME0001</td>
+                  <td class="text-secondary">Caderno 96 Folhas</td>
+                  <td class="text-secondary">Única</td>
+                  <td class="text-secondary">24</td>
+                  <td class="text-secondary">Material Escolar</td>
+                  <td class="text-secondary">Cadernos</td>
+                  <td class="text-end">
+                    <img src="{% static 'img/registro.svg' %}" alt="" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div
+          class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height"
+        >
+         
+
+        <div class="d-flex align-items-center p-0 mb-4">
+          <h5 class="custom-title">Detalhes do Produto</h5>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-4 mb-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Código"
+              aria-label="codigo"
+            />
+          </div>
+          <div class="col-8 mb-2">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Descrição"
+              aria-label="descricao"
+            />
+          </div>
+          <div class="col-12">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Categoria"
+              aria-label="Categoria"
+            />
+          </div>
+          <div class="col-12">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Sub-Categoria"
+              aria-label="Sub-Categoria"
+            />
+          </div>
+          <div class="col-4 mb-2">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Peso"
+              aria-label="peso"
+            />
+          </div>
+          <div class="col-8 mb-2">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Kilo"
+              aria-label="Kilo"
+            />
+          </div>
+          <div class="col-4 mb-4">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Unidade"
+              aria-label="Unidade"
+            />
+          </div>
+          <div class="col-8 mb-4">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="Caixa"
+              aria-label="Caixa"
+            />
+          </div>
+        </div>
+
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+        <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
+  </body>
+</html>
