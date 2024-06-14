@@ -107,10 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'America/Sao_Paulo'
-
 USE_I18N = True
 
 USE_TZ = True
@@ -128,3 +124,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Adicionado por mim:
 LOGIN_URL = '/'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'cei.iracemahelenecampregher@gmail.com'
+EMAIL_HOST_PASSWORD = 'cei@2024'
+DEFAULT_FROM_EMAIL = 'cei.iracemahelenecampregher@gmail.com'
+
+
+LANGUAGE_CODE = 'pt-br'
+
+TIME_ZONE = 'America/Sao_Paulo'

@@ -9,7 +9,6 @@ import {
 const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 
 const appendAlert = (message, type, timeout = 4000) => {
-  console.log(`Appending alert with message: "${message}" of type: "${type}" for ${timeout} milliseconds.`);
   const wrapper = document.createElement('div');
   wrapper.innerHTML = [
     `<div class="alert alert-${type} alert-dismissible" role="alert">`,
@@ -22,7 +21,6 @@ const appendAlert = (message, type, timeout = 4000) => {
 
   setTimeout(() => {
     if (wrapper) {
-      console.log(`Removing alert with message: "${message}"`);
       wrapper.remove();
     }
   }, timeout);
@@ -49,23 +47,18 @@ let modal = new Modal();
 modal.eventoFechar();
 
 modal.eventoBotao1((dataId) => {
-  console.log("Botão 1 clicado, data-id:", dataId);
   modal.fechar();
 });
 
 modal.eventoBotao2(async (dataId) => {
   try {
-    console.log("Botão 2 clicado, data-id:", dataId);
     const resposta = await solicitacoes.fazerSolicitacao(`/usuarios/${dataId}/`, {}, "DELETE");
-    console.log(resposta);
-
     usuarios.removerLinhaUsuario(dataId);
     usuarios.limparUrl();
     usuarios.ocultarFormulario();
     modal.fechar();
     appendAlert('Usuário excluído com sucesso!', 'success');
   } catch (erro) {
-    console.error("Erro ao excluir usuário:", erro);
     modal.fechar();
     appendAlert('Erro ao excluir usuário: ' + erro.message, 'danger');
   }
@@ -85,7 +78,6 @@ usuarios.botaoCancelar.addEventListener("click", () =>
   formValidator.removeInvalidClass(limparCampos)
 );
 
-// Atualize a seleção e configuração dos botões de exclusão
 let botoesExcluirUsuario = document.querySelectorAll(".excluirRegistro");
 botoesExcluirUsuario.forEach((botao) => {
   let dataId = botao.getAttribute("data-id");
@@ -150,7 +142,9 @@ document.getElementById("salvar").addEventListener("click", async () => {
     };
 
     if (isEditing) {
-      delete dadosUsuario.password;
+      if (!dadosUsuario.password) {
+        delete dadosUsuario.password;  // Remove a senha se estiver vazia durante a edição
+      }
     }
 
     const userId = new URLSearchParams(window.location.search).get("usuario_id");
@@ -167,15 +161,11 @@ document.getElementById("salvar").addEventListener("click", async () => {
         sessionStorage.setItem('alertType', 'success');
       }
 
-      console.log(resposta);
       window.location.reload();
     } catch (erro) {
-      console.error("Erro ao salvar usuário:", erro);
       appendAlert('Erro ao salvar usuário: ' + erro.message, 'danger');
     }
   } else {
     appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
   }
 });
-
-//teste. testando, testando.

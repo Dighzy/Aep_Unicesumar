@@ -11,71 +11,6 @@ from django.utils import timezone
 from django.db import IntegrityError, transaction
 import json
 
-
-@method_decorator(login_required, name='dispatch')
-class OrigemView(View):
-    @method_decorator(never_cache)
-    def get(self, request):
-        request.session['previous_url'] = request.path  # Atualiza a URL atual
-        origem_codigo = request.GET.get('origem_id', None)
-        if origem_codigo is not None:
-            origem = Origem.objects.get(codigo=origem_codigo)
-        else:
-            origem = None
-        origens = Origem.objects.all()
-        return render(request, 'origens.html', {'origens': origens, 'origem': origem})
-
-    def post(self, request):
-        data = json.loads(request.body)
-        codigo = data.get('codigo')
-        descricao = data.get('descricao')
-        tipo_de_movimento = data.get('tipo_de_movimento')
-        try:
-            origem = Origem.objects.create(codigo=codigo, descricao=descricao, tipo_de_movimento=tipo_de_movimento)
-            return JsonResponse({'id': origem.id})
-        except IntegrityError:
-            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
-
-    def patch(self, request, origem_id):
-        data = json.loads(request.body)
-        origem = get_object_or_404(Origem, codigo=origem_id)
-
-        novo_codigo = data.get('codigo')
-        if novo_codigo and novo_codigo != origem.codigo:
-            origem.codigo = novo_codigo
-
-        origem.descricao = data.get('descricao', origem.descricao)
-        origem.tipo_de_movimento = data.get('tipo_de_movimento', origem.tipo_de_movimento)
-
-        try:
-            origem.save()
-            return JsonResponse({'status': 'success'})
-        except IntegrityError:
-            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
-
-    def put(self, request, origem_id):
-        data = json.loads(request.body)
-        origem = get_object_or_404(Origem, codigo=origem_id)
-
-        novo_codigo = data.get('codigo')
-        if novo_codigo and novo_codigo != origem.codigo:
-            origem.codigo = novo_codigo
-
-        origem.descricao = data.get('descricao')
-        origem.tipo_de_movimento = data.get('tipo_de_movimento')
-
-        try:
-            origem.save()
-            return JsonResponse({'status': 'success'})
-        except IntegrityError:
-            return JsonResponse({'status': 'error', 'message': 'O código já existe'})
-
-    def delete(self, request, origem_id):
-        origem = get_object_or_404(Origem, codigo=origem_id)
-        origem.delete()
-        return JsonResponse({'status': 'success'})
-
-
 class CategoriaView(View):
     @method_decorator(login_required, name='dispatch')
     def get(self, request):
@@ -140,34 +75,61 @@ class CategoriaView(View):
         categoria = get_object_or_404(Categoria, codigo=categoria_id)
         categoria.delete()
         return JsonResponse({'status': 'success'})
+        
 
-
-
-@method_decorator(login_required, name='dispatch')
-class EntradaView(View):
-    @method_decorator(never_cache)
+class EmbalagemView(View):
+    @method_decorator(login_required, name='dispatch')
     def get(self, request):
-        lancamentos_entrada = Lancamentos.objects.filter(
-            categoria_movimento_id__tipo_de_movimento='Entrada'
-        ).select_related('produto', 'origem', 'usuario')
-
-        return render(request, 'entrada.html', {'lancamentos_entrada': lancamentos_entrada})
+        embalagens = EmbalagemProduto.objects.all()
+        tipos = TipoProduto.objects.all()
+        embalagem_id = request.GET.get('embalagem_id', None)
+        if embalagem_id is not None:
+            embalagem = get_object_or_404(EmbalagemProduto, codigo=embalagem_id)
+        else:
+            embalagem = None
+        return render(request, 'embalagens.html', {
+            'embalagens': embalagens,
+            'tipos': tipos,
+            'embalagem': embalagem
+        })
 
     def post(self, request):
-        produto_id = request.POST.get('produto_id')
-        total = request.POST.get('total')
-        categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        usuario_id = request.POST.get('usuario_id')
-        produto = Produto.objects.get(id=produto_id)
-        origem = Origem.objects.get(id=categoria_movimento_id)
-        usuario = User.objects.get(id=usuario_id)
-        lancamento = Lancamentos.objects.create(
-            produto=produto,
-            total=total,
-            origem=origem,
-            usuario=usuario
-        )
-        return JsonResponse({'id': lancamento.id})
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+
+        try:
+            with transaction.atomic():
+                embalagem = EmbalagemProduto.objects.create(
+                    codigo=codigo, 
+                    descricao=descricao
+                )
+            return JsonResponse({'id': embalagem.codigo})
+        except IntegrityError:
+            return JsonResponse({'error': 'Código de embalagem já existe.'}, status=400)
+
+    def patch(self, request, embalagem_id):
+        embalagem = get_object_or_404(EmbalagemProduto, codigo=embalagem_id)
+        data = json.loads(request.body)
+        embalagem.descricao = data.get('descricao', embalagem.descricao)
+        embalagem.save()
+        
+        return JsonResponse({'status': 'success'})
+
+    def put(self, request, embalagem_id):
+        embalagem = get_object_or_404(EmbalagemProduto, codigo=embalagem_id)
+        data = json.loads(request.body)
+        embalagem.codigo = data.get('codigo')
+        embalagem.descricao = data.get('descricao')
+        embalagem.save()
+        
+        return JsonResponse({'status': 'success'})
+
+    def delete(self, request, embalagem_id):
+        embalagem = get_object_or_404(EmbalagemProduto, codigo=embalagem_id)
+        embalagem.delete()
+        return JsonResponse({'status': 'success'})
+
 
 @never_cache
 @login_required
@@ -252,13 +214,71 @@ def logout(request):
     user_logout(request)
     return HttpResponseRedirect('/')
 
+@method_decorator(login_required, name='dispatch')
+class OrigemView(View):
+    def get(self, request):
+        origens = Origem.objects.all()
+        origem_id = request.GET.get('origem_id', None)
+        if origem_id is not None:
+            origem = get_object_or_404(Origem, codigo=origem_id)
+        else:
+            origem = None
+        return render(request, 'origens.html', {
+            'origens': origens,
+            'origem': origem
+        })
+
+    def post(self, request):
+        data = json.loads(request.body)
+        codigo = data.get('codigo')
+        descricao = data.get('descricao')
+        tipo = data.get('tipo')
+
+        try:
+            with transaction.atomic():
+                origem = Origem.objects.create(
+                    codigo=codigo, 
+                    descricao=descricao,
+                    tipo=tipo
+                )
+            return JsonResponse({'codigo': origem.codigo})
+        except IntegrityError:
+            return JsonResponse({'error': 'Código de origem já existe.'}, status=400)
+
+    def patch(self, request):
+        origem_id = request.GET.get('origem_id')
+        origem = get_object_or_404(Origem, codigo=origem_id)
+        data = json.loads(request.body)
+        origem.codigo = data.get('codigo', origem.codigo)
+        origem.descricao = data.get('descricao', origem.descricao)
+        origem.tipo = data.get('tipo', origem.tipo)
+        origem.save()
+        
+        return JsonResponse({'status': 'success'})
+
+    def put(self, request):
+        origem_id = request.GET.get('origem_id')
+        origem = get_object_or_404(Origem, codigo=origem_id)
+        data = json.loads(request.body)
+        origem.codigo = data.get('codigo')
+        origem.descricao = data.get('descricao')
+        origem.tipo = data.get('tipo')
+        origem.save()
+        
+        return JsonResponse({'status': 'success'})
+
+    def delete(self, request):
+        origem_id = request.GET.get('origem_id')
+        origem = get_object_or_404(Origem, codigo=origem_id)
+        origem.delete()
+        return JsonResponse({'status': 'success'})
+
 @never_cache
 @login_required
 def painel_usuario(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
     user = request.user
     return render(request, 'painel_usuario.html', {'user': user})
-
 
 @method_decorator(login_required, name='dispatch')
 class ProdutoView(View):
@@ -339,54 +359,6 @@ class ProdutoView(View):
         produto = get_object_or_404(Produto, codigo=produto_codigo)
         produto.delete()
         return JsonResponse({'status': 'success'})
-
-@method_decorator(login_required, name='dispatch')
-class SaidaView(View):
-    @method_decorator(never_cache)
-    def get(self, request):
-        # Filtrar os lançamentos com tipo de movimento igual a 'entrada'
-        lancamentos_entrada = Lancamentos.objects.filter(categoria_movimento_id__tipo_de_movimento='Saída').select_related('produto','origem','usuario')
-        return render(request, 'saida.html', {'lancamentos_entrada': lancamentos_entrada})
-    
-    def post(self, request):
-        # Inserir
-        produto_id = request.POST.get('produto_id')
-        total = request.POST.get('total')
-        categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        usuario_id = request.POST.get('usuario_id')
-        produto = Produto.objects.get(id=produto_id)
-        origem = Origem.objects.get(id=categoria_movimento_id)
-        usuario = User.objects.get(id=usuario_id)
-        lancamento = Lancamentos.objects.create(
-            produto=produto, total=total, origem=origem,
-            usuario=usuario, data_lancamento=timezone.now()
-        )
-        return JsonResponse({'codigo': lancamento.codigo})
-
-    def patch(self, request, lancamento_id):
-        # Atualizar Partes
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.total = request.POST.get('total', lancamento.total)
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def put(self, request, lancamento_id):
-        # Atualizar Tudo
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.produto_id = request.POST.get('produto_id')
-        lancamento.total = request.POST.get('total')
-        lancamento.categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        lancamento.usuario_id = request.POST.get('usuario_id')
-        lancamento.data_lancamento = timezone.now()
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def delete(self, request, lancamento_id):
-        # Deletar
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.delete()
-        return JsonResponse({'status': 'success'})
-
 
 
 class SubCategoriaView(View):
@@ -510,7 +482,6 @@ class TipoView(View):
 
 class UsuarioView(View):
     @method_decorator(never_cache)
-    # Mostrar
     def get(self, request):
         if not request.user.is_superuser:
             previous_url = request.session.get('previous_url', '/')
@@ -525,14 +496,12 @@ class UsuarioView(View):
         usuarios = User.objects.all()
         return render(request, 'usuarios.html', {'usuarios': usuarios, 'usuario': usuario})
 
-    # Inserir
     def post(self, request):
         if not request.user.is_superuser:
-            previous_url = request.session.get('previous_url', '/')
             return JsonResponse({'error': 'Permission denied'}, status=403)
 
         data = json.loads(request.body)
-        username = data.get('username')  # Adicionado
+        username = data.get('username')
         first_name = data.get('first_name')
         last_name = data.get('last_name')
         email = data.get('email')
@@ -540,24 +509,24 @@ class UsuarioView(View):
         is_superuser = data.get('is_superuser', False)
 
         user = User.objects.create_user(
-            username=username,  # Modificado
+            username=username,
             email=email,
             first_name=first_name,
             last_name=last_name,
-            password=password,
-            is_superuser=is_superuser
+            password=password
         )
+        user.is_superuser = is_superuser
+        user.save()
+
         return JsonResponse({'id': user.id})
 
-    # Atualizar Partes    
     def patch(self, request, user_id):
         if not request.user.is_superuser:
-            previous_url = request.session.get('previous_url', '/')
             return JsonResponse({'error': 'Permission denied'}, status=403)
 
         user = get_object_or_404(User, id=user_id)
         data = json.loads(request.body)
-        user.username = data.get('username', user.username)  # Adicionado
+        user.username = data.get('username', user.username)
         user.first_name = data.get('first_name', user.first_name)
         user.last_name = data.get('last_name', user.last_name)
         user.email = data.get('email', user.email)
@@ -568,15 +537,13 @@ class UsuarioView(View):
         user.save()
         return JsonResponse({'status': 'success'})
 
-    # Atualizar Tudo   
     def put(self, request, user_id):
         if not request.user.is_superuser:
-            previous_url = request.session.get('previous_url', '/')
             return JsonResponse({'error': 'Permission denied'}, status=403)
 
         user = get_object_or_404(User, id=user_id)
         data = json.loads(request.body)
-        user.username = data.get('username', user.username)  # Adicionado
+        user.username = data.get('username', user.username)
         user.first_name = data.get('first_name')
         user.last_name = data.get('last_name')
         user.email = data.get('email')
@@ -586,14 +553,11 @@ class UsuarioView(View):
         user.save()
         return JsonResponse({'status': 'success'})
 
-    # Deletar    
     def delete(self, request, user_id):
         if not request.user.is_superuser:
-            previous_url = request.session.get('previous_url', '/')
             return JsonResponse({'error': 'Permission denied'}, status=403)
 
         user = get_object_or_404(User, id=user_id)
         user.delete()
         return JsonResponse({'status': 'success'})
-
         

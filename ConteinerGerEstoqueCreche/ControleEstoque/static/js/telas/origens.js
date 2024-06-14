@@ -3,7 +3,6 @@ import { Modal, TableSorter, Solicitacoes, FormValidator } from "../componentes/
 const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
 
 const appendAlert = (message, type, timeout = 4000) => {
-  console.log(`Appending alert with message: "${message}" of type: "${type}" for ${timeout} milliseconds.`);
   const wrapper = document.createElement('div');
   wrapper.innerHTML = [
     `<div class="alert alert-${type} alert-dismissible" role="alert">`,
@@ -16,7 +15,6 @@ const appendAlert = (message, type, timeout = 4000) => {
 
   setTimeout(() => {
     if (wrapper) {
-      console.log(`Removing alert with message: "${message}"`);
       wrapper.remove();
     }
   }, timeout);
@@ -35,51 +33,101 @@ const displayAlertFromSession = () => {
 window.onload = displayAlertFromSession;
 
 let solicitacoes = new Solicitacoes();
-
+let formValidator = new FormValidator("formularioOrigens");
 let modal = new Modal();
 modal.eventoFechar();
 
 modal.eventoBotao1((dataId) => {
-  console.log("Botão 1 clicado, data-id:", dataId);
   modal.fechar();
 });
 
 modal.eventoBotao2(async (dataId) => {
+  modal.fechar(); // Fechar a modal imediatamente após clicar no botão de confirmação
   try {
-    console.log("Botão 2 clicado, data-id:", dataId);
-    const resposta = await solicitacoes.fazerSolicitacao(`/origens/${dataId}/`, {}, "DELETE");
-    console.log(resposta);
-
-    removerLinhaCategoria(dataId);
-    window.history.replaceState({}, "", window.location.pathname); // Remove todos os parâmetros de consulta
-    document.querySelector(".custom-col-height").classList.add("d-none");
-    modal.fechar();
-    appendAlert('Origem excluída com sucesso!', 'success');
+    await solicitacoes.fazerSolicitacao(`/origens/gerenciar/?origem_id=${dataId}`, {}, "DELETE");
+    sessionStorage.setItem('alertMessage', 'Origem excluída com sucesso!');
+    sessionStorage.setItem('alertType', 'success');
+    const url = new URL(window.location);
+    url.searchParams.delete('origem_id');
+    window.history.pushState({}, '', url);
+    setTimeout(() => {
+      window.location.reload();
+    }, 700);
   } catch (erro) {
     console.error("Erro ao excluir origem:", erro);
-    modal.fechar();
     appendAlert('Erro ao excluir origem: ' + erro.message, 'danger');
   }
 });
 
-let formValidator = new FormValidator("formularioOrigens");
-const limparCampos = ["codigo", "descricao"];
+document.getElementById("salvar").addEventListener("click", async () => {
+  const codigo = document.getElementById('codigo').value;
+  const descricao = document.getElementById('descricao').value;
+  const tipo = document.querySelector('input[name="tipo_movimento"]:checked');
 
-const removerLinhaCategoria = (dataId) => {
-  const linha = document.getElementById(dataId);
-  if (linha) {
-    linha.remove();
+  let isValid = true;
+
+  if (!codigo.trim()) {
+    document.getElementById('codigo').classList.add('is-invalid');
+    isValid = false;
+  } else {
+    document.getElementById('codigo').classList.remove('is-invalid');
   }
-};
 
-document.getElementById("cancelar").addEventListener("click", () => {
-  formValidator.removeInvalidClass(limparCampos);
-  window.history.replaceState({}, "", window.location.pathname); // Remove todos os parâmetros de consulta
-  document.querySelector(".custom-col-height").classList.add("d-none");
+  if (!descricao.trim()) {
+    document.getElementById('descricao').classList.add('is-invalid');
+    isValid = false;
+  } else {
+    document.getElementById('descricao').classList.remove('is-invalid');
+  }
+
+  if (!tipo) {
+    document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+      radio.classList.add('is-invalid');
+    });
+    isValid = false;
+  } else {
+    document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+      radio.classList.remove('is-invalid');
+    });
+  }
+
+  if (!isValid) {
+    appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
+    return;
+  }
+
+  const data = {
+    codigo: codigo,
+    descricao: descricao,
+    tipo: tipo.value
+  };
+
+  try {
+    const origemId = new URLSearchParams(window.location.search).get('origem_id');
+    const url = new URL(window.location);
+    if (origemId) {
+      await solicitacoes.fazerSolicitacao(`/origens/gerenciar/?origem_id=${origemId}`, data, "PUT");
+      sessionStorage.setItem('alertMessage', 'Origem editada com sucesso!');
+      sessionStorage.setItem('alertType', 'success');
+    } else {
+      await solicitacoes.fazerSolicitacao('/origens/', data, "POST");
+      sessionStorage.setItem('alertMessage', 'Origem incluída com sucesso!');
+      sessionStorage.setItem('alertType', 'success');
+    }
+    url.searchParams.delete('origem_id');
+    window.history.pushState({}, '', url);
+    setTimeout(() => {
+      window.location.reload();
+    }, 300);
+  } catch (error) {
+    console.error('Erro ao salvar origem:', error);
+    appendAlert('Erro ao salvar origem: ' + error.message, 'danger');
+  }
 });
 
-document.querySelectorAll(".excluirCategoriaMovimentacao").forEach((botao) => {
-  let dataId = botao.getAttribute("data-id");
+let botoesExcluirOrigem = document.querySelectorAll(".excluirCategoriaMovimentacao");
+botoesExcluirOrigem.forEach((botao) => {
+  let dataId = botao.getAttribute("data-codigo");
   botao.addEventListener("click", () => {
     modal.parametrizar(
       "Confirmação",
@@ -89,136 +137,86 @@ document.querySelectorAll(".excluirCategoriaMovimentacao").forEach((botao) => {
     );
     modal.abrir(dataId);
   });
-  botao.addEventListener("click", () => formValidator.removeInvalidClass(limparCampos));
 });
 
-document.querySelectorAll("table tbody tr").forEach((linha) => {
-  linha.addEventListener("click", (event) => {
-    formValidator.removeInvalidClass(limparCampos);
-    const dataId = event.currentTarget.getAttribute("id"); // Pegando o id da linha da tabela
-    if (dataId) {
-      var params = new URLSearchParams(window.location.search);
-      params.set("origem_id", dataId);
-      window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
-      
-      // Preencher o formulário com os dados da linha
-      const codigo = linha.cells[0].textContent.trim();
-      const descricao = linha.cells[1].textContent.trim();
-      const tipoMovimento = linha.cells[2].textContent.trim();
+document.addEventListener('DOMContentLoaded', function() {
+  const origemRows = document.querySelectorAll('.origem-row');
+  const novaOrigemButton = document.getElementById('nova');
+  const cancelarButton = document.getElementById('cancelar');
+  const codigoInput = document.getElementById('codigo');
+  const descricaoInput = document.getElementById('descricao');
 
-      document.getElementById('codigo').value = codigo;
-      document.getElementById('descricao').value = descricao;
-      document.querySelector(`input[name="tipo_movimento"][value="${tipoMovimento}"]`).checked = true;
-      
-      // Mostrar o formulário
-      document.querySelector(".custom-col-height").classList.remove("d-none");
-    } else {
-      console.error('data-id not found on the clicked row');
+  origemRows.forEach(row => {
+    row.addEventListener('click', function() {
+      const codigo = this.querySelector('td:nth-child(1)').textContent.trim();
+      const descricao = this.querySelector('td:nth-child(2)').textContent.trim();
+      const tipo = this.querySelector('td:nth-child(3)').textContent.trim();
+
+      codigoInput.value = codigo;
+      descricaoInput.value = descricao;
+
+      document.querySelector(`input[name="tipo_movimento"][value="${tipo}"]`).checked = true;
+
+      const origemId = this.getAttribute('id');
+      const url = new URL(window.location);
+      url.searchParams.set('origem_id', origemId);
+      window.history.pushState({}, '', url);
+
+      codigoInput.classList.remove('is-invalid');
+      descricaoInput.classList.remove('is-invalid');
+      document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+        radio.classList.remove('is-invalid');
+      });
+
+      document.getElementById('formularioOrigens').classList.remove('d-none');
+    });
+  });
+
+  novaOrigemButton.addEventListener('click', function() {
+    codigoInput.value = '';
+    descricaoInput.value = '';
+    document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+      radio.checked = false;
+      radio.classList.remove('is-invalid');
+    });
+
+    document.getElementById('formularioOrigens').classList.remove('d-none');
+
+    const url = new URL(window.location);
+    url.searchParams.delete('origem_id');
+    window.history.pushState({}, '', url);
+  });
+
+  cancelarButton.addEventListener('click', function() {
+    document.getElementById('formularioOrigens').classList.add('d-none');
+    codigoInput.classList.remove('is-invalid');
+    descricaoInput.classList.remove('is-invalid');
+    document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+      radio.classList.remove('is-invalid');
+    });
+
+    const url = new URL(window.location);
+    url.searchParams.delete('origem_id');
+    window.history.pushState({}, '', url);
+  });
+
+  codigoInput.addEventListener('input', function() {
+    if (codigoInput.value.trim()) {
+      codigoInput.classList.remove('is-invalid');
     }
   });
-});
 
-document.getElementById("nova").addEventListener("click", () => {
-  formValidator.removeInvalidClass(limparCampos);
-  document.getElementById('formularioOrigens').classList.remove("d-none");
-  limparCampos.forEach((id) => document.getElementById(id).value = "");
-  document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
-    radio.checked = false;
+  descricaoInput.addEventListener('input', function() {
+    if (descricaoInput.value.trim()) {
+      descricaoInput.classList.remove('is-invalid');
+    }
   });
-  window.history.replaceState({}, "", window.location.pathname); // Remove todos os parâmetros de consulta
+
+  document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
+        radio.classList.remove('is-invalid');
+      });
+    });
+  });
 });
-
-let sorter = new TableSorter("origensLancamento");
-sorter.setupSorting();
-
-const idsToRevalidate = ["codigo", "descricao"];
-
-idsToRevalidate.forEach((id) => {
-  const field = document.getElementById(id);
-  field.addEventListener("input", () => formValidator.revalidarCampo(id));
-});
-
-document.querySelectorAll('input[name="tipo_movimento"]').forEach((radio) => {
-  radio.addEventListener("change", () => formValidator.validateRadioButtons('tipo_movimento'));
-});
-
-document.getElementById("salvar").addEventListener("click", async () => {
-  const idsToValidate = ["codigo", "descricao"];
-  const origemId = new URLSearchParams(window.location.search).get("origem_id");
-  const isEditing = !!origemId;
-
-  const hasInvalidClass = () => {
-      const allFields = [...document.querySelectorAll('input')];
-      return allFields.some(field => field.classList.contains('is-invalid'));
-  };
-
-  console.log('Validando campos:', idsToValidate);
-  const fieldsValid = formValidator.validateFieldsById(idsToValidate);
-  const radiosValid = formValidator.validateRadioButtons('tipo_movimento');
-  console.log('Campos válidos:', fieldsValid);
-  console.log('Radios válidos:', radiosValid);
-
-  if (!hasInvalidClass()) {
-      const radioChecked = document.querySelector('input[name="tipo_movimento"]:checked');
-      const dadosOrigem = {
-          codigo: document.getElementById("codigo").value,
-          descricao: document.getElementById("descricao").value,
-          tipo_de_movimento: radioChecked ? radioChecked.value : null
-      };
-
-      if (!radioChecked) {
-          console.log('Validation failed: No radio button checked');
-          appendAlert('Erro: Selecione um tipo de movimento.', 'danger');
-          return;
-      }
-
-      try {
-          let resposta;
-          if (isEditing) {
-              console.log('Enviando solicitação PATCH para atualizar a origem com ID:', origemId);
-              console.log('Dados enviados:', JSON.stringify(dadosOrigem));
-              resposta = await solicitacoes.fazerSolicitacao(`/origens/${origemId}/`, dadosOrigem, "PATCH");
-
-              if (resposta.status === 'error') {
-                  appendAlert(resposta.message, 'danger');
-                  return;
-              }
-
-              sessionStorage.setItem('alertMessage', 'Origem editada com sucesso!');
-              sessionStorage.setItem('alertType', 'success');
-              
-              // Atualizar o valor do parâmetro de consulta com o novo valor de código
-              const params = new URLSearchParams(window.location.search);
-              params.set('origem_id', dadosOrigem.codigo);
-              window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
-          } else {
-              console.log('Enviando solicitação POST para criar nova origem');
-              resposta = await solicitacoes.fazerSolicitacao("/origens/", dadosOrigem, "POST");
-
-              if (resposta.status === 'error') {
-                  appendAlert(resposta.message, 'danger');
-                  return;
-              }
-
-              sessionStorage.setItem('alertMessage', 'Origem incluída com sucesso!');
-              sessionStorage.setItem('alertType', 'success');
-          }
-
-          console.log(resposta);
-          window.location.reload();
-      } catch (erro) {
-          console.error('Erro ao salvar origem:', erro);
-          appendAlert('Erro ao salvar origem: ' + erro.message, 'danger');
-      }
-  } else {
-      console.log('Validation failed');
-      appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
-  }
-});
-
-
-
-
-
-
-

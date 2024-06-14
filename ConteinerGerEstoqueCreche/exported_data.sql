@@ -66,7 +66,7 @@ INSERT INTO ce_embalagem (codigo, descricao) VALUES (8, 'Grade');
 INSERT INTO ce_produto (codigo, peso, unidade, unidade_real, categoria_id, sub_categoria_id, descricao, tipo_id, embalagem_id, tipo_peso) VALUES
 ('MAC001', 1.00, 1, 1, 1, 1, 'Maçã', 1, 1, 'KG'),
 ('BAN001', 1.00, 1, 1, 1, 1, 'Banana', 1, 1, 'KG'),
-('ARR001', 5.00, 5, 5, 2, 2, 'Arroz', 1, 2, 'KG'),
+('ARR001', 5.00, 5, 1, 2, 2, 'Arroz', 1, 2, 'KG'),
 ('FEI001', 1.00, 1, 1, 2, 2, 'Feijão', 1, 2, 'KG'),
 ('DET001', 0.50, 1, 1, 3, 3, 'Detergente', 2, 3, 'LT'),
 ('SAP001', 1.00, 1, 1, 3, 4, 'Sabão em Pó', 2, 2, 'KG'),
@@ -85,9 +85,9 @@ INSERT INTO ce_produto (codigo, peso, unidade, unidade_real, categoria_id, sub_c
 ('MOC001', 0.75, 1, 1, 7, 34, 'Mochila Escolar', 3, 1, 'KG'),
 ('EST001', 0.15, 1, 1, 7, 35, 'Estojo Escolar', 3, 1, 'KG'),
 ('OVO001', 1.50, 12, 1, 4, 19, 'Ovos - Bandeja', 3, 7, 'KG'),
-('COC001', 2.00, 24, 2, 4, 19, 'Latas de Coca-Cola - Pacote', 3, 8, 'LT'),
-('FAR001', 5.00, 10, 0.5, 4, 19, 'Pacote de Farinha de Trigo - Saco', 3, 3, 'KG'),
-('AGU001', 0.50, 6, 0.5, 4, 19, 'Garrafa de Água - Caixa', 3, 2, 'LT');
+('COC001', 2.00, 24, 1, 4, 19, 'Coca-Cola', 3, 8, 'LT'),
+('FAR001', 5.00, 10, 1, 4, 19, 'Farinha de Trigo', 3, 3, 'KG'),
+('AGU001', 0.50, 6, 1, 4, 19, 'Garrafa de Água', 3, 2, 'LT');
 
 
 

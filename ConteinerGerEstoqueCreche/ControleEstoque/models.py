@@ -74,7 +74,7 @@ class Origem(models.Model):
     id = models.AutoField(primary_key=True)
     codigo = models.PositiveIntegerField(unique=True)
     descricao = models.CharField(max_length=100)
-    tipo_de_movimento = models.CharField(max_length=50)
+    tipo = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'ce_origem'
