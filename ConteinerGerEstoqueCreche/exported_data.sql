@@ -63,35 +63,36 @@ INSERT INTO ce_embalagem (codigo, descricao) VALUES (8, 'Grade');
 
 
 
-INSERT INTO ce_produto (codigo, peso, unidade, unidade_real, categoria_id, sub_categoria_id, descricao, tipo_id, embalagem_id, tipo_peso) VALUES
-('MAC001', 1.00, 1, 1, 1, 1, 'Maçã', 1, 1, 'KG'),
-('BAN001', 1.00, 1, 1, 1, 1, 'Banana', 1, 1, 'KG'),
-('ARR001', 5.00, 5, 1, 2, 2, 'Arroz', 1, 2, 'KG'),
-('FEI001', 1.00, 1, 1, 2, 2, 'Feijão', 1, 2, 'KG'),
-('DET001', 0.50, 1, 1, 3, 3, 'Detergente', 2, 3, 'LT'),
-('SAP001', 1.00, 1, 1, 3, 4, 'Sabão em Pó', 2, 2, 'KG'),
-('ESP001', 0.10, 1, 1, 3, 8, 'Esponja de Aço', 2, 1, 'KG'),
-('PAN001', 0.20, 1, 1, 3, 9, 'Pano de Limpeza', 2, 1, 'KG'),
-('LIM001', 0.50, 1, 1, 3, 13, 'Limpador de Cozinha', 2, 4, 'LT'),
-('DES001', 0.75, 1, 1, 3, 14, 'Desinfetante de Banheiro', 2, 4, 'LT'),
-('CAD001', 0.50, 1, 1, 4, 16, 'Caderno Universitário', 3, 1, 'KG'),
-('BLO001', 0.20, 1, 1, 4, 17, 'Bloco de Notas', 3, 1, 'KG'),
-('LAP001', 0.02, 1, 1, 4, 19, 'Lápis Preto', 3, 1, 'KG'),
-('CAN001', 0.01, 1, 1, 4, 20, 'Caneta Azul', 3, 1, 'KG'),
-('PAS001', 0.10, 1, 1, 5, 24, 'Pasta A4', 3, 1, 'KG'),
-('AGE001', 0.30, 1, 1, 5, 25, 'Agenda 2024', 3, 1, 'KG'),
-('LAP002', 0.30, 1, 1, 6, 29, 'Lápis de Cor', 3, 1, 'KG'),
-('TIN001', 0.25, 1, 1, 6, 31, 'Tinta Guache', 3, 1, 'LT'),
-('MOC001', 0.75, 1, 1, 7, 34, 'Mochila Escolar', 3, 1, 'KG'),
-('EST001', 0.15, 1, 1, 7, 35, 'Estojo Escolar', 3, 1, 'KG'),
-('OVO001', 1.50, 12, 1, 4, 19, 'Ovos - Bandeja', 3, 7, 'KG'),
-('COC001', 2.00, 24, 1, 4, 19, 'Coca-Cola', 3, 8, 'LT'),
-('FAR001', 5.00, 10, 1, 4, 19, 'Farinha de Trigo', 3, 3, 'KG'),
-('AGU001', 0.50, 6, 1, 4, 19, 'Garrafa de Água', 3, 2, 'LT');
+INSERT INTO ce_produto (codigo, peso, unidade, categoria_id, sub_categoria_id, descricao, tipo_id, embalagem_id, tipo_peso) VALUES
+('MAC001', 1.00, 1, 1, 1, 'Maçã', 1, 1, 'KG'),
+('BAN001', 1.00, 1, 1, 1, 'Banana', 1, 1, 'KG'),
+('ARR001', 5.00, 1, 2, 2, 'Arroz', 1, 2, 'KG'),
+('FEI001', 1.00, 1, 2, 2, 'Feijão', 1, 2, 'KG'),
+('DET001', 0.50, 1, 3, 3, 'Detergente', 2, 3, 'LT'),
+('SAP001', 1.00, 1, 3, 4, 'Sabão em Pó', 2, 2, 'KG'),
+('ESP001', 0.10, 1, 3, 8, 'Esponja de Aço', 2, 1, 'KG'),
+('PAN001', 0.20, 1, 3, 9, 'Pano de Limpeza', 2, 1, 'KG'),
+('LIM001', 0.50, 1, 3, 13, 'Limpador de Cozinha', 2, 4, 'LT'),
+('DES001', 0.75, 1, 3, 14, 'Desinfetante de Banheiro', 2, 4, 'LT'),
+('CAD001', 0.50, 1, 4, 16, 'Caderno Universitário', 3, 1, 'KG'),
+('BLO001', 0.20, 1, 4, 17, 'Bloco de Notas', 3, 1, 'KG'),
+('LAP001', 0.02, 1, 4, 19, 'Lápis Preto', 3, 1, 'KG'),
+('CAN001', 0.01, 1, 4, 20, 'Caneta Azul', 3, 1, 'KG'),
+('PAS001', 0.10, 1, 5, 24, 'Pasta A4', 3, 1, 'KG'),
+('AGE001', 0.30, 1, 5, 25, 'Agenda 2024', 3, 1, 'KG'),
+('LAP002', 0.30, 1, 6, 29, 'Lápis de Cor', 3, 1, 'KG'),
+('TIN001', 0.25, 1, 6, 31, 'Tinta Guache', 3, 1, 'LT'),
+('MOC001', 0.75, 1, 7, 34, 'Mochila Escolar', 3, 1, 'KG'),
+('EST001', 0.15, 1, 7, 35, 'Estojo Escolar', 3, 1, 'KG'),
+('OVO001', 1.50, 12, 4, 19, 'Bandeja de Ovos 12 un.', 3, 7, 'KG'),
+('COC001', 2.00, 24, 4, 19, 'Coca-Cola', 3, 8, 'LT'),
+('FAR001', 5.00, 10, 4, 19, 'Farinha de Trigo', 3, 3, 'KG'),
+('AGU001', 0.50, 6, 4, 19, 'Garrafa de Água', 3, 2, 'LT');
 
 
 
-INSERT INTO ce_origem (id, codigo, descricao, tipo_de_movimento) VALUES
+
+INSERT INTO ce_origem (id, codigo, descricao, tipo) VALUES
 (1, 1, 'Bazar', 'Saída'),
 (2, 2, 'Compra', 'Entrada'),
 (3, 3, 'Doação', 'Entrada'),

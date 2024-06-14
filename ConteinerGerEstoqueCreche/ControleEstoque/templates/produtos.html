@@ -42,32 +42,38 @@
               </thead>
               <tbody>
                 {% for produto in produtos %}
-                <tr data-codigo="{{ produto.codigo }}" class="produto-row">
+                <tr data-codigo="{{ produto.codigo }}" 
+                    data-descricao="{{ produto.descricao }}"
+                    data-peso="{{ produto.peso }}"
+                    data-unidade="{{ produto.unidade }}"
+                    data-tipo="{{ produto.tipo.id }}"
+                    data-categoria="{{ produto.categoria.id }}"
+                    data-sub-categoria="{{ produto.sub_categoria.id }}"
+                    data-embalagem="{{ produto.embalagem.id }}"
+                    data-tipo-peso="{{ produto.tipo_peso }}"
+                    class="produto-row">
                   <td class="text-secondary">{{ produto.codigo }}</td>
                   <td class="text-secondary text-truncate" title="{{ produto.descricao }}">
                     {{ produto.descricao }}
                   </td>
-                  <td class="text-secondary text-truncate" title="{{ produto.tipo.descricao }}"
-                    style="max-width: 70px;">
+                  <td class="text-secondary text-truncate" title="{{ produto.tipo.descricao }}" style="max-width: 70px;">
                     {{ produto.tipo.descricao }}
                   </td>
-                  <td class="text-secondary text-truncate" title="{{ produto.categoria.descricao }}"
-                    style="max-width: 90px;">
+                  <td class="text-secondary text-truncate" title="{{ produto.categoria.descricao }}" style="max-width: 90px;">
                     {{ produto.categoria.descricao }}
                   </td>
                   <td class="text-secondary text-truncate" title="{{ produto.sub_categoria.descricao }}">
                     {{ produto.sub_categoria.descricao }}
                   </td>
                   <td class="text-end">
-                    <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ produto.codigo }}"
-                      alt="Editar" />
-                    <img src="{% static 'img/deletar.svg' %}" class="excluirProduto" data-id="{{ produto.codigo }}"
-                      alt="Excluir" />
+                    <img src="{% static 'img/editar.svg' %}" class="editarRegistro" data-id="{{ produto.codigo }}" alt="Editar" />
+                    <img src="{% static 'img/deletar.svg' %}" class="excluirProduto" data-id="{{ produto.codigo }}" alt="Excluir" />
                   </td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
+            
           </div>
         </div>
         <button id="novoProduto"
@@ -79,144 +85,143 @@
         </button>
       </div>
       <div id="formularioProduto"
-        class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height{% if not produto %} d-none{% endif %}">
-        <div class="d-flex align-items-center p-0 mb-4">
-          <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-          <h5 class="custom-title">Cadastrar Produto</h5>
+      class="col-4 align-items-start justify-content-start border-start boder-secondary ps-5 custom-col-height{% if not produto %} d-none{% endif %}">
+      <div class="d-flex align-items-center p-0 mb-4">
+        <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
+        <h5 class="custom-title">Cadastrar Produto</h5>
+      </div>
+      <div class="row g-3">
+        <div class="col-4 mb-2">
+          <input type="text" class="form-control" placeholder="Código" aria-label="codigo" id="codigo" />
         </div>
-        <div class="row g-3">
-          <div class="col-4 mb-2">
-            <input type="text" class="form-control" placeholder="Código" aria-label="codigo" id="codigo" />
-          </div>
-          <div class="col-8 mb-2">
-            <input type="text" class="form-control" placeholder="Descrição" aria-label="descricao" id="descricao" />
-          </div>
-          <div class="col-12 mb-2">
-            <div class="dropdown">
-              <button id="categoria-options" class="form-select text-start user-select-none" type="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-                Categoria
-              </button>
-              <ul class="dropdown-menu w-100 custom-dropdown" id="categorias-container">
-                {% for categoria in categorias %}
-                <li class="d-flex user-select-none" data-categoria-codigo="{{ categoria.codigo }}">
-                  <input class="form-check-input me-2" type="radio" value="{{ categoria.codigo }}"
-                    id="categoriaCheck{{ categoria.codigo }}" name="categoria" />
-                  <label class="form-check-label w-100" for="categoriaCheck{{ categoria.codigo }}">
-                    {{ categoria.descricao }}
-                  </label>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-12 mb-2">
-            <div class="dropdown">
-              <button id="subcategoria-options" class="form-select text-start user-select-none" type="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-                Sub-Categoria
-              </button>
-              <ul class="dropdown-menu w-100 custom-dropdown" id="subcategorias-container">
-                {% for subcategoria in subcategorias %}
-                <li class="d-flex user-select-none" data-subcategoria-codigo="{{ subcategoria.codigo }}">
-                  <input class="form-check-input me-2" type="radio" value="{{ subcategoria.codigo }}"
-                    id="subcategoriaCheck{{ subcategoria.codigo }}" name="subcategoria" />
-                  <label class="form-check-label w-100" for="subcategoriaCheck{{ subcategoria.codigo }}">
-                    {{ subcategoria.descricao }}
-                  </label>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-12 mb-2">
-            <div class="dropdown">
-              <button id="tipo-options" class="form-select text-start user-select-none" type="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-                Tipo
-              </button>
-              <ul class="dropdown-menu w-100 custom-dropdown" id="tipos-container">
-                {% for tipo in tipos %}
-                <li class="d-flex user-select-none" data-tipo-codigo="{{ tipo.codigo }}">
-                  <input class="form-check-input me-2" type="radio" value="{{ tipo.codigo }}"
-                    id="tipoCheck{{ tipo.codigo }}" name="tipo" />
-                  <label class="form-check-label w-100" for="tipoCheck{{ tipo.codigo }}">
-                    {{ tipo.descricao }}
-                  </label>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-
-
-          <div class="col-4 mb-2">
-            <input type="number" class="form-control" placeholder="Peso" aria-label="peso" id="valor-peso" />
-          </div>
-          <div class="col-8 mb-2">
-            <div class="dropdown">
-              <button id="tipo-peso-options" class="form-select text-start user-select-none" type="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-                Tipo de Peso
-              </button>
-              <ul class="dropdown-menu w-100 custom-dropdown" id="pesos-container">
-                <li class="d-flex user-select-none" data-peso-codigo="KILO">
-                  <input class="form-check-input me-2" type="radio" value="KILO" id="pesoCheckKILO" name="peso" />
-                  <label class="form-check-label w-100" for="pesoCheckKILO">
-                    Kilo
-                  </label>
-                </li>
-                <li class="d-flex user-select-none" data-peso-codigo="LITRO">
-                  <input class="form-check-input me-2" type="radio" value="LITRO" id="pesoCheckLITRO" name="peso" />
-                  <label class="form-check-label w-100" for="pesoCheckLITRO">
-                    Litro
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-4 mb-4">
-            <input type="number" class="form-control" placeholder="Unidade" aria-label="Unidade"
-              id="valor-unidade-embalagem" />
-          </div>
-          <div class="col-8 mb-4">
-            <div class="dropdown">
-              <button id="embalagem-options" class="form-select text-start user-select-none" type="button"
-                data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-                Embalagem
-              </button>
-              <ul class="dropdown-menu w-100 custom-dropdown" id="embalagens-container">
-                {% for embalagem in embalagens %}
-                <li class="d-flex user-select-none" data-embalagem-codigo="{{ embalagem.codigo }}">
-                  <input class="form-check-input me-2" type="radio" value="{{ embalagem.codigo }}"
-                    id="embalagemCheck{{ embalagem.codigo }}" name="embalagem" />
-                  <label class="form-check-label w-100" for="embalagemCheck{{ embalagem.codigo }}">
-                    {{ embalagem.descricao }}
-                  </label>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-6">
-            <button class="btn-cancelar rounded bg-white text-secondary">
-              Cancelar
+        <div class="col-8 mb-2">
+          <input type="text" class="form-control" placeholder="Descrição" aria-label="descricao" id="descricao" />
+        </div>
+        <div class="col-12 mb-2">
+          <div class="dropdown">
+            <button id="categoria-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Categoria
             </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="categorias-container">
+              {% for categoria in categorias %}
+              <li class="d-flex user-select-none" data-categoria-codigo="{{ categoria.codigo }}">
+                <input class="form-check-input me-2" type="radio" value="{{ categoria.codigo }}"
+                  id="categoriaCheck{{ categoria.codigo }}" name="categoria" />
+                <label class="form-check-label w-100" for="categoriaCheck{{ categoria.codigo }}">
+                  {{ categoria.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
           </div>
-          <div class="col-6">
-            <button id="salvar"
-              class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative">
-              <span>Salvar</span>
-              <span class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
-                aria-hidden="true"></span>
+        </div>
+    
+        <div class="col-12 mb-2">
+          <div class="dropdown">
+            <button id="subcategoria-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Sub-Categoria
             </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="subcategorias-container">
+              {% for subcategoria in subcategorias %}
+              <li class="d-flex user-select-none" data-subcategoria-codigo="{{ subcategoria.codigo }}">
+                <input class="form-check-input me-2" type="radio" value="{{ subcategoria.codigo }}"
+                  id="subcategoriaCheck{{ subcategoria.codigo }}" name="subcategoria" />
+                <label class="form-check-label w-100" for="subcategoriaCheck{{ subcategoria.codigo }}">
+                  {{ subcategoria.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
           </div>
+        </div>
+    
+        <div class="col-12 mb-2">
+          <div class="dropdown">
+            <button id="tipo-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Tipo
+            </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="tipos-container">
+              {% for tipo in tipos %}
+              <li class="d-flex user-select-none" data-tipo-codigo="{{ tipo.codigo }}">
+                <input class="form-check-input me-2" type="radio" value="{{ tipo.codigo }}"
+                  id="tipoCheck{{ tipo.codigo }}" name="tipo" />
+                <label class="form-check-label w-100" for="tipoCheck{{ tipo.codigo }}">
+                  {{ tipo.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+    
+        <div class="col-4 mb-2">
+          <input type="number" class="form-control" placeholder="Peso" aria-label="peso" id="valor-peso" />
+        </div>
+        <div class="col-8 mb-2">
+          <div class="dropdown">
+            <button id="tipo-peso-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Tipo de Peso
+            </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="pesos-container">
+              <li class="d-flex user-select-none" data-peso-codigo="KILO">
+                <input class="form-check-input me-2" type="radio" value="KILO" id="pesoCheckKILO" name="peso" />
+                <label class="form-check-label w-100" for="pesoCheckKILO">
+                  Kilo
+                </label>
+              </li>
+              <li class="d-flex user-select-none" data-peso-codigo="LITRO">
+                <input class="form-check-input me-2" type="radio" value="LITRO" id="pesoCheckLITRO" name="peso" />
+                <label class="form-check-label w-100" for="pesoCheckLITRO">
+                  Litro
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+    
+        <div class="col-4 mb-4">
+          <input type="number" class="form-control" placeholder="Unidade" aria-label="Unidade"
+            id="valor-unidade-embalagem" />
+        </div>
+        <div class="col-8 mb-4">
+          <div class="dropdown">
+            <button id="embalagem-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Embalagem
+            </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="embalagens-container">
+              {% for embalagem in embalagens %}
+              <li class="d-flex user-select-none" data-embalagem-codigo="{{ embalagem.codigo }}">
+                <input class="form-check-input me-2" type="radio" value="{{ embalagem.codigo }}"
+                  id="embalagemCheck{{ embalagem.codigo }}" name="embalagem" />
+                <label class="form-check-label w-100" for="embalagemCheck{{ embalagem.codigo }}">
+                  {{ embalagem.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+    
+        <div class="col-6">
+          <button class="btn-cancelar rounded bg-white text-secondary">
+            Cancelar
+          </button>
+        </div>
+        <div class="col-6">
+          <button id="salvar"
+            class="custom-btn-salvar rounded text-light d-flex justify-content-center align-items-center ms-auto position-relative">
+            <span>Salvar</span>
+            <span class="spinner-border spinner-border-sm position-absolute custom-r-12 d-none"
+              aria-hidden="true"></span>
+          </button>
         </div>
       </div>
+    </div>
     </div>
   </div>
   {% include "componentes/modal_generica.html" %}

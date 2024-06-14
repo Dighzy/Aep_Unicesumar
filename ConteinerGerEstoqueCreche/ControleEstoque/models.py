@@ -59,7 +59,7 @@ class Produto(models.Model):
     tipo_peso = models.CharField(max_length=2, null=True, blank=True)  
     peso = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True) 
     unidade = models.PositiveIntegerField() 
-    unidade_real = models.PositiveIntegerField() 
+    unidade_real = models.PositiveIntegerField(default=1, editable=False) 
     tipo = models.ForeignKey(TipoProduto, on_delete=models.SET_NULL, null=True, blank=True)
     embalagem = models.ForeignKey(EmbalagemProduto, on_delete=models.SET_NULL, null=True, blank=True)
     
@@ -68,6 +68,7 @@ class Produto(models.Model):
     
     def __str__(self):
         return f'{self.codigo} - {self.descricao}'
+
 
 
 class Origem(models.Model):

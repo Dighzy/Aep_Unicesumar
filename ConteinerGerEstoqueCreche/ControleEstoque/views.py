@@ -280,6 +280,7 @@ def painel_usuario(request):
     user = request.user
     return render(request, 'painel_usuario.html', {'user': user})
 
+
 @method_decorator(login_required, name='dispatch')
 class ProdutoView(View):
     @method_decorator(never_cache)
@@ -307,28 +308,40 @@ class ProdutoView(View):
         return render(request, 'produtos.html', context)
 
     def post(self, request):
-        data = json.loads(request.body)
-        codigo = data.get('codigo')
-        descricao = data.get('descricao')
-        categoria_id = data.get('categoria_id')
-        sub_categoria_id = data.get('sub_categoria_id')
-        peso = data.get('peso')
-        unidade = data.get('unidade')
-        tipo_id = data.get('tipo_id')
-
-        categoria = get_object_or_404(Categoria, codigo=categoria_id)
-        sub_categoria = get_object_or_404(SubCategoria, codigo=sub_categoria_id)
-        tipo = get_object_or_404(TipoProduto, codigo=tipo_id)
-        
         try:
+            data = json.loads(request.body)
+            codigo = data.get('codigo')
+            descricao = data.get('descricao')
+            categoria_id = data.get('categoria_id')
+            sub_categoria_id = data.get('sub_categoria_id')
+            peso = data.get('peso')
+            unidade = data.get('unidade')
+            tipo_id = data.get('tipo_id')
+            embalagem_id = data.get('embalagem_id')
+            tipo_peso = data.get('tipo_peso')
+
+            categoria = get_object_or_404(Categoria, pk=categoria_id)
+            sub_categoria = get_object_or_404(SubCategoria, pk=sub_categoria_id)
+            tipo = get_object_or_404(TipoProduto, pk=tipo_id)
+            embalagem = get_object_or_404(EmbalagemProduto, pk=embalagem_id) if embalagem_id else None
+
             with transaction.atomic():
                 produto = Produto.objects.create(
-                    codigo=codigo, descricao=descricao, categoria=categoria,
-                    sub_categoria=sub_categoria, peso=peso, unidade=unidade, tipo=tipo
+                    codigo=codigo,
+                    descricao=descricao,
+                    categoria=categoria,
+                    sub_categoria=sub_categoria,
+                    peso=peso,
+                    unidade=unidade,
+                    tipo=tipo,
+                    embalagem=embalagem,
+                    tipo_peso=tipo_peso
                 )
-            return JsonResponse({'id': produto.codigo})
+            return JsonResponse({'id': produto.codigo}, status=201)
         except IntegrityError:
             return JsonResponse({'error': 'Código de produto já existe.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
     def patch(self, request, produto_codigo):
         produto = get_object_or_404(Produto, codigo=produto_codigo)
