@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,10 +9,8 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}" />
 </head>
-
 <body>
   {% include "componentes/navbar.html" %}
-  <!-- Placeholder for alerts -->
   <div id="liveAlertPlaceholder"></div>
   <div class="custom-container">
     <div class="row m-0">
@@ -73,7 +70,6 @@
                 {% endfor %}
               </tbody>
             </table>
-            
           </div>
         </div>
         <button id="novoProduto"
@@ -99,46 +95,6 @@
         </div>
         <div class="col-12 mb-2">
           <div class="dropdown">
-            <button id="categoria-options" class="form-select text-start user-select-none" type="button"
-              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-              Categoria
-            </button>
-            <ul class="dropdown-menu w-100 custom-dropdown" id="categorias-container">
-              {% for categoria in categorias %}
-              <li class="d-flex user-select-none" data-categoria-codigo="{{ categoria.codigo }}">
-                <input class="form-check-input me-2" type="radio" value="{{ categoria.codigo }}"
-                  id="categoriaCheck{{ categoria.codigo }}" name="categoria" />
-                <label class="form-check-label w-100" for="categoriaCheck{{ categoria.codigo }}">
-                  {{ categoria.descricao }}
-                </label>
-              </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-    
-        <div class="col-12 mb-2">
-          <div class="dropdown">
-            <button id="subcategoria-options" class="form-select text-start user-select-none" type="button"
-              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
-              Sub-Categoria
-            </button>
-            <ul class="dropdown-menu w-100 custom-dropdown" id="subcategorias-container">
-              {% for subcategoria in subcategorias %}
-              <li class="d-flex user-select-none" data-subcategoria-codigo="{{ subcategoria.codigo }}">
-                <input class="form-check-input me-2" type="radio" value="{{ subcategoria.codigo }}"
-                  id="subcategoriaCheck{{ subcategoria.codigo }}" name="subcategoria" />
-                <label class="form-check-label w-100" for="subcategoriaCheck{{ subcategoria.codigo }}">
-                  {{ subcategoria.descricao }}
-                </label>
-              </li>
-              {% endfor %}
-            </ul>
-          </div>
-        </div>
-    
-        <div class="col-12 mb-2">
-          <div class="dropdown">
             <button id="tipo-options" class="form-select text-start user-select-none" type="button"
               data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
               Tipo
@@ -146,8 +102,7 @@
             <ul class="dropdown-menu w-100 custom-dropdown" id="tipos-container">
               {% for tipo in tipos %}
               <li class="d-flex user-select-none" data-tipo-codigo="{{ tipo.codigo }}">
-                <input class="form-check-input me-2" type="radio" value="{{ tipo.codigo }}"
-                  id="tipoCheck{{ tipo.codigo }}" name="tipo" />
+                <input class="form-check-input me-2" type="radio" value="{{ tipo.id }}" id="tipoCheck{{ tipo.codigo }}" name="tipo" />
                 <label class="form-check-label w-100" for="tipoCheck{{ tipo.codigo }}">
                   {{ tipo.descricao }}
                 </label>
@@ -156,7 +111,45 @@
             </ul>
           </div>
         </div>
-    
+        
+        <div class="col-12 mb-2">
+          <div class="dropdown">
+            <button id="categoria-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Categoria
+            </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="categorias-container">
+              {% for categoria in categorias %}
+              <li class="d-flex user-select-none" data-categoria-codigo="{{ categoria.codigo }}" data-tipo="{{ categoria.tipo.id }}">
+                <input class="form-check-input me-2" type="radio" value="{{ categoria.id }}" id="categoriaCheck{{ categoria.codigo }}" name="categoria" />
+                <label class="form-check-label w-100" for="categoriaCheck{{ categoria.codigo }}">
+                  {{ categoria.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        
+        <div class="col-12 mb-2">
+          <div class="dropdown">
+            <button id="subcategoria-options" class="form-select text-start user-select-none" type="button"
+              data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+              Sub-Categoria
+            </button>
+            <ul class="dropdown-menu w-100 custom-dropdown" id="subcategorias-container">
+              {% for subcategoria in subcategorias %}
+              <li class="d-flex user-select-none" data-subcategoria-codigo="{{ subcategoria.codigo }}" data-categoria="{{ subcategoria.categoria.id }}">
+                <input class="form-check-input me-2" type="radio" value="{{ subcategoria.id }}" id="subcategoriaCheck{{ subcategoria.codigo }}" name="subcategoria" />
+                <label class="form-check-label w-100" for="subcategoriaCheck{{ subcategoria.codigo }}">
+                  {{ subcategoria.descricao }}
+                </label>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
         <div class="col-4 mb-2">
           <input type="number" class="form-control" placeholder="Peso" aria-label="peso" id="valor-peso" />
         </div>
@@ -182,7 +175,7 @@
             </ul>
           </div>
         </div>
-    
+
         <div class="col-4 mb-4">
           <input type="number" class="form-control" placeholder="Unidade" aria-label="Unidade"
             id="valor-unidade-embalagem" />
@@ -206,7 +199,7 @@
             </ul>
           </div>
         </div>
-    
+
         <div class="col-6">
           <button class="btn-cancelar rounded bg-white text-secondary">
             Cancelar
@@ -230,5 +223,4 @@
     crossorigin="anonymous"></script>
   <script type="module" src="{% static 'js/telas/produtos.js' %}"></script>
 </body>
-
 </html>

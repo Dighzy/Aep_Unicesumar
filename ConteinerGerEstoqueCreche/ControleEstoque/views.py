@@ -296,7 +296,7 @@ class ProdutoView(View):
             produto = get_object_or_404(Produto, codigo=produto_codigo)
         else:
             produto = None
-        
+
         context = {
             'produtos': produtos,
             'produto': produto,
@@ -343,8 +343,8 @@ class ProdutoView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def patch(self, request, produto_codigo):
-        produto = get_object_or_404(Produto, codigo=produto_codigo)
+    def patch(self, request, produto_id):
+        produto = get_object_or_404(Produto, codigo=produto_id)
         data = json.loads(request.body)
         produto.descricao = data.get('descricao', produto.descricao)
         produto.categoria = get_object_or_404(Categoria, codigo=data.get('categoria_id', produto.categoria.codigo))
@@ -355,8 +355,8 @@ class ProdutoView(View):
         produto.save()
         return JsonResponse({'status': 'success'})
 
-    def put(self, request, produto_codigo):
-        produto = get_object_or_404(Produto, codigo=produto_codigo)
+    def put(self, request, produto_id):
+        produto = get_object_or_404(Produto, codigo=produto_id)
         data = json.loads(request.body)
         produto.codigo = data.get('codigo')
         produto.descricao = data.get('descricao')
@@ -368,11 +368,10 @@ class ProdutoView(View):
         produto.save()
         return JsonResponse({'status': 'success'})
 
-    def delete(self, request, produto_codigo):
-        produto = get_object_or_404(Produto, codigo=produto_codigo)
+    def delete(self, request, produto_id):
+        produto = get_object_or_404(Produto, codigo=produto_id)
         produto.delete()
         return JsonResponse({'status': 'success'})
-
 
 class SubCategoriaView(View):
     @method_decorator(login_required, name='dispatch')

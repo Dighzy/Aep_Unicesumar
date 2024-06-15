@@ -21,7 +21,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="password_reset_form.html"), name='password_reset_confirm'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="password_reset_complete.html"), name='password_reset_complete'),
     path('produtos/', views.ProdutoView.as_view(), name='produtos'),
-    path('produtos/<int:produto_id>/', views.ProdutoView.as_view(), name='gerenciar_produto'),
+    path('produtos/<str:produto_id>/', views.ProdutoView.as_view(), name='gerenciar_produto'),
     # path('saida/', views.SaidaView.as_view(), name='saida'),
     path('subcategorias/', views.SubCategoriaView.as_view(), name='subcategorias'), 
     path('subcategorias/<int:subcategoria_id>/', views.SubCategoriaView.as_view(), name='gerenciar_subcategoria'),  

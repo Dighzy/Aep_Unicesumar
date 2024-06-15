@@ -1,16 +1,47 @@
 import { Modal, TableSorter, Solicitacoes } from "../componentes/classes.js";
 
+const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+
+const appendAlert = (message, type, timeout = 4000) => {
+  const wrapper = document.createElement('div');
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('');
+
+  alertPlaceholder.append(wrapper);
+
+  setTimeout(() => {
+    if (wrapper) {
+      wrapper.remove();
+    }
+  }, timeout);
+};
+
+const displayAlertFromSession = () => {
+  const message = sessionStorage.getItem('alertMessage');
+  const type = sessionStorage.getItem('alertType');
+  if (message && type) {
+    appendAlert(message, type);
+    sessionStorage.removeItem('alertMessage');
+    sessionStorage.removeItem('alertType');
+  }
+};
+
+window.onload = displayAlertFromSession;
+
 let sorter = new TableSorter("CE_Produto");
+let solicitacoes = new Solicitacoes();
 sorter.setupSorting();
 
 document.addEventListener("DOMContentLoaded", function() {
-    const solicitacoes = new Solicitacoes();
     const formularioProduto = document.getElementById("formularioProduto");
     const btnCancelar = document.querySelector(".btn-cancelar");
     const btnNovoProduto = document.querySelector(".custom-button-2");
     const produtoRows = document.querySelectorAll(".produto-row");
     const btnSalvar = document.getElementById("salvar");
-    const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
     const inputCodigo = document.getElementById("codigo");
     const inputDescricao = document.getElementById("descricao");
     const inputPeso = document.getElementById("valor-peso");
@@ -21,30 +52,23 @@ document.addEventListener("DOMContentLoaded", function() {
     const embalagemContainer = document.getElementById("embalagens-container");
     const pesoContainer = document.getElementById("pesos-container");
 
-    // Função para esconder o formulário de produtos
     function esconderFormulario() {
         formularioProduto.classList.add("d-none");
     }
 
-    // Função para exibir o formulário de produtos
     function exibirFormulario() {
         formularioProduto.classList.remove("d-none");
     }
 
-    // Função para validar campos
     function validarCampos() {
         const camposTexto = formularioProduto.querySelectorAll("input[type='text'], input[type='number']");
         const dropdowns = formularioProduto.querySelectorAll(".form-select");
-        const radios = formularioProduto.querySelectorAll("input[type='radio']");
         let camposValidos = true;
 
-        // Validação de campos de texto e números
         camposTexto.forEach((campo) => {
-            // Se o campo for o de Peso, pule a validação
             if (campo.id === 'valor-peso') {
                 return;
             }
-
             if (campo.value.trim() === "") {
                 campo.classList.add("is-invalid");
                 camposValidos = false;
@@ -53,13 +77,10 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Validação de dropdowns
         dropdowns.forEach((dropdown) => {
-            // Se o dropdown for o de Tipo de Peso, pule a validação
             if (dropdown.id === 'tipo-peso-options') {
                 return;
             }
-
             const selectedOption = dropdown.parentElement.querySelector("input[type='radio']:checked");
             if (!selectedOption) {
                 dropdown.classList.add("is-invalid");
@@ -69,7 +90,24 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        // Adiciona event listeners para remover a classe is-invalid quando o campo é preenchido
+        // Validação inversamente proporcional para Peso e Tipo de Peso
+        const tipoPesoSelecionado = pesoContainer.querySelector("input[type='radio']:checked");
+        const valorPeso = inputPeso.value.trim();
+
+        if (tipoPesoSelecionado && !valorPeso) {
+            inputPeso.classList.add("is-invalid");
+            camposValidos = false;
+        } else {
+            inputPeso.classList.remove("is-invalid");
+        }
+
+        if (!tipoPesoSelecionado && valorPeso) {
+            document.getElementById("tipo-peso-options").classList.add("is-invalid");
+            camposValidos = false;
+        } else {
+            document.getElementById("tipo-peso-options").classList.remove("is-invalid");
+        }
+
         formularioProduto.querySelectorAll("input, .form-select").forEach((campo) => {
             campo.addEventListener("input", () => {
                 if (campo.value.trim() !== "") {
@@ -87,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return camposValidos;
     }
 
-    // Função para remover is-invalid de todos os campos
     function removerInvalidClass() {
         const camposInvalidos = formularioProduto.querySelectorAll(".is-invalid");
         camposInvalidos.forEach((campo) => {
@@ -95,97 +132,97 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Função para exibir alertas
-    function appendAlert(message, type) {
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = [
-            `<div class="alert alert-${type} alert-dismissible fade show" role="alert">`,
-            `   <div>${message}</div>`,
-            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-            '</div>'
-        ].join('');
-
-        alertPlaceholder.append(wrapper);
-    }
-
-    // Função para atualizar o parâmetro de consulta na URL
     function updateQueryStringParameter(key, value) {
         let url = new URL(window.location);
         url.searchParams.set(key, value);
         window.history.pushState({}, '', url);
     }
 
-    // Função para remover um parâmetro de consulta da URL
     function removeQueryStringParameter(key) {
         let url = new URL(window.location);
         url.searchParams.delete(key);
         window.history.pushState({}, '', url);
     }
 
-    // Função para preencher o formulário com os dados do produto
     function preencherFormulario(produto) {
         inputCodigo.value = produto.codigo;
         inputDescricao.value = produto.descricao;
-        inputPeso.value = produto.peso.replace(',', '.'); // Converter vírgula para ponto
+        inputPeso.value = produto.peso.replace(',', '.');
         inputUnidade.value = produto.unidade;
     }
 
-    // Função para mover e marcar o tipo correspondente no dropdown
     function atualizarDropdown(container, id) {
         const itens = Array.from(container.children);
         const itemSelecionado = itens.find(item => item.querySelector(`input[value="${id}"]`));
-
         if (itemSelecionado) {
-            // Move o item selecionado para o topo da lista
             container.prepend(itemSelecionado);
-
-            // Marca o botão de rádio correspondente
             itemSelecionado.querySelector('input[type="radio"]').checked = true;
         }
     }
 
-    // Função para marcar o tipo de peso correspondente no dropdown
     function atualizarTipoPeso(tipoPeso) {
         let valorPeso;
         if (tipoPeso.toUpperCase() === "KG") {
-            valorPeso = "KILO";
+            valorPeso = "KG";
         } else if (tipoPeso.toUpperCase() === "LT") {
-            valorPeso = "LITRO";
+            valorPeso = "LT";
         } else {
             valorPeso = tipoPeso.toUpperCase();
         }
 
         const itens = Array.from(pesoContainer.children);
         const itemSelecionado = itens.find(item => item.querySelector(`input[value="${valorPeso}"]`));
-
         if (itemSelecionado) {
-            // Marca o botão de rádio correspondente
             itemSelecionado.querySelector('input[type="radio"]').checked = true;
         }
     }
 
-    // Função para garantir que o campo de unidade aceite apenas inteiros positivos
-    inputUnidade.addEventListener("input", function(e) {
-        const valor = e.target.value;
-        e.target.value = valor.replace(/[^0-9]/g, ''); // Remove caracteres que não são dígitos
-    });
-
-    // Evento de clique para o botão de cancelar
-    if (btnCancelar) {
-        btnCancelar.addEventListener("click", function() {
-            esconderFormulario();
-            removerInvalidClass(); // Remover a classe is-invalid ao cancelar
-            removeQueryStringParameter('produto_id'); // Remover o parâmetro da URL
+    function filtrarCategorias(tipoId) {
+        const categorias = categoriaContainer.querySelectorAll('li');
+        categorias.forEach(categoria => {
+            if (categoria.getAttribute('data-tipo') === tipoId) {
+                categoria.classList.remove('d-none');
+            } else {
+                categoria.classList.add('d-none');
+            }
         });
     }
 
-    // Evento de clique para o botão de novo produto
+    function filtrarSubcategorias(categoriaId) {
+        const subcategorias = subcategoriaContainer.querySelectorAll('li');
+        subcategorias.forEach(subcategoria => {
+            if (subcategoria.getAttribute('data-categoria') === categoriaId) {
+                subcategoria.classList.remove('d-none');
+            } else {
+                subcategoria.classList.add('d-none');
+            }
+        });
+    }
+
+    function exibirTodasCategoriasSubcategorias() {
+        const categorias = categoriaContainer.querySelectorAll('li');
+        categorias.forEach(categoria => categoria.classList.remove('d-none'));
+
+        const subcategorias = subcategoriaContainer.querySelectorAll('li');
+        subcategorias.forEach(subcategoria => subcategoria.classList.remove('d-none'));
+    }
+
+    if (btnCancelar) {
+        btnCancelar.addEventListener("click", function() {
+            esconderFormulario();
+            removerInvalidClass();
+            removeQueryStringParameter('produto_id');
+            exibirTodasCategoriasSubcategorias();
+        });
+    }
+
     if (btnNovoProduto) {
         btnNovoProduto.addEventListener("click", function() {
             exibirFormulario();
-            removerInvalidClass(); // Remover a classe is-invalid ao abrir novo produto
-            removeQueryStringParameter('produto_id'); // Remover o parâmetro da URL
-            // Limpar os campos do formulário ao abrir novo produto
+            removerInvalidClass();
+            removeQueryStringParameter('produto_id');
+            exibirTodasCategoriasSubcategorias();
+
             inputCodigo.value = "";
             inputDescricao.value = "";
             inputPeso.value = "";
@@ -208,16 +245,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Evento de clique para as rows da tabela de produtos
     if (produtoRows) {
         produtoRows.forEach(function(row) {
             row.addEventListener("click", function() {
                 const produtoId = row.getAttribute('data-codigo');
                 updateQueryStringParameter('produto_id', produtoId);
-                removerInvalidClass(); // Remover a classe is-invalid ao clicar em uma linha de produto
+                removerInvalidClass();
                 exibirFormulario();
 
-                // Obter os dados do produto a partir dos atributos da linha
                 const produto = {
                     codigo: row.getAttribute('data-codigo'),
                     descricao: row.getAttribute('data-descricao'),
@@ -232,7 +267,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 preencherFormulario(produto);
                 atualizarDropdown(tipoContainer, produto.tipo);
+                filtrarCategorias(produto.tipo);
                 atualizarDropdown(categoriaContainer, produto.categoria);
+                filtrarSubcategorias(produto.categoria);
                 atualizarDropdown(subcategoriaContainer, produto.subCategoria);
                 atualizarDropdown(embalagemContainer, produto.embalagem);
                 atualizarTipoPeso(produto.tipoPeso);
@@ -240,42 +277,101 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Evento de clique para o botão de salvar
     if (btnSalvar) {
         btnSalvar.addEventListener("click", async function() {
             if (validarCampos()) {
-                let peso = inputPeso.value.trim();
-                if (peso === "") {
-                    peso = null; // Set null if peso is empty
-                } else {
-                    peso = parseFloat(peso.replace(',', '.')); // Convert to float
-                }
-
-                const dadosProduto = {
-                    codigo: inputCodigo.value,
-                    descricao: inputDescricao.value,
-                    categoria_id: document.querySelector("input[name='categoria']:checked").value,
-                    sub_categoria_id: document.querySelector("input[name='subcategoria']:checked").value,
-                    peso: peso,
-                    unidade: parseInt(inputUnidade.value),
-                    tipo_id: document.querySelector("input[name='tipo']:checked").value,
-                    embalagem_id: document.querySelector("input[name='embalagem']:checked") ? document.querySelector("input[name='embalagem']:checked").value : null,
-                    tipo_peso: document.querySelector("input[name='peso']:checked").value === "KILO" ? "KG" : "LT"
-                };
-
                 try {
-                    const resposta = await solicitacoes.fazerSolicitacao("/produtos/", dadosProduto);
-                    console.log("Produto salvo com sucesso:", resposta);
-                    appendAlert('Produto salvo com sucesso!', 'success');
-                    // Atualizar a tabela ou fazer qualquer outra ação necessária
+                    let tipoPesoSelecionado = pesoContainer.querySelector("input[type='radio']:checked").value;
+
+                    if (tipoPesoSelecionado === "KILO") {
+                        tipoPesoSelecionado = "KG";
+                    } else if (tipoPesoSelecionado === "LITRO") {
+                        tipoPesoSelecionado = "LT";
+                    }
+
+                    const dadosProduto = {
+                        codigo: inputCodigo.value,
+                        descricao: inputDescricao.value,
+                        categoria_id: categoriaContainer.querySelector("input[type='radio']:checked").value,
+                        sub_categoria_id: subcategoriaContainer.querySelector("input[type='radio']:checked").value,
+                        peso: inputPeso.value,
+                        unidade: inputUnidade.value,
+                        tipo_id: tipoContainer.querySelector("input[type='radio']:checked").value,
+                        embalagem_id: embalagemContainer.querySelector("input[type='radio']:checked").value,
+                        tipo_peso: tipoPesoSelecionado
+                    };
+
+                    const resposta = await solicitacoes.fazerSolicitacao('/produtos/', dadosProduto);
+
+                    if (resposta.id) {
+                        sessionStorage.setItem('alertMessage', 'Produto salvo com sucesso!');
+                        sessionStorage.setItem('alertType', 'success');
+                        window.location.reload();
+                    }
                 } catch (erro) {
-                    console.error("Erro ao salvar o produto:", erro);
-                    appendAlert(`Erro ao salvar o produto: ${erro.error || 'Erro desconhecido'}`, 'danger');
+                    appendAlert(`Erro ao salvar o produto: ${erro.error}`, 'danger');
                 }
             } else {
-                console.log("Há campos inválidos.");
                 appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
             }
         });
     }
+
+    const alertMessage = sessionStorage.getItem('alertMessage');
+    const alertType = sessionStorage.getItem('alertType');
+
+    if (alertMessage) {
+        appendAlert(alertMessage, alertType);
+        sessionStorage.removeItem('alertMessage');
+        sessionStorage.removeItem('alertType');
+    }
+
+    let modal = new Modal();
+    modal.eventoFechar();
+
+    modal.eventoBotao1((dataId) => {
+      modal.fechar();
+    });
+
+    modal.eventoBotao2(async (dataId) => {
+      modal.fechar();
+      try {
+        await solicitacoes.fazerSolicitacao(`/produtos/${dataId}/`, {}, "DELETE");
+        sessionStorage.setItem('alertMessage', 'Produto excluído com sucesso!');
+        sessionStorage.setItem('alertType', 'success');
+        const url = new URL(window.location);
+        url.searchParams.delete('produto_id');
+        window.history.pushState({}, '', url);
+        setTimeout(() => {
+          window.location.reload();
+        }, 700);
+      } catch (erro) {
+        console.error("Erro ao excluir produto:", erro);
+        appendAlert('Erro ao excluir produto: ' + erro.message, 'danger');
+      }
+    });
+
+    let botoesExcluirProduto = document.querySelectorAll(".excluirProduto");
+    botoesExcluirProduto.forEach((botao) => {
+      let dataId = botao.getAttribute("data-id");
+      botao.addEventListener("click", () => {
+        modal.parametrizar(
+          "Confirmação",
+          "Tem certeza que deseja excluir esse produto?",
+          "Cancelar",
+          "Confirmar"
+        );
+        modal.abrir(dataId);
+      });
+    });
+
+    tipoContainer.addEventListener('change', function() {
+        const tipoSelecionado = tipoContainer.querySelector("input[type='radio']:checked").value;
+        filtrarCategorias(tipoSelecionado);
+    });
+
+    categoriaContainer.addEventListener('change', function() {
+        const categoriaSelecionada = categoriaContainer.querySelector("input[type='radio']:checked").value;
+        filtrarSubcategorias(categoriaSelecionada);
+    });
 });
