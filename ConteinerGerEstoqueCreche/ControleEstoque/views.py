@@ -360,13 +360,16 @@ class ProdutoView(View):
         data = json.loads(request.body)
         produto.codigo = data.get('codigo')
         produto.descricao = data.get('descricao')
-        produto.categoria = get_object_or_404(Categoria, codigo=data.get('categoria_id'))
-        produto.sub_categoria = get_object_or_404(SubCategoria, codigo=data.get('sub_categoria_id'))
-        produto.tipo = get_object_or_404(TipoProduto, codigo=data.get('tipo_id'))
+        produto.categoria = get_object_or_404(Categoria, pk=data.get('categoria_id'))
+        produto.sub_categoria = get_object_or_404(SubCategoria, pk=data.get('sub_categoria_id'))
+        produto.tipo = get_object_or_404(TipoProduto, pk=data.get('tipo_id'))
         produto.peso = data.get('peso')
         produto.unidade = data.get('unidade')
+        produto.embalagem = get_object_or_404(EmbalagemProduto, pk=data.get('embalagem_id')) if data.get('embalagem_id') else None
+        produto.tipo_peso = data.get('tipo_peso')
         produto.save()
         return JsonResponse({'status': 'success'})
+
 
     def delete(self, request, produto_id):
         produto = get_object_or_404(Produto, codigo=produto_id)
