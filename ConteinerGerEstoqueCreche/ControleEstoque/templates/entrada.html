@@ -19,6 +19,8 @@
   </head>
   <body>
     {% include "componentes/navbar.html" %}
+    <div id="liveAlertPlaceholder"></div>
+
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
@@ -79,11 +81,12 @@
             </button>
          </div>
          <div>
-            <button class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3">
-                <span>Finalizar</span>
-                <span class="d-none spinner-border spinner-border-sm position-absolute custom-r-12" aria-hidden="true"></span>
-                <img class="position-absolute custom-r-12" src="{% static 'img/finalizar.svg' %}" alt="" />
-            </button>
+          <button id="finalizarButton" class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3">
+            <span>Finalizar</span>
+            <span class="d-none spinner-border spinner-border-sm position-absolute custom-r-12" aria-hidden="true"></span>
+            <img class="position-absolute custom-r-12" src="{% static 'img/finalizar.svg' %}" alt="" />
+        </button>
+        
          </div>
         </div>
         </div>
@@ -129,6 +132,7 @@
                 <tbody>
                   {% for produto in produtos %}
                   <tr
+                    data-id="{{ produto.id }}"
                     data-codigo="{{ produto.codigo }}"
                     data-descricao="{{ produto.descricao }}"
                     data-unidade="{{ produto.unidade }}"
@@ -165,6 +169,7 @@
                   </tr>
                   {% endfor %}
                 </tbody>
+                
               </table>
             </div>
           </div>

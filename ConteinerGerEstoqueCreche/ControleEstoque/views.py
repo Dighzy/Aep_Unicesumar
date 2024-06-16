@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib.auth.models import User
-from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProduto, EmbalagemProduto
+from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProduto, EmbalagemProduto, Lancamento, Entrada
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
@@ -541,7 +541,8 @@ class UsuarioView(View):
         user = get_object_or_404(User, id=user_id)
         user.delete()
         return JsonResponse({'status': 'success'})
-        
+
+
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class EntradaView(View):
@@ -549,6 +550,44 @@ class EntradaView(View):
         produtos = Produto.objects.all()
         origens = Origem.objects.filter(tipo='Entrada')
         return render(request, 'entrada.html', {'produtos': produtos, 'origens': origens})
+
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            origem_id = data.get('origem')
+            produtos_data = data.get('produtos')
+            
+            if not origem_id or not produtos_data:
+                return JsonResponse({'error': 'Todos os campos são obrigatórios.'}, status=400)
+
+            origem = Origem.objects.get(id=origem_id)
+            usuario = request.user
+            
+            # Criar um único lançamento para a entrada inteira
+            lancamento = Lancamento.objects.create(origem=origem, usuario=usuario, data_lancamento=timezone.now())
+            
+            for produto_data in produtos_data:
+                produto_id = produto_data.get('id')
+                total_real = produto_data.get('total_real')
+                total = produto_data.get('total')
+                produto = Produto.objects.get(id=produto_id)
+                
+                # Criar a entrada para cada produto
+                Entrada.objects.create(lancamento=lancamento, produto=produto, quantidade=total_real, data_entrada=timezone.now())
+                
+                # Atualizar o estoque
+                estoque, created = Estoque.objects.get_or_create(produto=produto)
+                if created or not estoque.primeiro_movimento:
+                    estoque.primeiro_movimento = timezone.now()
+                estoque.ultimo_movimento = timezone.now()
+                estoque.contabil_real += int(total_real)
+                estoque.contabil += int(total)
+                estoque.save()
+            
+            return JsonResponse({'success': 'Entrada registrada com sucesso.'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')

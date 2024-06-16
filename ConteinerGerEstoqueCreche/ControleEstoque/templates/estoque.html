@@ -53,55 +53,39 @@
               </label>
             </div>
           </div>
-          <div class="flex-grow-1 mb-3">
-            <table class="table mb-0 table-hover">
-              <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Produto</th>
-                  <th scope="col" class="text-secondary">Descrição</th>
-                  <th scope="col" class="text-secondary">Embalagem</th>
-                  <th scope="col" class="text-secondary">Contábil</th>
-                  <th scope="col" class="text-secondary">Categoria</th>
-                  <th scope="col" class="text-secondary">Sub-Categoria</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="text-secondary">ML0001</td>
-                  <td class="text-secondary">Detergente Líquido</td>
-                  <td class="text-secondary">Única</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">Material de Limpeza</td>
-                  <td class="text-secondary">Detergentes</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">AL0002</td>
-                  <td class="text-secondary">Cx. de Leite 12 Un.</td>
-                  <td class="text-secondary">Caixa</td>
-                  <td class="text-secondary">2</td>
-                  <td class="text-secondary">Alimento</td>
-                  <td class="text-secondary">Não Perecíveis</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro.svg' %}" alt="" />
-                  </td>
-                </tr>
-                <tr>
-                  <td class="text-secondary">ME0001</td>
-                  <td class="text-secondary">Caderno 96 Folhas</td>
-                  <td class="text-secondary">Única</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">Material Escolar</td>
-                  <td class="text-secondary">Cadernos</td>
-                  <td class="text-end">
-                    <img src="{% static 'img/registro.svg' %}" alt="" />
-                  </td>
-                </tr>
-              </tbody>
+          <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
+            <div class="table-responsive position-absolute w-100 h-100">
+              <table id="CE_Estoque" class="table mb-0 table-hover">
+                <thead>
+                    <tr class="cabecalho">
+                        <th scope="col" class="text-secondary">Produto</th>
+                        <th scope="col" class="text-secondary">Descrição</th>
+                        <th scope="col" class="text-secondary">Tipo</th>
+                        <th scope="col" class="text-secondary">Embalagem</th>
+                        <th scope="col" class="text-secondary">Contábil</th>
+                        <th scope="col" class="text-secondary">Categoria</th>
+                        <th scope="col" class="text-secondary">Sub-Categoria</th>
+                        <th scope="col" class="text-secondary"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in estoque_items %}
+                    <tr data-primeiro-movimento="{{ item.primeiro_movimento_formatado }}" data-ultimo-movimento="{{ item.ultimo_movimento_formatado }}" data-tipo="{{  item.produto.tipo_mascarado  }}" data-quantidade="{{ item.contabil }}" data-categoria="{{ item.produto.categoria.descricao }}">
+                        <td class="text-secondary">{{ item.produto.codigo }}</td>
+                        <td class="text-secondary">{{ item.produto.descricao }}</td>
+                        <td class="text-secondary">{{ item.produto.tipo_mascarado }}</td>
+                        <td class="text-secondary">{{ item.produto.embalagem.descricao }}</td>
+                        <td class="text-secondary">{{ item.contabil }}</td>
+                        <td class="text-secondary">{{ item.produto.categoria.descricao }}</td>
+                        <td class="text-secondary">{{ item.produto.sub_categoria.descricao }}</td>
+                        <td class="text-end"><img src="{% static 'img/registro.svg' %}" alt="" /></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
+            
+            
+            </div>
           </div>
 
         </div>
@@ -112,7 +96,7 @@
             <h5 class="custom-title">Histórico de Movimentação</h5>
           </div>
           <div class="flex-grow-1 mb-4">
-            <table class="table mb-0 table-hover">
+            <table class="table mb-0 table-hover" id="CE_Estoque">
               <thead>
                 <tr class="cabecalho">
                   <th scope="col" class="text-secondary">Lanc.</th>
@@ -161,49 +145,55 @@
             <h5 class="custom-title">Resumo de Movimentação</h5>
           </div>
           <div class="flex-grow-1 mb-5">
+
+            
             <table class="table mb-0 table-hover">
               <thead>
                 <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">1º Mov.</th>
-                  <th scope="col" class="text-secondary">Tipo</th>
-                  <th scope="col" class="text-secondary">Quantidade</th>
-                  <th scope="col" class="text-secondary">Categoria</th>
-                  <th scope="col" class="text-secondary"></th>
+                  <th scope="col" class="text-secondary custom-cell">1º Mov.</th>
+                  <th scope="col" class="text-secondary custom-cell">Tipo</th>
+                  <th scope="col" class="text-secondary custom-cell">Quantidade</th>
+                  <th scope="col" class="text-secondary custom-cell">Categoria</th>
+                  <th scope="col" class="text-secondary custom-cell"></th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td class="text-secondary">12/01/2024</td>
-                  <td class="text-secondary">E</td>
-                  <td class="text-secondary">24</td>
-                  <td class="text-secondary">Compra</td>
-                  <td class="text-end">
+                <tr class="custom-row">
+                  <td id="primeiro-movimento" class="text-secondary custom-cell"></td>
+                  <td id="tipo-movimento" class="text-secondary custom-cell"></td>
+                  <td id="quantidade-movimento" class="text-secondary custom-cell"></td>
+                  <td id="categoria-movimento" class="text-secondary custom-cell"></td>
+                  <td class="text-end custom-cell">
                     <img src="{% static 'img/registro-2.svg' %}" alt="" />
                   </td>
                 </tr>
               </tbody>
             </table>
-            <table class="table mt-3 p-0 table-hover w-100">
+            
+            
+            
+          <table class="table mt-3 p-0 table-hover w-100">
               <thead>
-                <tr class="cabecalho">
-                  <th scope="col" class="text-secondary">Ult. Mov.</th>
-                  <th scope="col" class="text-secondary">Tipo</th>
-                  <th scope="col" class="text-secondary">Quantidade</th>
-                  <th scope="col" class="text-secondary">Categoria</th>
-                  <th scope="col" class="text-secondary"></th>
-                </tr>
+                  <tr class="cabecalho">
+                      <th scope="col" class="text-secondary">Ult. Mov.</th>
+                      <th scope="col" class="text-secondary">Tipo</th>
+                      <th scope="col" class="text-secondary">Quantidade</th>
+                      <th scope="col" class="text-secondary">Categoria</th>
+                      <th scope="col" class="text-secondary"></th>
+                  </tr>
               </thead>
-              <tbody></tbody>
-              <tr>
-                <td class="text-secondary">12/01/2024</td>
-                <td class="text-secondary">E</td>
-                <td class="text-secondary">24</td>
-                <td class="text-secondary">Compra</td>
-                <td class="text-end">
-                  <img src="{% static 'img/registro-2.svg' %}" alt="" />
-                </td>
-              </tr>
-            </table>
+              <tbody>
+                  <tr>
+                      <td id="ultimo-movimento" class="text-secondary"></td>
+                      <td id="tipo-movimento" class="text-secondary"></td>
+                      <td id="quantidade-movimento" class="text-secondary"></td>
+                      <td id="categoria-movimento" class="text-secondary"></td>
+                      <td class="text-end">
+                          <img src="{% static 'img/registro-2.svg' %}" alt="" />
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
           </div>
         </div>
       </div>
@@ -213,7 +203,20 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" src="{% static 'js/sortTable.js' %}"></script>
-
+    <script type="module" src="{% static 'js/telas/estoque.js' %}"></script>
   </body>
 </html>
+<style>
+  .custom-cell {
+    overflow: hidden;
+    white-space: nowrap;
+    max-height: 50px;
+    max-width: 110px;
+    min-width: 110px;                                                       
+    width: 110px;
+  }
+  
+  .custom-row {
+    height: 50px;
+  }
+</style>
