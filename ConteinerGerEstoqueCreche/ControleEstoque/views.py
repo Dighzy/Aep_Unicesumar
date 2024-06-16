@@ -4,15 +4,16 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib.auth.models import User
-from .models import Categoria, SubCategoria, Produto, Origem, Lancamentos, TipoProduto, EmbalagemProduto
+from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProduto, EmbalagemProduto
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.db import IntegrityError, transaction
 import json
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class CategoriaView(View):
-    @method_decorator(login_required, name='dispatch')
     def get(self, request):
         categorias = Categoria.objects.all()
         tipos = TipoProduto.objects.all()
@@ -76,9 +77,9 @@ class CategoriaView(View):
         categoria.delete()
         return JsonResponse({'status': 'success'})
         
-
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class EmbalagemView(View):
-    @method_decorator(login_required, name='dispatch')
     def get(self, request):
         embalagens = EmbalagemProduto.objects.all()
         tipos = TipoProduto.objects.all()
@@ -138,59 +139,7 @@ def estoque(request):
     return render(request, 'estoque.html')
 
 
-@method_decorator(login_required, name='dispatch')
-class LancamentoView(View):
-    @method_decorator(never_cache)
-    def get(self, request):
-        # Mostrar
-        lancamento_id = request.GET.get('lancamento_id', None)
-        if lancamento_id is not None:
-            lancamento = Lancamentos.objects.get(id=lancamento_id)
-        else:
-            lancamento = None
-        lancamentos = Lancamentos.objects.all()
-        return render(request, 'lancamentos.html', {'lancamentos': lancamentos, 'lancamento': lancamento})
-
-    def post(self, request):
-        # Inserir
-        produto_id = request.POST.get('produto_id')
-        total = request.POST.get('total')
-        categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        usuario_id = request.POST.get('usuario_id')
-        produto = Produto.objects.get(id=produto_id)
-        origem = Origem.objects.get(id=categoria_movimento_id)
-        usuario = User.objects.get(id=usuario_id)
-        lancamento = Lancamentos.objects.create(
-            produto=produto, total=total, origem=origem,
-            usuario=usuario, data_lancamento=timezone.now()
-        )
-        return JsonResponse({'codigo': lancamento.codigo})
-
-    def patch(self, request, lancamento_id):
-        # Atualizar Partes
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.total = request.POST.get('total', lancamento.total)
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def put(self, request, lancamento_id):
-        # Atualizar Tudo
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.produto_id = request.POST.get('produto_id')
-        lancamento.total = request.POST.get('total')
-        lancamento.categoria_movimento_id = request.POST.get('categoria_movimento_id')
-        lancamento.usuario_id = request.POST.get('usuario_id')
-        lancamento.data_lancamento = timezone.now()
-        lancamento.save()
-        return JsonResponse({'status': 'success'})
-
-    def delete(self, request, lancamento_id):
-        # Deletar
-        lancamento = get_object_or_404(Lancamentos, id=lancamento_id)
-        lancamento.delete()
-        return JsonResponse({'status': 'success'})
-
-
+@never_cache
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -209,12 +158,13 @@ def login(request):
     else:
         return render(request, 'login.html')
 
-
+@never_cache
 def logout(request):
     user_logout(request)
     return HttpResponseRedirect('/')
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class OrigemView(View):
     def get(self, request):
         origens = Origem.objects.all()
@@ -282,8 +232,8 @@ def painel_usuario(request):
 
 
 @method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class ProdutoView(View):
-    @method_decorator(never_cache)
     def get(self, request):
         produtos = Produto.objects.all()
         embalagens = EmbalagemProduto.objects.all()
@@ -337,6 +287,8 @@ class ProdutoView(View):
                     embalagem=embalagem,
                     tipo_peso=tipo_peso
                 )
+                Estoque.objects.create(produto=produto)
+
             return JsonResponse({'id': produto.codigo}, status=201)
         except IntegrityError:
             return JsonResponse({'error': 'Código de produto já existe.'}, status=400)
@@ -372,12 +324,26 @@ class ProdutoView(View):
 
 
     def delete(self, request, produto_id):
-        produto = get_object_or_404(Produto, codigo=produto_id)
-        produto.delete()
-        return JsonResponse({'status': 'success'})
+        try:
+            produto = get_object_or_404(Produto, codigo=produto_id)
+            estoque = get_object_or_404(Estoque, produto=produto)
+            
+            if estoque.contabil == 0 and estoque.contabil_real == 0:
+                with transaction.atomic():
+                    estoque.delete()
+                    produto.delete()
+                return JsonResponse({'status': 'success'})
+            else:
+                return JsonResponse({'error': 'Não é possível deletar o produto, pois o estoque não está vazio.'}, status=400)
+        except Estoque.DoesNotExist:
+            produto.delete()
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class SubCategoriaView(View):
-    @method_decorator(login_required, name='dispatch')
     def get(self, request):
         subcategorias = SubCategoria.objects.all()
         categorias = Categoria.objects.all()
@@ -441,9 +407,9 @@ class SubCategoriaView(View):
         subcategoria.delete()
         return JsonResponse({'status': 'success'})
 
-
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class TipoView(View):
-    @method_decorator(login_required, name='dispatch')
     def get(self, request):
         tipos = TipoProduto.objects.all()
         tipo_id = request.GET.get('tipo_id', None)
@@ -494,9 +460,9 @@ class TipoView(View):
         tipo.delete()
         return JsonResponse({'status': 'success'})
 
-
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class UsuarioView(View):
-    @method_decorator(never_cache)
     def get(self, request):
         if not request.user.is_superuser:
             previous_url = request.session.get('previous_url', '/')
@@ -576,3 +542,23 @@ class UsuarioView(View):
         user.delete()
         return JsonResponse({'status': 'success'})
         
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class EntradaView(View):
+    def get(self, request):
+        produtos = Produto.objects.all()
+        origens = Origem.objects.filter(tipo='Entrada')
+        return render(request, 'entrada.html', {'produtos': produtos, 'origens': origens})
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class SaidaView(View):
+    def get(self, request):
+        estoque = Estoque.objects.select_related('produto').all()
+        return render(request, 'saida.html', {'estoque': estoque})
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class LancamentoView(View):
+    def get(self, request):
+        return render(request, 'lancamentos.html')

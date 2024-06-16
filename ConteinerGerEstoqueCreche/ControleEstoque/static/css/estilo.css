@@ -93,6 +93,7 @@
 .custom-wrapper-table{
   margin-right: -25px;
 }
+
 .table-responsive {
   padding-right: 10px;
   overflow-y: scroll; 
@@ -150,7 +151,12 @@
   padding: 0px;
   margin-right: 20px;
   margin-top: 3px;
+  cursor: pointer; 
+
 }
+
+
+
 
 .custom-navbar-bg {
   background-color: #6aa4d9;

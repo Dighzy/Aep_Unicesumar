@@ -84,25 +84,41 @@ class Origem(models.Model):
         return f'{str(self.codigo).zfill(4)} - {self.descricao}'
 
 
-class Lancamentos(models.Model):
-    codigo = models.AutoField(primary_key=True)
-    produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+class Lancamento(models.Model):
+    id = models.AutoField(primary_key=True)
     origem = models.ForeignKey('Origem', on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     data_lancamento = models.DateTimeField(default=timezone.now)
 
     class Meta:
-        db_table = 'ce_lancamentos'
+        db_table = 'ce_lancamento'
 
+class Entrada(models.Model):
+    id = models.AutoField(primary_key=True)
+    lancamento = models.ForeignKey('Lancamento', on_delete=models.CASCADE)
+    produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=2)
+    data_entrada = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = 'ce_entrada'
+
+class Saida(models.Model):
+    id = models.AutoField(primary_key=True)
+    lancamento = models.ForeignKey('Lancamento', on_delete=models.CASCADE)
+    produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=2)
+    data_saida = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        db_table = 'ce_saida'
 
 class Estoque(models.Model):
     produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
-    contabil_real = models.DecimalField(max_digits=10, decimal_places=2)
-    contabil = models.DecimalField(max_digits=10, decimal_places=2)
-    primeiro_movimento = models.DateTimeField(default=timezone.now)
-    ultimo_movimento = models.DateTimeField(default=timezone.now)
-    origem = models.ForeignKey('Origem', on_delete=models.CASCADE)
+    contabil_real = models.PositiveIntegerField(default=0)
+    contabil = models.PositiveIntegerField(default=0)
+    primeiro_movimento = models.DateTimeField(null=True, blank=True)
+    ultimo_movimento = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'ce_estoque'
