@@ -172,6 +172,7 @@
             
             
             
+            
           <table class="table mt-3 p-0 table-hover w-100">
               <thead>
                   <tr class="cabecalho">
@@ -184,10 +185,10 @@
               </thead>
               <tbody>
                   <tr>
-                      <td id="ultimo-movimento" class="text-secondary"></td>
-                      <td id="tipo-movimento" class="text-secondary"></td>
-                      <td id="quantidade-movimento" class="text-secondary"></td>
-                      <td id="categoria-movimento" class="text-secondary"></td>
+                      <td id="ultimo-movimento" class="text-secondary custom-cell"></td>
+                      <td id="tipo-movimento" class="text-secondary custom-cell"></td>
+                      <td id="quantidade-movimento" class="text-secondary custom-cell"></td>
+                      <td id="categoria-movimento" class="text-secondary custom-cell"></td>
                       <td class="text-end">
                           <img src="{% static 'img/registro-2.svg' %}" alt="" />
                       </td>
@@ -209,13 +210,12 @@
 <style>
   .custom-cell {
     overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
     max-height: 50px;
-    max-width: 110px;
-    min-width: 110px;                                                       
-    width: 110px;
+    width: 150px; /* Defina a largura fixa para todas as colunas */
   }
-  
+
   .custom-row {
     height: 50px;
   }

@@ -69,26 +69,46 @@
             </div>
           </div>
           <div class="d-flex align-items-center justify-content-start gap-2">
-            <div id="totalGeral" class="me-auto text-secondary" style="font-weight: 500;">
-                Total Geral: <span id="totalValue">0</span>
+            <div
+              id="totalGeral"
+              class="me-auto text-secondary"
+              style="font-weight: 500"
+            >
+              Total Geral: <span id="totalValue">0</span>
             </div>
             <div>
-            <button id="showRightDivButton" class="custom-button-2-outline rounded d-flex justify-content-between align-items-center">
+              <button
+                id="showRightDivButton"
+                class="custom-button-2-outline rounded d-flex justify-content-between align-items-center"
+              >
                 <span>Incluir</span>
                 <span>
-                    <img class="custom-mb" src="{% static 'img/novo-outline.svg' %}" alt="" />
+                  <img
+                    class="custom-mb"
+                    src="{% static 'img/novo-outline.svg' %}"
+                    alt=""
+                  />
                 </span>
-            </button>
-         </div>
-         <div>
-          <button id="finalizarButton" class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3">
-            <span>Finalizar</span>
-            <span class="d-none spinner-border spinner-border-sm position-absolute custom-r-12" aria-hidden="true"></span>
-            <img class="position-absolute custom-r-12" src="{% static 'img/finalizar.svg' %}" alt="" />
-        </button>
-        
-         </div>
-        </div>
+              </button>
+            </div>
+            <div>
+              <button
+                id="finalizarButton"
+                class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3"
+              >
+                <span>Finalizar</span>
+                <span
+                  class="d-none spinner-border spinner-border-sm position-absolute custom-r-12"
+                  aria-hidden="true"
+                ></span>
+                <img
+                  class="position-absolute custom-r-12"
+                  src="{% static 'img/finalizar.svg' %}"
+                  alt=""
+                />
+              </button>
+            </div>
+          </div>
         </div>
         <div
           id="rightDiv"
@@ -169,7 +189,6 @@
                   </tr>
                   {% endfor %}
                 </tbody>
-                
               </table>
             </div>
           </div>

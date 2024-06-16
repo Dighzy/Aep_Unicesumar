@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login as user_login, logout as user_logout
 from django.contrib.auth.models import User
-from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProduto, EmbalagemProduto, Lancamento, Entrada
+from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProduto, EmbalagemProduto, Lancamento, Entrada, Saida
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
@@ -589,12 +589,56 @@ class EntradaView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')
 class SaidaView(View):
     def get(self, request):
-        estoque = Estoque.objects.select_related('produto').all()
-        return render(request, 'saida.html', {'estoque': estoque})
+        produtos_no_estoque = Estoque.objects.filter(contabil_real__gt=0).select_related('produto')
+        origens = Origem.objects.filter(tipo='Saída')
+        return render(request, 'saida.html', {'produtos': produtos_no_estoque, 'origens': origens})
+
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            origem_id = data.get('origem')
+            produtos_data = data.get('produtos')
+            
+            if not origem_id or not produtos_data:
+                return JsonResponse({'error': 'Todos os campos são obrigatórios.'}, status=400)
+
+            origem = Origem.objects.get(id=origem_id)
+            usuario = request.user
+            
+            # Criar um único lançamento para a saída inteira
+            lancamento = Lancamento.objects.create(origem=origem, usuario=usuario, data_lancamento=timezone.now())
+            
+            for produto_data in produtos_data:
+                produto_id = produto_data.get('id')
+                total_real = int(produto_data.get('total_real'))
+                total = int(produto_data.get('total'))
+                produto = Produto.objects.get(id=produto_id)
+                
+                # Verificar se o saldo de retirada não é maior que o saldo no estoque
+                estoque = Estoque.objects.get(produto=produto)
+                if total_real > estoque.contabil_real or total > estoque.contabil:
+                    return JsonResponse({'error': f'Saldo insuficiente para o produto {produto.codigo}.'}, status=400)
+                
+                # Criar a saída para cada produto
+                Saida.objects.create(lancamento=lancamento, produto=produto, quantidade=total_real, data_saida=timezone.now())
+                
+                # Atualizar o estoque
+                if not estoque.primeiro_movimento:
+                    estoque.primeiro_movimento = timezone.now()
+                estoque.ultimo_movimento = timezone.now()
+                estoque.contabil_real -= total_real
+                estoque.contabil -= total
+                estoque.save()
+            
+            return JsonResponse({'success': 'Saída registrada com sucesso.'}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 @method_decorator(login_required, name='dispatch')
 @method_decorator(never_cache, name='dispatch')

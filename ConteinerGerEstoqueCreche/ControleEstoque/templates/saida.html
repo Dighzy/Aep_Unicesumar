@@ -11,137 +11,165 @@
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/estilo.css' %}">
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/estilo.css' %}"
+    />
   </head>
-
   <body>
     {% include "componentes/navbar.html" %}
+    <div id="liveAlertPlaceholder"></div>
+
     <div class="custom-container">
       <div class="row m-0">
         <div class="d-flex align-items-center p-0 mb-4">
           <a href="{{ request.session.previous_url }}" class="d-flex">
-            <img class="custom-img" src="{% static 'img/voltar.svg' %}" alt="" />
-        </a>
+            <img
+              class="custom-img"
+              src="{% static 'img/voltar.svg' %}"
+              alt="Voltar"
+            />
+          </a>
           <h5 class="custom-title">Registrar Saída</h5>
         </div>
-
         <div
           class="col-7 border boder-secondary rounded me-5 d-flex flex-column custom-container-2"
         >
           <div class="col-6 custom-col-pb-30">
-            <input
-              class="form-control"
-              id=""
-              placeholder="Pesquisar produto..."
-            />
+            <label for="origensSelect" class="form-label"
+              >Selecione a Origem</label
+            >
+            <select
+              class="form-select"
+              id="origensSelect"
+              aria-label="Seleção de Origem"
+            >
+              <option selected>Escolha uma origem</option>
+              {% for origem in origens %}
+              <option value="{{ origem.id }}">{{ origem.descricao }}</option>
+              {% endfor %}
+            </select>
           </div>
+
           <div class="flex-grow-1 mb-3 position-relative custom-wrapper-table">
             <div class="table-responsive position-absolute w-100 h-100">
-               <table id="CE_Produto" class="table mb-0 table-hover">
-              <thead>
-                <tr class="cabecalho">
+              <table id="CE_Saida" class="table mb-0 table-hover">
+                <thead>
+                  <tr class="cabecalho">
                     <th scope="col" class="text-secondary">Código</th>
                     <th scope="col" class="text-secondary">Descrição</th>
-                    <th scope="col" class="text-secondary">Embalagem</th>
-                    <th scope="col" class="text-secondary">Quantidade</th>
-                    <th scope="col" class="text-secondary">Unidades</th>
-                    <th scope="col" class="text-secondary">Produto</th>
+                    <th scope="col" class="text-secondary">Total Real</th>
+                    <th scope="col" class="text-secondary">Total</th>
                     <th scope="col" class="text-secondary"></th>
-                </tr>
-            </thead>
-            <tbody>
-              {% for lancamento in lancamentos_saida %}
-              <tr>
-                  <td class="text-secondary">{{ lancamento.codigo }}</td>
-                  <td class="text-secondary">{{ lancamento.data_lancamento|date:"j F Y" }}</td>
-                  <td class="text-secondary">{{ lancamento.descricao }}</td>
-                  <td class="text-secondary">{{ lancamento.embalagem }}</td>
-                  <td class="text-secondary">{{ lancamento.quantidade }}</td>
-                  <td class="text-secondary">{{ lancamento.produto.unidade }}</td>
-                  <td class="text-secondary">{{ lancamento.produto.descricao }}</td>
-                  <td class="text-end">
-                    <img
-                    src="{% static 'img/editar.svg' %}"
-                    class="editarLancamentosSaida"
-                    data-id="{{ lancamento.id }}"
-                    alt="Editar"
-                    />
-                    <img
-                    src="{% static 'img/deletar.svg' %}"
-                    class="excluirLancamentosSaida"
-                    data-id="{{ lancamento.id }}"
-                    alt="Excluir"
-                    />
-                  </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>  
-          </div>        
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
-          <div
-            class="d-flex align-items-center justify-content-start gap-2 ms-auto"
-          >
-            <button
-              class="custom-button-2-outline rounded d-flex justify-content-between align-items-center"
+          <div class="d-flex align-items-center justify-content-start gap-2">
+            <div
+              id="totalGeral"
+              class="me-auto text-secondary"
+              style="font-weight: 500"
             >
-              <span>Incluir</span>
-              <span>
-                <img class="custom-mb" src="{% static 'img/novo-outline.svg' %}" alt="" />
-              </span>
-            </button>
-            <button
-              class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3"
-            >
-              <span>Finalizar</span>
-              <span
-                class="d-none spinner-border spinner-border-sm position-absolute custom-r-12"
-                aria-hidden="true"
-              ></span>
-              <img 
-              class="position-absolute custom-r-12"
-              src="{% static 'img/finalizar.svg' %}" alt="">
-            </button>
+              Total Geral: <span id="totalValue">0</span>
+            </div>
+            <div>
+              <button
+                id="showRightDivButton"
+                class="custom-button-2-outline rounded d-flex justify-content-between align-items-center"
+              >
+                <span>Incluir</span>
+                <span>
+                  <img
+                    class="custom-mb"
+                    src="{% static 'img/novo-outline.svg' %}"
+                    alt=""
+                  />
+                </span>
+              </button>
+            </div>
+            <div>
+              <button
+                id="finalizarButton"
+                class="custom-btn-salvar custom-min-w rounded text-light d-flex justify-content-start align-items-center ms-auto position-relative ps-3"
+              >
+                <span>Finalizar</span>
+                <span
+                  class="d-none spinner-border spinner-border-sm position-absolute custom-r-12"
+                  aria-hidden="true"
+                ></span>
+                <img
+                  class="position-absolute custom-r-12"
+                  src="{% static 'img/finalizar.svg' %}"
+                  alt=""
+                />
+              </button>
+            </div>
           </div>
         </div>
         <div
-        class="d-flex flex-column position-relative col-4 align-items-start justify-content-start border-start ps-5 custom-col-height"
+          id="rightDiv"
+          class="d-flex flex-column position-relative col-4 align-items-start justify-content-start border-start ps-5 custom-col-height"
         >
-        <div class="d-flex align-items-center p-0 mb-4">
-           <img
+          <div class="d-flex align-items-center p-0 mb-4">
+            <img
               class="custom-img"
               src="{% static 'img/voltar.svg' %}"
               alt="Voltar"
-              />
-           <h5 class="custom-title">Remover Produto</h5>
-        </div>
-        <div class="flex-grow-1 custom-wrapper-table" style="overflow: hidden;">
-           <div class="table-responsive w-100 h-100">
-            <table id="CE_Estoque" class="table mb-0 table-hover">
-              <thead>
+            />
+            <h5 class="custom-title">Remover Produto</h5>
+          </div>
+          <div
+            class="flex-grow-1 custom-wrapper-table"
+            style="overflow: hidden"
+          >
+            <div class="table-responsive w-100 h-100">
+              <table id="CE_Estoque" class="table mb-0 table-hover">
+                <thead>
                   <tr class="cabecalho">
-                      <th scope="col" class="text-secondary">Cód.</th>
-                      <th scope="col" class="text-secondary text-truncate">Descrição</th>
-                      <th scope="col" class="text-secondary text-truncate" style="min-width: 150px; max-width: 150px;">Contábil</th>
+                    <th scope="col" class="text-secondary" style="padding-left: 40px">Cód.</th>
+                    <th scope="col" class="text-secondary text-truncate">Descrição</th>
+                    <th scope="col" class="text-secondary text-truncate" style="min-width: 150px; max-width: 150px">Contábil Real</th>
                   </tr>
-              </thead>
-              <tbody>
-                  {% for estoque in estoque %}
-                  <tr>
-                      <td class="text-secondary text-truncate">{{ estoque.produto.codigo }}</td>
-                      <td class="text-secondary text-truncate">{{ estoque.produto.descricao }}</td>
-                      <td class="text-secondary text-truncate">{{ estoque.contabil }}</td>
+                </thead>
+                <tbody>
+                  {% for item in produtos %}
+                  <tr
+                    data-id="{{ item.produto.id }}"
+                    data-codigo="{{ item.produto.codigo }}"
+                    data-descricao="{{ item.produto.descricao }}"
+                    data-unidade="{{ item.produto.unidade }}"
+                    data-saldo="{{ item.contabil_real }}"  
+                  >
+                    <td class="text-secondary text-truncate">
+                      <label for="checkbox_{{ forloop.counter }}" class="mb-0 d-flex align-items-center w-100">
+                        <input type="checkbox" id="checkbox_{{ forloop.counter }}" class="form-check-input produto-checkbox me-3" />
+                        {{ item.produto.codigo }}
+                      </label>
+                    </td>
+                    <td class="text-secondary text-truncate">
+                      <label for="checkbox_{{ forloop.counter }}" class="mb-0 d-flex align-items-center w-100">
+                        {{ item.produto.descricao }}
+                      </label>
+                    </td>
+                    <td class="text-secondary text-truncate">
+                      <label for="checkbox_{{ forloop.counter }}" class="mb-0 d-flex align-items-center w-100">
+                        {{ item.contabil_real }}
+                      </label>
+                    </td>
                   </tr>
                   {% endfor %}
-              </tbody>
-          </table>
-           </div>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-     </div>
       </div>
     </div>
     {% include "componentes/modal_generica.html" %}
-
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
@@ -150,3 +178,28 @@
     <script type="module" src="{% static 'js/telas/saida.js' %}"></script>
   </body>
 </html>
+<style>
+  thead th {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+
+  .input-group {
+    z-index: 1; /* Abaixo do cabeçalho */
+  }
+
+  /* Certifique-se de que os labels cubram toda a linha */
+  tr label {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    cursor: pointer;
+  }
+  /* Remova qualquer padding/margin para evitar problemas de alinhamento */
+  label .form-check-input {
+    margin-left: 0;
+    margin-right: 10px;
+  }
+</style>
