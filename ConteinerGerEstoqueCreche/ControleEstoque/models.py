@@ -97,7 +97,7 @@ class Entrada(models.Model):
     id = models.AutoField(primary_key=True)
     lancamento = models.ForeignKey('Lancamento', on_delete=models.CASCADE)
     produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
-    quantidade = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.PositiveIntegerField()
     data_entrada = models.DateTimeField(default=timezone.now)
 
     class Meta:
@@ -107,7 +107,7 @@ class Saida(models.Model):
     id = models.AutoField(primary_key=True)
     lancamento = models.ForeignKey('Lancamento', on_delete=models.CASCADE)
     produto = models.ForeignKey('Produto', on_delete=models.CASCADE)
-    quantidade = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.PositiveIntegerField()
     data_saida = models.DateTimeField(default=timezone.now)
 
     class Meta:

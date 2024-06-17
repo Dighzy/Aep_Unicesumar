@@ -168,4 +168,36 @@ document.getElementById("salvar").addEventListener("click", async () => {
   } else {
     appendAlert('Erro: Verifique os campos e tente novamente.', 'danger');
   }
+  
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  function filtrarUsuarios() {
+      const input = document.getElementById('pesquisarUsuario');
+      const filtro = input.value.toLowerCase();
+      const tabela = document.getElementById('tabelaUsuarios');
+      const linhas = tabela.getElementsByTagName('tr');
+
+      for (let i = 1; i < linhas.length; i++) {
+          const colunas = linhas[i].getElementsByTagName('td');
+          let encontrou = false;
+          
+          for (let j = 0; j < colunas.length; j++) {
+              const valor = colunas[j].textContent || colunas[j].innerText;
+              if (valor.toLowerCase().indexOf(filtro) > -1) {
+                  encontrou = true;
+                  break;
+              }
+          }
+
+          if (encontrou) {
+              linhas[i].style.display = '';
+          } else {
+              linhas[i].style.display = 'none';
+          }
+      }
+  }
+
+  const inputPesquisar = document.getElementById('pesquisarUsuario');
+  inputPesquisar.addEventListener('input', filtrarUsuarios);
 });

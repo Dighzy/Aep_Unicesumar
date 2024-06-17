@@ -238,3 +238,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
     finalizarButton.addEventListener("click", finalizarSaida);
 });
+

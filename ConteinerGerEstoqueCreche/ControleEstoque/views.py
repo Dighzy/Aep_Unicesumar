@@ -8,6 +8,7 @@ from .models import Categoria, SubCategoria, Produto, Origem, Estoque, TipoProdu
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
+from django.db.models import Sum
 from django.db import IntegrityError, transaction
 import json
 
@@ -132,12 +133,42 @@ class EmbalagemView(View):
         return JsonResponse({'status': 'success'})
 
 
-@never_cache
+
 @login_required
+@never_cache
 def estoque(request):
     request.session['previous_url'] = request.META.get('HTTP_REFERER')
-    return render(request, 'estoque.html')
 
+    # Mapear os tipos de produto para suas abreviações
+    tipo_abreviacoes = {
+        'Alimento': 'AL',
+        'Material de Limpeza': 'ML',
+        'Material Escolar': 'ME'
+    }
+
+    # Buscar todos os produtos em estoque com contabil_real maior que zero
+    estoque_items = Estoque.objects.select_related('produto__categoria', 'produto__sub_categoria', 'produto__embalagem', 'produto__tipo').filter(contabil_real__gt=0)
+    
+    # Formatando as datas e criando máscaras antes de passá-las ao template
+    for item in estoque_items:
+        # Formatar as datas
+        if item.primeiro_movimento:
+            item.primeiro_movimento_formatado = item.primeiro_movimento.strftime("%d/%m/%Y")
+        else:
+            item.primeiro_movimento_formatado = "Data não disponível"
+        
+        if item.ultimo_movimento:
+            item.ultimo_movimento_formatado = item.ultimo_movimento.strftime("%d/%m/%Y")
+        else:
+            item.ultimo_movimento_formatado = "Data não disponível"
+        
+        # Criar máscara para o tipo de produto
+        item.produto.tipo_mascarado = tipo_abreviacoes.get(item.produto.tipo.descricao, item.produto.tipo.descricao)
+    
+    # Buscar todos os lançamentos
+    lancamentos = Lancamento.objects.all()
+
+    return render(request, 'estoque.html', {'estoque_items': estoque_items, 'lancamentos': lancamentos})
 
 @never_cache
 def login(request):
@@ -644,4 +675,65 @@ class SaidaView(View):
 @method_decorator(never_cache, name='dispatch')
 class LancamentoView(View):
     def get(self, request):
-        return render(request, 'lancamentos.html')
+        lancamentos = Lancamento.objects.select_related('origem', 'usuario').all()
+        lancamento_detalhes = []
+
+        for lancamento in lancamentos:
+            total_entrada = Entrada.objects.filter(lancamento=lancamento).aggregate(Sum('quantidade'))['quantidade__sum'] or 0
+            total_saida = Saida.objects.filter(lancamento=lancamento).aggregate(Sum('quantidade'))['quantidade__sum'] or 0
+            total = total_entrada + total_saida
+
+            lancamento_detalhes.append({
+                'id': lancamento.id,
+                'origem': lancamento.origem.descricao,
+                'usuario': lancamento.usuario.username,
+                'data_lancamento': lancamento.data_lancamento,
+                'total': total
+            })
+
+        return render(request, 'lancamentos.html', {'lancamento_detalhes': lancamento_detalhes})
+
+@method_decorator(login_required, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class DetalheLancamentoView(View):
+    def get(self, request, lancamento_id):
+        lancamento = get_object_or_404(Lancamento, id=lancamento_id)
+        entradas = Entrada.objects.filter(lancamento=lancamento)
+        saidas = Saida.objects.filter(lancamento=lancamento)
+
+        return render(request, 'lancamento.html', {
+            'lancamento': lancamento,
+            'entradas': entradas,
+            'saidas': saidas
+        })
+
+@login_required
+@never_cache
+def lancamentos_produto(request, produto_id):
+    entradas = Entrada.objects.filter(produto_id=produto_id).values('id', 'quantidade', 'data_entrada', 'lancamento__origem__descricao')
+    saidas = Saida.objects.filter(produto_id=produto_id).values('id', 'quantidade', 'data_saida', 'lancamento__origem__descricao')
+
+    lancamentos = []
+    
+    for entrada in entradas:
+        lancamentos.append({
+            'id': entrada['id'],
+            'tipo': 'E',
+            'categoria': entrada['lancamento__origem__descricao'],
+            'total': entrada['quantidade'],
+            'data': entrada['data_entrada'].strftime('%d/%m/%Y')
+        })
+        
+    for saida in saidas:
+        lancamentos.append({
+            'id': saida['id'],
+            'tipo': 'S',
+            'categoria': saida['lancamento__origem__descricao'],
+            'total': saida['quantidade'],
+            'data': saida['data_saida'].strftime('%d/%m/%Y')
+        })
+
+    # Ordena os lançamentos pela data
+    lancamentos.sort(key=lambda x: x['data'])
+
+    return JsonResponse({'lancamentos': lancamentos})

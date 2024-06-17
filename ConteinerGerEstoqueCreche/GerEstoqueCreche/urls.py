@@ -34,12 +34,13 @@ transaction_patterns = [
     path('saidas/', views.SaidaView.as_view(), name='saidas'),  # Rota genérica para operações POST e GET
     path('saidas/<int:saida_id>/', views.SaidaView.as_view(), name='gerenciar_saida'),  # Rota específica para operações PUT, PATCH e DELETE
     path('lancamentos/', views.LancamentoView.as_view(), name='lancamentos'),  # Rota genérica para operações POST e GET
-    path('lancamentos/<int:lancamento_id>/', views.LancamentoView.as_view(), name='gerenciar_lancamento'),  # Rota específica para operações PUT, PATCH e DELETE
+    path('lancamento/<int:lancamento_id>/', views.DetalheLancamentoView.as_view(), name='detalhe_lancamento'),  # Rota específica para operações PUT, PATCH e DELETE
 ]
 
 # URLs de Estoque
 stock_patterns = [
     path('estoque/', views.estoque, name='estoque'),
+    path('lancamentos_produto/<int:produto_id>/', views.lancamentos_produto, name='lancamentos_produto'),  # Adiciona a rota específica para a view lancamentos_produto
 ]
 
 # URLs de Origens
